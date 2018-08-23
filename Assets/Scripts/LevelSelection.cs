@@ -59,12 +59,14 @@ public class LevelSelection : MonoBehaviour
             //gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, shift+height);
             gameObject.GetComponent<RectTransform>().offsetMin = new Vector2(gameObject.GetComponent<RectTransform>().offsetMin.x, (int)(-shift-0.1*height));//0.1 because of toolbar!
         }
+
         int index = 0;
         for (int i = 0; index < levelAmount-1; i++)
         {
             for (int j = 0; j <= 3 && index < levelAmount-1; j++)
             {
                 index = i * 4 + j;
+                
                 string text = "";
                 int X =  horizontalMargin + tileMargin + (tileMargin * 2 + tileSize) * j;
                 int Y = (int)(height * 0.9 - (verticalMargin + tileMargin + (tileMargin * 2 + tileSize) * i)); //0.9 because of toolbar!
@@ -90,10 +92,16 @@ public class LevelSelection : MonoBehaviour
 
                 buttons[index].GetComponentInChildren<Text>().text =text;
                 buttons[index].GetComponentInChildren<Text>().fontSize = fontSize;
-                
+
+                int copy = index; //fuck closures. I miss Haskell
+                buttons[index].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
             }
-        }      
- 
+        }       
+    }
+
+    void ButtonEvent(int index)
+    {       
+        Debug.Log("Button №: " + index.ToString());
     }
 
     void Update()
