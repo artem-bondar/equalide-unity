@@ -1,19 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.UI;
 using UnityEngine;
+using System.Collections;
+ 
+public class LevelController: MonoBehaviour
+{
+    public Transform canvas;
+    public Font font;
+	private Color[] colors = {Color.black, Color.yellow, Color.blue, Color.white};
+	public int num = 1;
+    void Start ()
+    {
+        CreateButton();
 
-public class LevelController : MonoBehaviour {
-
-	public GameObject PaletteButton;
+    }
+     
+    void Update ()
+    {
+     
+    }
+ 
+    void CreateButton ()
+    {
+        GameObject newButton = new GameObject("New button", typeof(Image), typeof(Button), typeof(LayoutElement));
+        newButton.transform.SetParent(canvas);
+        newButton.GetComponent<LayoutElement>().minHeight = 35;
+        newButton.GetComponent<Button>().onClick.AddListener(delegate { press(); });
+    }
 	
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	public void press ()
+    {
+        
+    }
 }
