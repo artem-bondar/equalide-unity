@@ -1,46 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelSelection : MonoBehaviour
 {
     public string levelStates;
 
+    public GameObject solved;
 
-    public Color colorSolvedTile;
-    public Color colorUnSolvedTile;
-    public Color colorCheckedSolvedTile;
-    public Color colorCheckedUnSolvedTile;
+    public GameObject unSolved;
 
-    public GUIStyle buttonStyle;
-
-    private Texture2D solved;
-    private Texture2D unSolved;
-    private Texture2D solvedActive;
-    private Texture2D unSolvedActive;
+    private List<GameObject> buttons; 
 
     void Awake()
     {
-        solved = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        solved.SetPixel(0, 0, colorSolvedTile);
-        solved.Apply();
+        /*
+       
+        buttons.Add( Instantiate(unSolved, new Vector3(100, 200, 0), Quaternion.identity) as GameObject);
+        buttons[0].transform.SetParent(gameObject.transform, false);
 
-        unSolved = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        unSolved.SetPixel(0, 0, colorUnSolvedTile);
-        unSolved.Apply();
+        buttons[0].GetComponentInChildren<Text>().text = "42";
 
-        solvedActive = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        solvedActive.SetPixel(0, 0, colorCheckedSolvedTile);
-        solvedActive.Apply();
+        buttons.Add( Instantiate(unSolved) as GameObject );
+        buttons[1].transform.SetParent(gameObject.transform, false);
 
-        unSolvedActive = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        unSolvedActive.SetPixel(0, 0, colorCheckedUnSolvedTile);
-        unSolvedActive.Apply();
-        GUI.backgroundColor = Color.white;
-    }
+        buttons[1].GetComponentInChildren<Text>().text = "42";
+        */
+        //int width = gameObject.renderer.GetComponent
 
-    void OnGUI()
-    {
+        buttons = new List<GameObject>();
         int tileSize = (int)(0.2 * Screen.width);
         int tileSizeByHeight = (int)(0.14 * Screen.height);
         int tileMargin;
@@ -57,44 +46,47 @@ public class LevelSelection : MonoBehaviour
         }
         else
             tileMargin = (int)((0.2 / 14) * Screen.width);
-        buttonStyle.fontSize = (int)tileSize / 3;
 
-
+        int fontSize = (int)tileSize / 3;
         int horizontalMargin = (Screen.width - 4 * tileSize - 8 * tileMargin) / 2;
         int verticalMargin = (Screen.height - 6 * tileSize - 12 * tileMargin) / 2;
+
         for (int i = 0; i <= 5; i++)
         {
             for (int j = 0; j <= 3; j++)
             {
                 int index = i * 4 + j;
                 string text = "";
+                int X =  - (int)Screen.width/2 + horizontalMargin + tileMargin + (tileMargin * 2 + tileSize) * j;
+                int Y = -(verticalMargin + tileMargin + (tileMargin * 2 + tileSize) * i);
 
                 if (index + 1 > levelStates.Length || levelStates[index] == 'c') // closed levels
                 {
-                    buttonStyle.normal.background = unSolved;
-                    buttonStyle.active.background = unSolvedActive;
+                    buttons.Add( Instantiate(unSolved, new Vector3(X, Y, 0), Quaternion.identity) as GameObject );
                 }
                 else if (levelStates[index] == 's') // solved levels
                 {
                     text = (index + 1).ToString();
-                    buttonStyle.normal.background = solved;
-                    buttonStyle.active.background = solvedActive;
+                    buttons.Add( Instantiate(solved, new Vector3(X, Y, 0), Quaternion.identity) as GameObject );
                 }
                 else // open levels
                 {
                     text = (index + 1).ToString();
-                    buttonStyle.normal.background = unSolved;
-                    buttonStyle.active.background = unSolvedActive;
+                    buttons.Add( Instantiate(unSolved, new Vector3(X, Y, 0), Quaternion.identity) as GameObject);
                 }
+                
+                buttons[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
+                buttons[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
+                buttons[index].transform.SetParent(gameObject.transform, false);
 
-                int X = horizontalMargin + tileMargin + (tileMargin * 2 + tileSize) * j;
-                int Y = verticalMargin + tileMargin + (tileMargin * 2 + tileSize) * i;
+                buttons[index].GetComponentInChildren<Text>().text =text;
+                buttons[index].GetComponentInChildren<Text>().fontSize = fontSize;
 
-                if (GUI.Button(new Rect(X, Y, tileSize, tileSize), text, buttonStyle))
-                {
-                    Application.LoadLevel(index + 1);
-                }
+
             }
         }
+        
+ 
     }
+    
 }
