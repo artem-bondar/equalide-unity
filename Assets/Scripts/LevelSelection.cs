@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+
 
 public class LevelSelection : MonoBehaviour
 {
@@ -10,54 +12,52 @@ public class LevelSelection : MonoBehaviour
     public GameObject solved;
 
     public GameObject unSolved;
-
+    public int levelAmount;
     private List<GameObject> buttons; 
 
     void Awake()
     {
-        /*
-       
-        buttons.Add( Instantiate(unSolved, new Vector3(100, 200, 0), Quaternion.identity) as GameObject);
-        buttons[0].transform.SetParent(gameObject.transform, false);
-
-        buttons[0].GetComponentInChildren<Text>().text = "42";
-
-        buttons.Add( Instantiate(unSolved) as GameObject );
-        buttons[1].transform.SetParent(gameObject.transform, false);
-
-        buttons[1].GetComponentInChildren<Text>().text = "42";
-        */
-        //int width = gameObject.renderer.GetComponent
-
+        int width = (int) gameObject.GetComponent<RectTransform>().rect.width;
+        int height = (int) gameObject.GetComponent<RectTransform>().rect.height;
+        
         buttons = new List<GameObject>();
-        int tileSize = (int)(0.2 * Screen.width);
-        int tileSizeByHeight = (int)(0.14 * Screen.height);
+        int tileSize = (int)(0.2 * width);
+        int tileSizeByHeight = (int)(0.14 * height);
         int tileMargin;
 
 
-        // Debug.Log(buttons.ToString());
+   
 
 
         if (tileSizeByHeight < tileSize)
         {
             // Tiles can't fit to screen by height
             tileSize = tileSizeByHeight;
-            tileMargin = (int)(0.01 * Screen.height);
+            tileMargin = (int)(0.01 * height);
         }
         else
-            tileMargin = (int)((0.2 / 14) * Screen.width);
+            tileMargin = (int)((0.2 / 14) * width);
 
         int fontSize = (int)tileSize / 3;
-        int horizontalMargin = (Screen.width - 4 * tileSize - 8 * tileMargin) / 2;
-        int verticalMargin = (Screen.height - 6 * tileSize - 12 * tileMargin) / 2;
+        int horizontalMargin = (width - 4 * tileSize - 8 * tileMargin) / 2;
+        int verticalMargin = (height - 6 * tileSize - 12 * tileMargin) / 2;
 
-        for (int i = 0; i <= 5; i++)
+
+        if (levelAmount > 24) 
         {
-            for (int j = 0; j <= 3; j++)
+            int shift = (int)Math.Ceiling((levelAmount - 24) / 4.0);
+            Debug.Log(shift.ToString());
+            shift *= tileSize + 2 * tileMargin;
+            gameObject.GetComponent<RectTransform>().offsetMin = new Vector2(gameObject.GetComponent<RectTransform>().offsetMin.x, -shift);
+        }
+        int index = 0;
+        for (int i = 0; index < levelAmount; i++)
+        {
+            for (int j = 0; j <= 3 && index < levelAmount; j++)
             {
-                int index = i * 4 + j;
+                
                 string text = "";
-                int X =  - (int)Screen.width/2 + horizontalMargin + tileMargin + (tileMargin * 2 + tileSize) * j;
+                int X =  - (int)width/2 + horizontalMargin + tileMargin + (tileMargin * 2 + tileSize) * j;
                 int Y = -(verticalMargin + tileMargin + (tileMargin * 2 + tileSize) * i);
 
                 if (index + 1 > levelStates.Length || levelStates[index] == 'c') // closed levels
@@ -81,11 +81,9 @@ public class LevelSelection : MonoBehaviour
 
                 buttons[index].GetComponentInChildren<Text>().text =text;
                 buttons[index].GetComponentInChildren<Text>().fontSize = fontSize;
-
-
+                index = i * 4 + j;
             }
-        }
-        
+        }      
  
     }
     

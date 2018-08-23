@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 287976119}
   - component: {fileID: 287976118}
   - component: {fileID: 287976122}
+  - component: {fileID: 287976123}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -222,6 +223,37 @@ MonoBehaviour:
   WaveObject: {fileID: 100000, guid: 9b803f85cde2c1c4db04360f0106130a, type: 2}
   CanvasMain: {fileID: 287976117}
   PoolSize: 1
+--- !u!114 &287976123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 287976117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1367256648, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Content: {fileID: 1508773313}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 2
+  m_Elasticity: 0.1
+  m_Inertia: 1
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 1
+  m_Viewport: {fileID: 0}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 0}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1135443585
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,6 +444,7 @@ MonoBehaviour:
   levelStates: ssssosossooccccc
   solved: {fileID: 1775165162875212, guid: ccf3fa941ef9a1648b936d6a2dfb3829, type: 2}
   unSolved: {fileID: 1259739425906454, guid: 67ea44c19c61b1d45a2593ae90ce3289, type: 2}
+  levelAmount: 39
 --- !u!114 &1508773315
 MonoBehaviour:
   m_ObjectHideFlags: 0
