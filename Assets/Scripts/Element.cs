@@ -11,7 +11,7 @@ public class Element
     private int height;
     private string body;
     private int width;
-    Element(string body, int width)
+    public Element(string body, int width)
     {
         height = body.Length / width;
         cutByWidth();
@@ -116,7 +116,7 @@ public class Element
         return result;
     }
     // Checks if element has only one connected component
-    bool checkConnectivity()
+    public bool checkConnectivity()
     {
         // Stores already traversed cell indexes
         var checkedIndexes = new HashSet<int>();
