@@ -33,12 +33,17 @@ public class Element
             ((this.body.Equals(other.body)) || this.mirrorByHeight().Equals(other.body));
         if (!result)
         {
-            for (int i = 0; i < 3; i++) // unreachable code detected
+            for (int i = 0; i < 3; i++) 
             {
+                this.rotateClockWise();
                 if ((this.width == other.width) && (this.height == other.height) &&
                     ((this.body.Equals(other.body)) || this.mirrorByHeight().Equals(other.body)))
+                {
                     result = true;
-                break;
+                    break;
+                }
+                    
+               
             }
         }
         return result;
@@ -118,11 +123,8 @@ public class Element
 
         // Stores pending cell indexes to traverse on next step
         var pendingIndexes = new HashSet<int>();
-        foreach (var s in body)
-        {
-            if (s == 'c')
-                pendingIndexes.Add(body.IndexOf(s)); // not sure
-        }
+        pendingIndexes.Add(body.IndexOf("c"));
+
 
         // Stores cell indexes that could be traversed after pending cells
         var findedIndexes = new HashSet<int>();
