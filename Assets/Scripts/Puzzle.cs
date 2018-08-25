@@ -14,17 +14,17 @@ public class Puzzle  {
     string cleaned;
 
     string solution;
-    int parts;
+    public int parts;
 
-    int width;
-    int height;
+    public int width;
+    public int height;
 
     string partition;
 
     public bool opened;
     public bool solved;
 
-    Puzzle(string source)
+    public Puzzle(string source)
     {
         var elements = new HashSet<char>();
         for (int i = 0; i < source.Length; i++)
