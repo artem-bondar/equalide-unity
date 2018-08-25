@@ -419,6 +419,16 @@ Prefab:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114347265751338660, guid: daf6f57182833fa4dbd1e92d34dcbddb,
+        type: 2}
+      propertyPath: colorCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114347265751338660, guid: daf6f57182833fa4dbd1e92d34dcbddb,
+        type: 2}
+      propertyPath: selectedIndex
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: daf6f57182833fa4dbd1e92d34dcbddb, type: 2}
   m_IsPrefabAsset: 0
@@ -469,7 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03dd0328a3fd14f41b52d791c48ffc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puzzleString: bebbbb beeebb beeeee eeeeee eeeeee ebeeee bbbebb
+  puzzleString: b0bbbb b000bb b01000 211101 222111 2b2221 bbb2bb
   toolbarMode: 0
   tile: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
   palette: {fileID: 391233805}
