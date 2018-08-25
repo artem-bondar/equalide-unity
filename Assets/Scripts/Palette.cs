@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class Palette : MonoBehaviour {
 
     public int colorCount;
-    //public int margin;
 
     public GameObject paletteButton;
     public int selectedIndex;
@@ -27,7 +26,7 @@ public class Palette : MonoBehaviour {
 
         buttons = new List<GameObject>();
         int tileSize = (int)(0.2 * Screen.width);
-        int margin = (int)(tileSize / 30.0);
+        int margin = (int)(tileSize / 32.0);
         gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize+margin*2);
         gameObject.transform.position = new Vector3(0, 0, 0);
 
@@ -44,7 +43,7 @@ public class Palette : MonoBehaviour {
             buttons[i].GetComponent<Image>().color = colors[i];
             buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; //Pencil image
 
-            int copy = i; //fuck closures. I miss Haskell
+            int copy = i; 
             buttons[i].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
         }
     }
@@ -58,10 +57,4 @@ public class Palette : MonoBehaviour {
         selectedIndex = index;
         buttons[index].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
      }
-
-
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
