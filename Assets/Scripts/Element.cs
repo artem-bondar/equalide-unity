@@ -13,6 +13,8 @@ public class Element
     private int width;
     public Element(string body, int width)
     {
+        this.body = body;
+        this.width = width;
         height = body.Length / width;
         cutByWidth();
     }
@@ -27,23 +29,21 @@ public class Element
         return body.GetHashCode();
     }
     // Checks equality to another element with accuracy to rotations and reflections
-    private bool compare(Element other)
+    public bool compare(Element other)
     {
         bool result = (this.width == other.width) && (this.height == other.height) &&
-            ((this.body.Equals(other.body)) || this.mirrorByHeight().Equals(other.body));
+            ((this.body == other.body) || this.mirrorByHeight() == other.body);
         if (!result)
         {
             for (int i = 0; i < 3; i++) 
             {
                 this.rotateClockWise();
                 if ((this.width == other.width) && (this.height == other.height) &&
-                    ((this.body.Equals(other.body)) || this.mirrorByHeight().Equals(other.body)))
+                    ((this.body == other.body) || this.mirrorByHeight() == other.body))
                 {
                     result = true;
                     break;
                 }
-                    
-               
             }
         }
         return result;

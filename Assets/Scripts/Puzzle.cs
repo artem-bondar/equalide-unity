@@ -98,9 +98,8 @@ public class Puzzle  {
 
         // Checks if elements are equal
         for (int i = 1; i < elements.Count; i++)
-            if (elements[0] != elements[i])
+            if (!elements[0].compare(elements[i]))
                 return false;
-
         return true;
     }
 
@@ -142,9 +141,8 @@ public class Puzzle  {
             var lastOccurance = partition.LastIndexOf(cell);
             var substr = partition.Substring(firstOccurance - firstOccurance % width,
                         (lastOccurance - firstOccurance+1) + width - (lastOccurance - firstOccurance+1) % width);
+            substr = Regex.Replace(substr, "[^" + cell.ToString() + "]", "e");
             substr = substr.Replace(cell, 'c');
-            substr = Regex.Replace(substr, "[0-9]", "e");
-
             result.Add(new Element(substr, width));
             
         }
