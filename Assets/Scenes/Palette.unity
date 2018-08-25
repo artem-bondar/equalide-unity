@@ -161,7 +161,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colorCount: 2
-  margin: 1
   paletteButton: {fileID: 1545526573603984, guid: 78c474dde38d1714bb14567f345ae9eb,
     type: 2}
 --- !u!114 &391233808
@@ -176,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -271,7 +270,6 @@ GameObject:
   - component: {fileID: 848801886}
   - component: {fileID: 848801885}
   - component: {fileID: 848801884}
-  - component: {fileID: 848801883}
   - component: {fileID: 848801888}
   m_Layer: 0
   m_Name: Main Camera
@@ -280,20 +278,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &848801883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 848801882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b66911d7236df944b9ccc0ef20f4f951, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Panel: {fileID: 0}
-  num: 1
-  ButtonName: 
 --- !u!81 &848801884
 AudioListener:
   m_ObjectHideFlags: 0
