@@ -29,7 +29,6 @@ public class GameField : MonoBehaviour
 
     private List<GameObject> tiles;
 
-    // Use this for initialization
     void Start()
     {
         tiles = new List<GameObject>();
@@ -38,7 +37,7 @@ public class GameField : MonoBehaviour
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
         ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
-
+        
         int toolbarScenario = 0;
         if(toolbarMode)
             toolbarScenario = Screen.height / 10;
@@ -77,13 +76,44 @@ public class GameField : MonoBehaviour
                 {
                     case 'b': tiles[index].GetComponent<Image>().color = Color.gray; break;
                     case 'e': tiles[index].GetComponent<Image>().color = Color.white; break;
-                    default: tiles[index].GetComponent<Image>().color = colors[( currentPuzzle.get(i, j) -'0')]; break;
+                    default: tiles[index].GetComponent<Image>().color = colors[( currentPuzzle.get(i, j) -'0')]; break; //get returns cleared puzzle, so it works only if you change get to return solution
                 }
+
+
+                tiles[index].GetComponent<Button>().onClick.AddListener(delegate { TileClick(index); });
+
             }
         }
     }
 
     void TileClick(int index)
+    {
+        Debug.Log(currentPuzzle.get(index));
+
+
+        if (currentPuzzle.get(index) == 'b')
+            return;
+
+        if (palette.GetComponent<Palette>().selectedIndex == -1)
+            return;
+
+        int currentColor = palette.GetComponent<Palette>().selectedIndex;
+
+    
+        if (currentColor == (currentPuzzle.get(index) - '0'))
+        {
+            currentPuzzle.set(index, 'e');
+            tiles[index].GetComponent<Image>().color = Color.white;
+        }
+        else
+        {
+            currentPuzzle.set(index, (char)('0' + currentColor));
+            tiles[index].GetComponent<Image>().color = colors[currentColor];
+        }
+
+    }
+
+    public void PointerUp()
     {
 
     }

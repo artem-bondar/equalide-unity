@@ -50,13 +50,25 @@ public class Puzzle  {
 
     public char get(int i, int j)
     {
-        return solution[i * width + j];
+        return partition[i * width + j];
+    }
+
+    public char get(int i)
+    {
+        return partition[i];
     }
 
     public void set(int i, int j, char c)
     {
         var temp = partition.ToCharArray();
         temp[i * width + j] = c;
+        partition = new string(temp);
+    }
+
+    public void set(int i, char c)
+    {
+        var temp = partition.ToCharArray();
+        temp[i] = c;
         partition = new string(temp);
     }
 
