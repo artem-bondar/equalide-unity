@@ -125,6 +125,16 @@ public class GameField : MonoBehaviour
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
         }
+
+        if (currentPuzzle.checkIfSolved()) {
+            currentPuzzle.solved = true;
+
+            Debug.Log("Solved!");
+
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    tiles[i * cols + j].GetComponent<Image>().color = Color.clear;
+        }
     }
 
     void TileDown(int index)
@@ -149,6 +159,16 @@ public class GameField : MonoBehaviour
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
+        }
+
+        if (currentPuzzle.checkIfSolved()) {
+            currentPuzzle.solved = true;
+
+            Debug.Log("Solved!");
+
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    tiles[i * cols + j].GetComponent<Image>().color = Color.clear;
         }
     }
 
