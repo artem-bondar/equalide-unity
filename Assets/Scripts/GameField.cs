@@ -81,11 +81,7 @@ public class GameField : MonoBehaviour
                 {
                     case 'b': tiles[index].GetComponent<Image>().color = Color.gray; break;
                     case 'e': tiles[index].GetComponent<Image>().color = Color.white; break;
-                    default: tiles[index].GetComponent<Image>().color = colors[( currentPuzzle.get(i, j) -'0')]; break; //get returns cleared puzzle, so it works only if you change get to return solution
                 }
-
-
-                //tiles[index].GetComponent<Button>().onClick.AddListener(delegate { TileClick(index); });
 
                 EventTrigger trigger = tiles[index].GetComponent<EventTrigger>();
 
@@ -114,7 +110,6 @@ public class GameField : MonoBehaviour
 
         if (palette.GetComponent<Palette>().selectedIndex == -1)
             return;
-
        
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
 
@@ -143,7 +138,6 @@ public class GameField : MonoBehaviour
 
         down = true;
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
-
     
         if (currentColor == (currentPuzzle.get(index) - '0'))
         {
@@ -157,7 +151,6 @@ public class GameField : MonoBehaviour
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
         }
-
     }
 
     void Update()
