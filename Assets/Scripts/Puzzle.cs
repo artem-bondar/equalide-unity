@@ -48,24 +48,24 @@ public class Puzzle  {
         solved = false;
     }
 
-    char get(int i, int j)
+    public char get(int i, int j)
     {
-        return partition[i * width + j];
+        return solution[i * width + j];
     }
 
-    void set(int i, int j, char c)
+    public void set(int i, int j, char c)
     {
         var temp = partition.ToCharArray();
         temp[i * width + j] = c;
         partition = new string(temp);
     }
 
-    void loadPartition(string partition)
+    public void loadPartition(string partition)
     {
         this.partition = partition;
     }
 
-    void refresh()
+    public void refresh()
     {
         partition = cleaned;
     }

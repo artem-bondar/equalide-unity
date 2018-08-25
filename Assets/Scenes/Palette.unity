@@ -469,7 +469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03dd0328a3fd14f41b52d791c48ffc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  puzzleString: eeebb bbeeb beeeb bebeb eebee ebebe eeeeb
+  puzzleString: eeebb bbeeb beeeb bebeb eebee ebebe 0123b
+  toolbarMode: 0
   tile: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
   palette: {fileID: 391233805}
 --- !u!114 &1702068996
