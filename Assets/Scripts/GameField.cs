@@ -53,7 +53,7 @@ public class GameField : MonoBehaviour
         rows = currentPuzzle.height;
 
         verticalFieldMargin = Screen.width * 5 / 180;
-        tileMargin = Screen.width / 180;
+        tileMargin = Screen.width / 360;
 
         fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
 

@@ -24,7 +24,7 @@ public class Palette : MonoBehaviour {
 
         buttons = new List<GameObject>();
         int tileSize = (int)(0.2 * Screen.width);
-        int margin = (int)(Screen.width / 180.0); // brute replacement for dpi margins
+        int margin = (int)(Screen.width / 360.0); // brute replacement for dpi margins
         gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
         gameObject.transform.position = new Vector3(0, 0, 0);
 
