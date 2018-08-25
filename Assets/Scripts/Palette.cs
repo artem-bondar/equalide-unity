@@ -9,11 +9,21 @@ public class Palette : MonoBehaviour {
     //public int margin;
 
     public GameObject paletteButton;
+    public int selectedIndex;
 
     private List<GameObject> buttons;
 
-    // Use this for initialization
+    private Color[] colors;
+
+
     void Start () {
+
+        selectedIndex = -1;
+        colors = new Color[4];
+        ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
+        ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
+        ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
+        ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
 
         buttons = new List<GameObject>();
         int tileSize = (int)(0.2 * Screen.width);
@@ -24,18 +34,32 @@ public class Palette : MonoBehaviour {
         for (int i = 0; i < colorCount; i++)
         {
             int X = Screen.width/2 -colorCount*tileSize/2 - (colorCount-1)*margin + i*(tileSize+2*margin);
-            int Y = tileSize+margin;
+            int Y = tileSize;
 
             buttons.Add(Instantiate(paletteButton, new Vector3(X, Y, 0), Quaternion.identity) as GameObject);
             buttons[i].transform.SetParent(gameObject.transform, true);
             buttons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
             buttons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
 
-            
-        }
+            buttons[i].GetComponent<Image>().color = colors[i];
+            buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; //Pencil image
 
+            int copy = i; //fuck closures. I miss Haskell
+            buttons[i].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
+        }
     }
 	
+     void ButtonEvent(int index)
+     {
+        if (selectedIndex == index)
+            return;
+        if(selectedIndex!=-1)
+            buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; 
+        selectedIndex = index;
+        buttons[index].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
+     }
+
+
 	// Update is called once per frame
 	void Update () {
 		
