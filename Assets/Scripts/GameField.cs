@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.EventSystems;
 
 public class GameField : MonoBehaviour
 {
@@ -29,8 +29,13 @@ public class GameField : MonoBehaviour
 
     private List<GameObject> tiles;
 
+    private bool eraseMode;
+    private bool down;
+
     void Start()
     {
+        eraseMode = false;
+        down = false;
         tiles = new List<GameObject>();
         colors = new Color[4];
         ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
@@ -80,16 +85,29 @@ public class GameField : MonoBehaviour
                 }
 
 
-                tiles[index].GetComponent<Button>().onClick.AddListener(delegate { TileClick(index); });
+                //tiles[index].GetComponent<Button>().onClick.AddListener(delegate { TileClick(index); });
+
+                EventTrigger trigger = tiles[index].GetComponent<EventTrigger>();
+
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerDown;
+                entry.callback.AddListener(delegate { TileDown(index); });
+                trigger.triggers.Add(entry);
+
+                entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerEnter;
+                entry.callback.AddListener(delegate { TileHover(index); });
+                trigger.triggers.Add(entry);
+
 
             }
         }
     }
 
-    void TileClick(int index)
+    void TileHover(int index)
     {
-        Debug.Log(currentPuzzle.get(index));
-
+        if (!down)
+            return;
 
         if (currentPuzzle.get(index) == 'b')
             return;
@@ -97,6 +115,33 @@ public class GameField : MonoBehaviour
         if (palette.GetComponent<Palette>().selectedIndex == -1)
             return;
 
+       
+        int currentColor = palette.GetComponent<Palette>().selectedIndex;
+
+
+        if (currentColor == (currentPuzzle.get(index) - '0') && eraseMode)
+        {
+            currentPuzzle.set(index, 'e');
+            tiles[index].GetComponent<Image>().color = Color.white;
+            return;
+        }
+
+        if (currentColor != (currentPuzzle.get(index) - '0') && !eraseMode)
+        {
+            currentPuzzle.set(index, (char)('0' + currentColor));
+            tiles[index].GetComponent<Image>().color = colors[currentColor];
+        }
+    }
+
+    void TileDown(int index)
+    {
+        if (currentPuzzle.get(index) == 'b')
+            return;
+
+        if (palette.GetComponent<Palette>().selectedIndex == -1)
+            return;
+
+        down = true;
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
 
     
@@ -104,23 +149,22 @@ public class GameField : MonoBehaviour
         {
             currentPuzzle.set(index, 'e');
             tiles[index].GetComponent<Image>().color = Color.white;
+            eraseMode = true;
         }
         else
         {
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
+            eraseMode = false;
         }
 
     }
 
-    public void PointerUp()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetMouseButtonUp(0))
+        {
+            down = false;
+        }
     }
 }
