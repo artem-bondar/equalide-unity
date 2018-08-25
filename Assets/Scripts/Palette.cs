@@ -16,8 +16,6 @@ public class Palette : MonoBehaviour {
 
 
     void Start () {
-
-        selectedIndex = -1;
         colors = new Color[4];
         ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
@@ -46,6 +44,8 @@ public class Palette : MonoBehaviour {
             int copy = i; 
             buttons[i].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
         }
+
+        buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
     }
 	
      void ButtonEvent(int index)
