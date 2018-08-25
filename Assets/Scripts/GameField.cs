@@ -23,7 +23,7 @@ public class GameField : MonoBehaviour
     private int rows;
 
     private Color[] colors;
-
+    private Color backgroundColor;
     public GameObject tile;
     public GameObject palette;
 
@@ -42,7 +42,8 @@ public class GameField : MonoBehaviour
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
         ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
-        
+        ColorUtility.TryParseHtmlString("#101616", out backgroundColor);
+
         int toolbarScenario = 0;
         if(toolbarMode)
             toolbarScenario = Screen.height / 10;
@@ -79,7 +80,7 @@ public class GameField : MonoBehaviour
                 tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
                 switch(currentPuzzle.get(i,j))
                 {
-                    case 'b': tiles[index].GetComponent<Image>().color = Color.gray; break;
+                    case 'b': tiles[index].GetComponent<Image>().color = backgroundColor; break;
                     case 'e': tiles[index].GetComponent<Image>().color = Color.white; break;
                 }
 

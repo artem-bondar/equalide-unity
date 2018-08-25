@@ -29,6 +29,9 @@ ExportedObj/
 *.pdb
 *.opendb
 
+# Visual Studio Code settings
+.vscode
+
 # Built application files
 *.apk
 *.unitypackage
