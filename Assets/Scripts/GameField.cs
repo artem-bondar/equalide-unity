@@ -26,6 +26,9 @@ public class GameField : MonoBehaviour
     public GameObject tile;
     public GameObject palette;
 
+    public AudioClip drawSound;
+    public AudioClip eraseSound;
+
     private List<GameObject> tiles;
 
     private bool eraseMode;
@@ -153,12 +156,14 @@ public class GameField : MonoBehaviour
             currentPuzzle.set(index, 'e');
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
+            gameObject.GetComponent<AudioSource>().PlayOneShot(eraseSound, 0.5f);
         }
         else
         {
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
+            gameObject.GetComponent<AudioSource>().PlayOneShot(drawSound, 0.5f);
         }
 
         if (currentPuzzle.checkIfSolved()) {
