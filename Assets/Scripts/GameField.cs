@@ -123,7 +123,7 @@ public class GameField : MonoBehaviour
         {
             currentPuzzle.set(index, 'e');
             tiles[index].GetComponent<Image>().color = Color.white;
-            gameObject.GetComponent<AudioSource>().PlayOneShot(eraseSoundHover, 0.5f);
+            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
             return;
         }
 
@@ -131,7 +131,7 @@ public class GameField : MonoBehaviour
         {
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
-            gameObject.GetComponent<AudioSource>().PlayOneShot(drawSoundHover, 0.5f);
+            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
         if (currentPuzzle.checkIfSolved()) {
@@ -161,14 +161,14 @@ public class GameField : MonoBehaviour
             currentPuzzle.set(index, 'e');
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
-            gameObject.GetComponent<AudioSource>().PlayOneShot(eraseSoundDown, 0.5f);
+            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
         {
             currentPuzzle.set(index, (char)('0' + currentColor));
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
-            gameObject.GetComponent<AudioSource>().PlayOneShot(drawSoundDown, 0.5f);
+            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
         if (currentPuzzle.checkIfSolved()) {
