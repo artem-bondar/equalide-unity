@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class GameField : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameField : MonoBehaviour
     public string puzzleString;
     public bool toolbarMode;
 
+    public string sceneName;
 
     private Puzzle currentPuzzle;
 
@@ -187,6 +189,11 @@ public class GameField : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             down = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         }
     }
 }
