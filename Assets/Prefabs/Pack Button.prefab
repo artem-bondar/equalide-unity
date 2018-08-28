@@ -56,7 +56,6 @@ GameObject:
   - component: {fileID: 222532542023340632}
   - component: {fileID: 114837328400747544}
   - component: {fileID: 114405591732853710}
-  - component: {fileID: 114452657434631306}
   m_Layer: 5
   m_Name: Pack Button
   m_TagString: Untagged
@@ -165,20 +164,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114452657434631306
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1851797042892088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f3284271f7047c4eb33f6bf326b19a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isLocked: 0
-  packNumber: 1
-  locked: {fileID: 21300000, guid: a1e06d9f6e6c43a499c3d7497788e71e, type: 3}
 --- !u!114 &114837328400747544
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -198,8 +183,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 9d650e0a6f759574788b732580fe5090, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: d38b7e3d60d06f24887774553c8b71fa, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -245,7 +230,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 540, y: -60}
-  m_SizeDelta: {x: 1080, y: 120}
+  m_SizeDelta: {x: 800, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224344785092020782
 RectTransform:
