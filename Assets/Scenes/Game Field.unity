@@ -483,6 +483,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleString: b0bbbb b000bb b01000 211101 222111 2b2221 bbb2bb
   toolbarMode: 0
+  sceneName: 
   tile: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
   palette: {fileID: 391233805}
   drawSoundDown: {fileID: 8300000, guid: 10294005cd7e80640b96eb016641fb3e, type: 3}
@@ -758,10 +759,10 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1080, y: 1920}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
