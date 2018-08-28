@@ -39,7 +39,7 @@ public class GameField : MonoBehaviour
     private bool eraseMode;
     private bool down;
 
-    void Start()
+    public void Start()
     {
         eraseMode = false;
         down = false;
