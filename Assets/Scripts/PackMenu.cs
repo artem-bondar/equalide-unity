@@ -8,12 +8,15 @@ public class PackMenu : MonoBehaviour {
     public GameObject[] packButtons;
     public string packStates;
     public Sprite locked;
-    // Use this for initialization
+    public Sprite star;
+    
     void Start () {
         for (int i = 0; i < packButtons.Length; i++)
         {
             if(i >= packStates.Length || packStates[i] == 'c')
                 packButtons[i].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = locked;
+            else if(packStates[i] == 's')
+                packButtons[i].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = star;
 
             packButtons[i].transform.GetChild(1).gameObject.GetComponent<Text>().text = "Pack " + (i+1);
             int copy = i + 1;
