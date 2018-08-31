@@ -141,9 +141,7 @@ public class GameField : MonoBehaviour
 
             Debug.Log("Solved!");
 
-            for (int i = 0; i < rows; i++)
-                for (int j = 0; j < cols; j++)
-                    tiles[i * cols + j].GetComponent<Image>().color = Color.clear;
+            RemovePartitions();
         }
     }
 
@@ -178,9 +176,7 @@ public class GameField : MonoBehaviour
 
             Debug.Log("Solved!");
 
-            for (int i = 0; i < rows; i++)
-                for (int j = 0; j < cols; j++)
-                    tiles[i * cols + j].GetComponent<Image>().color = Color.clear;
+            RemovePartitions();
         }
     }
 
@@ -194,6 +190,61 @@ public class GameField : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        }
+    }
+
+    void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
+    {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                RemovePartitionsForSingleTile(i, j);
+            }
+        }
+    }    
+
+    void RemovePartitionsForSingleTile(int tileRow, int tileColumn)
+    {
+	int longSide = tileSize;
+	int shortSide = 2 * tileMargin;
+
+        int tileIndex = tileRow * cols + tileColumn;
+        var tileColor = tiles[tileIndex].GetComponent<Image>().color;
+
+        int X = (int)tiles[tileIndex].transform.position.x;
+        int Y = (int)tiles[tileIndex].transform.position.y;
+        		
+        if (tileColumn != cols - 1) { // has right neighbor
+            int rightTileIndex = tileRow * cols + (tileColumn + 1);
+            var rightTileColor = tiles[rightTileIndex].GetComponent<Image>().color;
+
+            if (tileColor == rightTileColor) {
+                var verticalPartition = Instantiate(tile, new Vector3(X + tileSize, Y, 0), Quaternion.identity) as GameObject;
+                verticalPartition.transform.SetParent(gameObject.transform, true);
+
+                verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, shortSide);
+                verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, longSide);
+
+                verticalPartition.GetComponent<Image>().color = tileColor;
+
+                tiles.Add(verticalPartition);
+            }
+        }
+
+        if (tileRow != rows - 1) { // has down neighbor
+            int downTileIndex = (tileRow + 1) * cols + tileColumn;
+            var downTileColor = tiles[downTileIndex].GetComponent<Image>().color;
+
+            if (tileColor == downTileColor) {
+                var horizontalPartition = Instantiate(tile, new Vector3(X, Y - tileSize, 0), Quaternion.identity) as GameObject;
+                horizontalPartition.transform.SetParent(gameObject.transform, true);
+
+                horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, longSide);
+                horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, shortSide);
+
+                horizontalPartition.GetComponent<Image>().color = tileColor;
+
+                tiles.Add(horizontalPartition);
+            }
         }
     }
 }
