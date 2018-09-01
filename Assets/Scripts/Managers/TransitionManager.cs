@@ -8,111 +8,70 @@ public class TransitionManager : MonoBehaviour {
     public enum Transition
     {
         fade,
-        slideR,
-        slideL,
-        slideB,
-        slideT,
-        slideOverR,
-        slideOverL,
-        slideOverB,
-        slideOverT
+        slide,
+        slideOver
     }
-    Transition selectedTransition;
 
-    GameObject oldUI;
-    GameObject newUI;
-
-    Vector3 posNew;
-    Vector3 posOld;
-    Vector2 sizeNew;
-    Vector2 sizeOld;
-    int layer;
+    public enum Direction
+    {
+        None,
+        R,
+        L,
+        B,
+        T
+    }
 
     public GameObject[] UIElements;
 
-    bool locked = false;
     bool[] lockedUI;
 
-    float timeInterval = 0.5f;
-
-    void Init()
+    void Init(Transition type, Direction dir, GameObject oldUI, GameObject newUI)
     {
-        //posNew = GetOriginPosition(newUI);
-        posOld = GetOriginPosition(oldUI);
 
-        sizeNew = GetAbsoluteSize(newUI);
-        sizeOld = GetAbsoluteSize(oldUI);
+        Vector3 posOld = GetOriginPosition(oldUI);
 
-        switch (selectedTransition)
+        Vector3 sizeNew = GetAbsoluteSize(newUI);
+        Vector3 sizeOld = GetAbsoluteSize(oldUI);
+
+        switch(type)
         {
             case Transition.fade:
-                posNew = new Vector3(posOld.x, posOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
+                SetOriginPosition(newUI, posOld.x, posOld.y);
                 newUI.GetComponent<CanvasGroup>().alpha = 0;
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 break;
 
-            case Transition.slideR:
-                posNew = new Vector3(posOld.x - sizeNew.x, posOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
+            case Transition.slide:
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 newUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
 
-            case Transition.slideL:
-                posNew = new Vector3(posOld.x + sizeOld.x, posOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
+            case Transition.slideOver:
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideB:
-                posNew = new Vector3(posOld.x, posOld.y - sizeNew.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideT:
-                posNew = new Vector3(posOld.x, posOld.y + sizeOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideOverR:
-                layer = oldUI.GetComponent<Canvas>().sortingOrder;
-                posNew = new Vector3(posOld.x - sizeNew.x, posOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideOverL:
-                layer = oldUI.GetComponent<Canvas>().sortingOrder;
-                posNew = new Vector3(posOld.x + sizeOld.x, posOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideOverB:
-                layer = oldUI.GetComponent<Canvas>().sortingOrder;
-                posNew = new Vector3(posOld.x, posOld.y - sizeNew.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                break;
-
-            case Transition.slideOverT:
-                layer = oldUI.GetComponent<Canvas>().sortingOrder;
-                posNew = new Vector3(posOld.x, posOld.y + sizeOld.y, oldUI.transform.position.z);
-                SetOriginPosition(newUI, posNew);
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
+                newUI.GetComponent<Canvas>().overrideSorting = true;
+                newUI.GetComponent<Canvas>().sortingOrder = oldUI.GetComponent<Canvas>().sortingOrder + 1;
                 break;
         }
-        Place();
+
+        switch(dir)
+        {
+            case Direction.R:
+                SetOriginPosition(newUI, posOld.x - sizeNew.x, posOld.y);
+                break;
+
+            case Direction.L:
+                SetOriginPosition(newUI, posOld.x + sizeOld.x, posOld.y);
+                break;
+
+            case Direction.B:
+                SetOriginPosition(newUI, posOld.x, posOld.y + sizeOld.y);                
+                break;
+
+            case Direction.T:
+                SetOriginPosition(newUI, posOld.x, posOld.y - sizeNew.y);
+                break;
+        }
     }
 
     void Start()
@@ -124,38 +83,27 @@ public class TransitionManager : MonoBehaviour {
         }
 
     }
-    void AddComponents()
+    void AddComponents(Transition type, GameObject oldUI, GameObject newUI)
     {
-        if(!oldUI.GetComponent<CanvasGroup>() && (selectedTransition == Transition.fade || (int)selectedTransition >= (int)Transition.slideOverR))
+        if(!oldUI.GetComponent<CanvasGroup>() && (type == Transition.fade || type == Transition.slideOver))
         {
             oldUI.AddComponent<CanvasGroup>();
         }
-        if (!newUI.GetComponent<CanvasGroup>() && (selectedTransition == Transition.fade || (int)selectedTransition >= (int)Transition.slideOverR))
+        if (!newUI.GetComponent<CanvasGroup>() && (type == Transition.fade || type == Transition.slideOver))
         {
             newUI.AddComponent<CanvasGroup>();
         }
 
-        if (!oldUI.GetComponent<Canvas>() && (int)selectedTransition >= (int)Transition.slideOverR)
+        if (!oldUI.GetComponent<Canvas>() && type == Transition.slideOver)
         {
             oldUI.AddComponent<Canvas>();
             oldUI.AddComponent<GraphicRaycaster>();
         }
-        if (!newUI.GetComponent<Canvas>() && (int)selectedTransition >= (int)Transition.slideOverR)
+        if (!newUI.GetComponent<Canvas>() && type == Transition.slideOver)
         {
             newUI.AddComponent<Canvas>();
             newUI.AddComponent<GraphicRaycaster>();
         }
-
-    }
-
-    void Place()
-    {
-        float scale = newUI.GetComponent<RectTransform>().parent.GetComponent<Canvas>().scaleFactor; //
-        RectTransform rectXfrom = newUI.GetComponent<RectTransform>();
-        float width = rectXfrom.rect.width * scale * rectXfrom.localScale.x;
-        float height = rectXfrom.rect.height * scale * rectXfrom.localScale.y;
-        Debug.Log("Width: " + width.ToString() + " Height: " + height.ToString() + " Global Scale: " + scale.ToString() + " Local Scale: " + rectXfrom.localScale.ToString());
-
     }
 
     //Allows UIElements to have different pivots and scales
@@ -170,7 +118,7 @@ public class TransitionManager : MonoBehaviour {
         float dx = rectXfrom.pivot.x * width;
         float dy = rectXfrom.pivot.y * height;
 
-        obj.transform.position = new Vector3(x+dx, y+dy, rectXfrom.position.z); //maybe allow to pass new z coord?
+        obj.transform.position = new Vector3(Mathf.Round(x+dx), Mathf.Round(y +dy), rectXfrom.position.z); //maybe allow to pass new z coord?
     }
 
     void SetOriginPosition(GameObject obj, Vector3 vec)
@@ -203,97 +151,28 @@ public class TransitionManager : MonoBehaviour {
         return new Vector2(width, height);
     }
 
-    IEnumerator Fade(int fromLock, int toLock)
+    IEnumerator Fade(int from, int to, float duration)
     {
 
-        float delta = Time.deltaTime / timeInterval ;
+        float delta = Time.deltaTime / duration;
         float shift = 0;
         while (shift < 1)
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            oldUI.GetComponent<CanvasGroup>().alpha = 1 - shift;
-            newUI.GetComponent<CanvasGroup>().alpha = shift;
+            UIElements[from].GetComponent<CanvasGroup>().alpha = 1 - shift;
+            UIElements[to].GetComponent<CanvasGroup>().alpha = shift;
         }
-        oldUI.GetComponent<CanvasGroup>().alpha = 0;
-        newUI.GetComponent<CanvasGroup>().alpha = 1;
+        UIElements[from].GetComponent<CanvasGroup>().alpha = 0;
+        UIElements[to].GetComponent<CanvasGroup>().alpha = 1;
 
-        newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        UIElements[to].GetComponent<CanvasGroup>().blocksRaycasts = true;
+        UIElements[from].GetComponent<CanvasGroup>().blocksRaycasts = false;
 
 
-        lockedUI[fromLock] = false;
-        lockedUI[toLock] = false;
+        lockedUI[from] = false;
+        lockedUI[to] = false;
     }
-
-    IEnumerator SlideHorizontal(int fromLock, int toLock, int direction, bool singular = false)
-    {
-        float shift = Mathf.Min(sizeNew.x, sizeOld.x);
-        float delta = shift * Time.deltaTime / timeInterval * direction;
-        float currentShift = 0;
-
-        if (singular)
-        {
-            newUI.GetComponent<Canvas>().overrideSorting = true;
-            newUI.GetComponent<Canvas>().sortingOrder = layer + 1;
-        }
-
-        while (currentShift * direction < shift)
-        {
-            yield return new WaitForEndOfFrame();
-            currentShift += delta;
-            if (!singular)
-                oldUI.transform.Translate(new Vector3(delta, 0, 0));
-            newUI.transform.Translate(new Vector3(delta, 0, 0));
-        }
-
-        SetOriginPosition(newUI, posNew.x + direction * shift, posOld.y);
-        if (!singular)
-            SetOriginPosition(oldUI, posOld.x + direction * shift, posOld.y);
-        else
-        {
-            newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
-        }
-
-        lockedUI[fromLock] = false;
-        lockedUI[toLock] = false;
-    }
-
-    IEnumerator SlideVertical(int fromLock, int toLock, int direction, bool singular = false)
-    {
-        float shift = Mathf.Min(sizeNew.y, sizeOld.y);
-        float delta = shift * Time.deltaTime / timeInterval * direction;
-        float currentShift = 0;
-
-        if (singular)
-        {
-            newUI.GetComponent<Canvas>().overrideSorting = true;
-            newUI.GetComponent<Canvas>().sortingOrder = layer + 1;
-        }
-            
-
-        while (currentShift * direction < shift)
-        {
-            yield return new WaitForEndOfFrame();
-            currentShift += delta;
-            if(!singular)
-                oldUI.transform.Translate(new Vector3(0, delta, 0));
-            newUI.transform.Translate(new Vector3(0, delta, 0));
-        }
-        SetOriginPosition(newUI, posOld.x, posNew.y + direction * shift);
-        if (!singular)
-            SetOriginPosition(oldUI, posOld.x , posOld.y + direction * shift);
-        else
-        {
-            newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
-        }
-
-        lockedUI[fromLock] = false;
-        lockedUI[toLock] = false;
-    }
-
 
     IEnumerator Shift(int index, Vector3 shift, float duration) 
     {
@@ -310,60 +189,68 @@ public class TransitionManager : MonoBehaviour {
         lockedUI[index] = false;
     }
 
-    public void Test()
+    public void DoCustomTransition(int index, Vector3 shift, float duration)
     {
-        StartCoroutine(Shift(0, new Vector3(0, 500, 0), 1));
-        StartCoroutine(Shift(1, new Vector3(0, 500, 0), 1));
+        if (lockedUI[index])
+            return;
+        lockedUI[index] = true;
+        StartCoroutine(Shift(index, shift, duration));
     }
 
-    public void DoTransition(int from, int to, Transition type, float duration)
+    public void DoTransition(int from, int to, Transition type, Direction dir, float duration)
     {
-        if (lockedUI[to] || ( lockedUI[from] && (int)type < (int)Transition.slideOverR )) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
+        if (lockedUI[to] || ( lockedUI[from] && type != Transition.slideOver)) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
             return;
-        oldUI = UIElements[from];
-        newUI = UIElements[to];
-        selectedTransition = type;
-        timeInterval = duration;
+        GameObject oldUI = UIElements[from];
+        GameObject newUI = UIElements[to];
         lockedUI[to] = true;
 
-        if((int)type < (int)Transition.slideOverR)
+        if(type != Transition.slideOver)
             lockedUI[from] = true;
 
-        AddComponents();
-        Init();
+        AddComponents(type, oldUI, newUI);
+        Init(type, dir, oldUI, newUI);
+        Vector3 shift;
+        Vector3 sizeNew = GetAbsoluteSize(newUI);
+        Vector3 sizeOld = GetAbsoluteSize(oldUI);
+
+        switch (dir)
+        {
+            case Direction.R:
+                shift = new Vector3(Mathf.Min(sizeNew.x, sizeOld.x), 0, 0);
+                break;
+
+            case Direction.L:
+                shift = new Vector3(-Mathf.Min(sizeNew.x, sizeOld.x), 0, 0);
+                break;
+
+            case Direction.B:
+                shift = new Vector3(0, -Mathf.Min(sizeNew.y, sizeOld.y), 0);
+                break;
+
+            case Direction.T:
+                shift = new Vector3(0, Mathf.Min(sizeNew.y, sizeOld.y), 0);
+                break;
+
+            default:
+                shift =  Vector3.one;
+                break;
+        }
 
         switch (type)
         {
             case Transition.fade:
-                StartCoroutine(Fade(from,to));
+                StartCoroutine(Fade(from,to, duration));
                 break;
 
-            case Transition.slideR:
-                StartCoroutine(SlideHorizontal(from, to,1));
-                break;
-            case Transition.slideL:
-                StartCoroutine(SlideHorizontal(from, to, -1));
-                break;
-            case Transition.slideT:
-                StartCoroutine(SlideVertical(from, to, -1));
-                break;
-            case Transition.slideB:
-                StartCoroutine(SlideVertical(from, to, 1));
+            case Transition.slideOver:
+                StartCoroutine(Shift(to, shift, duration));
                 break;
 
-            case Transition.slideOverR:
-                StartCoroutine(SlideHorizontal(from, to, 1,true));
+            case Transition.slide:
+                StartCoroutine(Shift(to, shift, duration));
+                StartCoroutine(Shift(from, shift, duration));
                 break;
-            case Transition.slideOverL:
-                StartCoroutine(SlideHorizontal(from, to, -1, true));
-                break;
-            case Transition.slideOverT:
-                StartCoroutine(SlideVertical(from, to, -1, true));
-                break;
-            case Transition.slideOverB:
-                StartCoroutine(SlideVertical(from, to, 1, true));
-                break;
-
         }
     }
 
@@ -372,46 +259,47 @@ public class TransitionManager : MonoBehaviour {
         string[] argv = args.Split(' ');
         int fst = System.Convert.ToInt32(argv[0]);
         int snd = System.Convert.ToInt32(argv[1]);
-        float dur = (float)System.Convert.ToDouble(argv[3]);
+        float dur = (float)System.Convert.ToDouble(argv[4]);
         Transition type;
+        Direction dir;
         switch (argv[2].ToLower())
         {
-             case "slider":
-                type = Transition.slideR;
+            case "slide":
+                type = Transition.slide;
                 break;
 
-            case "slidel":
-                type = Transition.slideL;
-                break;
-
-            case "slidet":
-                type = Transition.slideT;
-                break;
-
-            case "slideb":
-                type = Transition.slideB;
-                break;
-
-            case "slideoverr":
-                type = Transition.slideOverR;
-                break;
-
-            case "slideoverl":
-                type = Transition.slideOverL;
-                break;
-
-            case "slideovert":
-                type = Transition.slideOverT;
-                break;
-
-            case "slideoverb":
-                type = Transition.slideOverB;
+            case "slideover":
+                type = Transition.slideOver;
                 break;
 
             default:
                 type = Transition.fade;
                 break;
         }
-        DoTransition(fst, snd, type, dur);
+
+        switch (argv[3].ToLower())
+        {
+            case "r":
+                dir = Direction.R;
+                break;
+
+            case "l":
+                dir = Direction.L;
+                break;
+
+            case "b":
+                dir = Direction.B;
+                break;
+
+            case "t":
+                dir = Direction.T;
+                break;
+
+            default:
+                dir = Direction.None;
+                break;
+        }
+
+        DoTransition(fst, snd, type, dir, dur);
     }
 }
