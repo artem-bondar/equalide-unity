@@ -244,8 +244,8 @@ RectTransform:
   m_Father: {fileID: 1868229366}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0.000000029802322}
+  m_AnchorMax: {x: 1, y: 0.99999994}
   m_AnchoredPosition: {x: 0.0000009536743, y: 0}
   m_SizeDelta: {x: 19.999998, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -358,8 +358,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 180689106}
   m_HandleRect: {fileID: 180689105}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 0.5
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1272,7 +1272,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: ebf4e955bf6525b49a395abf4b8ced92, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6c7da4a51f93fbe48ba9447c898b996d, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1451,7 +1451,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1237876344}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c84a0cc4a45abc4193e300e235108e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 072cb1708db88f34cb6ce56a1182fb06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   packButtons:
@@ -1464,7 +1464,7 @@ MonoBehaviour:
   - {fileID: 2091439591}
   - {fileID: 2054462373}
   - {fileID: 922384393}
-  packStates: socoso
+  packStates: socsoc
   locked: {fileID: 21300000, guid: a1e06d9f6e6c43a499c3d7497788e71e, type: 3}
   star: {fileID: 21300000, guid: 6595884a0d012ca4ea4f15128b27aaf4, type: 3}
 --- !u!1001 &1280693555
@@ -1834,7 +1834,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.8}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.000061035156}
   m_SizeDelta: {x: 0, y: 1536}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1419975316
