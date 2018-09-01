@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class TransitionController : MonoBehaviour {
 
-
-    GameObject mainUI;
-    GameObject secondaryUI;
-
-    public GameObject[] UIElements;
-
-
     public enum Transition
     {
         fade,
@@ -20,32 +13,46 @@ public class TransitionController : MonoBehaviour {
     }
     Transition selectedTransition;
 
+    GameObject oldUI;
+    GameObject newUI;
+
+    Vector3 posOld;
+    Vector2 sizeNew;
+    Vector2 sizeOld;
+
+    public GameObject[] UIElements;
+
     bool locked = false;
+    bool[] lockedUI;
 
     float timeInterval = 0.5f;
 
-
-
     void Init()
     {
+        posOld = GetOriginPosition(oldUI);
+
+        sizeNew = GetAbsoluteSize(newUI);
+        sizeOld = GetAbsoluteSize(oldUI);
 
         switch (selectedTransition)
         {
             case Transition.slideR:
-                SetOriginPosition(secondaryUI, -Screen.width, 0);
-                secondaryUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                secondaryUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetOriginPosition(newUI, posOld.x - sizeNew.x, posOld.y);
+                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                newUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
+
             case Transition.slideL:
-                SetOriginPosition(secondaryUI, Screen.width, 0);
-                secondaryUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                secondaryUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetOriginPosition(newUI, posOld.x + sizeOld.x, posOld.y);
+                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                newUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
+
             case Transition.fade:
-                //secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-                SetOriginPosition(secondaryUI, 0, 0);
-                secondaryUI.GetComponent<CanvasGroup>().alpha = 0;
-                secondaryUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                //newUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+                SetOriginPosition(newUI, posOld.x, posOld.y);
+                newUI.GetComponent<CanvasGroup>().alpha = 0;
+                newUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 break;
         }
         Place();
@@ -53,8 +60,8 @@ public class TransitionController : MonoBehaviour {
 
     void Place()
     {
-        float scale = secondaryUI.GetComponent<RectTransform>().parent.GetComponent<Canvas>().scaleFactor; //
-        RectTransform rectXfrom = secondaryUI.GetComponent<RectTransform>();
+        float scale = newUI.GetComponent<RectTransform>().parent.GetComponent<Canvas>().scaleFactor; //
+        RectTransform rectXfrom = newUI.GetComponent<RectTransform>();
         float width = rectXfrom.rect.width * scale * rectXfrom.localScale.x;
         float height = rectXfrom.rect.height * scale * rectXfrom.localScale.y;
         Debug.Log("Width: " + width.ToString() + " Height: " + height.ToString() + " Global Scale: " + scale.ToString() + " Local Scale: " + rectXfrom.localScale.ToString());
@@ -76,12 +83,11 @@ public class TransitionController : MonoBehaviour {
         obj.transform.position = new Vector3(x+dx, y+dy, 0);
     }
 
-    public void GetOriginPosition(GameObject obj)
+    public Vector3 GetOriginPosition(GameObject obj)
     {
-        float globalScale = obj.GetComponentInParent<Canvas>().scaleFactor;
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
-        float width = rectXfrom.rect.width * globalScale * rectXfrom.localScale.x;
-        float height = rectXfrom.rect.height * globalScale * rectXfrom.localScale.y;
+        float width = GetAbsoluteSize(obj).x;
+        float height = GetAbsoluteSize(obj).y;
 
         float dx = rectXfrom.pivot.x * width;
         float dy = rectXfrom.pivot.y * height;
@@ -89,6 +95,17 @@ public class TransitionController : MonoBehaviour {
         Vector3 pos = obj.transform.position;
         pos = new Vector3(pos.x - dx, pos.y - dy, pos.z);
         Debug.Log(pos.ToString());
+        return pos;
+    }
+
+    public Vector2 GetAbsoluteSize(GameObject obj)
+    {
+        float globalScale = obj.GetComponentInParent<Canvas>().scaleFactor;
+        RectTransform rectXfrom = obj.GetComponent<RectTransform>();
+        float width = rectXfrom.rect.width * globalScale * rectXfrom.localScale.x;
+        float height = rectXfrom.rect.height * globalScale * rectXfrom.localScale.y;
+
+        return new Vector2(width, height);
     }
 
     IEnumerator Fade()
@@ -100,14 +117,14 @@ public class TransitionController : MonoBehaviour {
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            mainUI.GetComponent<CanvasGroup>().alpha = 1 - shift;
-            secondaryUI.GetComponent<CanvasGroup>().alpha = shift;
+            oldUI.GetComponent<CanvasGroup>().alpha = 1 - shift;
+            newUI.GetComponent<CanvasGroup>().alpha = shift;
         }
-        mainUI.GetComponent<CanvasGroup>().alpha = 0;
-        secondaryUI.GetComponent<CanvasGroup>().alpha = 1;
+        oldUI.GetComponent<CanvasGroup>().alpha = 0;
+        newUI.GetComponent<CanvasGroup>().alpha = 1;
 
-        secondaryUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        mainUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
 
         locked = false;
@@ -115,20 +132,21 @@ public class TransitionController : MonoBehaviour {
 
     IEnumerator SlideHorizontal(float direction)
     {
-        float delta = Screen.width * Time.deltaTime / timeInterval * direction;
+
+        float delta = Mathf.Min(sizeNew.x,sizeOld.x) * Time.deltaTime / timeInterval * direction;
         float shift = 0;
         
-        while (shift * direction < Screen.width)
+        while (shift * direction < Mathf.Min(sizeNew.x, sizeOld.x))
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            mainUI.transform.Translate(new Vector3(delta, 0, 0));
-            secondaryUI.transform.Translate(new Vector3(delta, 0, 0));
+            oldUI.transform.Translate(new Vector3(delta, 0, 0));
+            newUI.transform.Translate(new Vector3(delta, 0, 0));
         }
-        SetOriginPosition(mainUI, direction * Screen.width, 0);
-        SetOriginPosition(secondaryUI, 0, 0);
-        //mainUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
-        //secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        SetOriginPosition(oldUI, posOld.x + direction * Mathf.Min(sizeNew.x, sizeOld.x), posOld.y);
+        SetOriginPosition(newUI, posOld.x, posOld.y);
+        //oldUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
+        //newUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         locked = false;
     }
 
@@ -141,13 +159,13 @@ public class TransitionController : MonoBehaviour {
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            mainUI.transform.Translate(new Vector3(delta, 0, 0));
-            secondaryUI.transform.Translate(new Vector3(delta, 0, 0));
+            oldUI.transform.Translate(new Vector3(delta, 0, 0));
+            newUI.transform.Translate(new Vector3(delta, 0, 0));
         }
-        SetOriginPosition(mainUI, direction * Screen.width, 0);
-        SetOriginPosition(secondaryUI, 0, 0);
-        //mainUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
-        //secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        SetOriginPosition(oldUI, direction * Screen.width, 0);
+        SetOriginPosition(newUI, 0, 0);
+        //oldUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
+        //newUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         locked = false;
     }
 
@@ -156,8 +174,8 @@ public class TransitionController : MonoBehaviour {
     {
         if (locked) // does not allow transitions to overlap
             return;
-        mainUI = UIElements[from];
-        secondaryUI = UIElements[to];
+        oldUI = UIElements[from];
+        newUI = UIElements[to];
         selectedTransition = type;
         Init();
         timeInterval = duration;
