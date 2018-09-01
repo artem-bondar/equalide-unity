@@ -350,7 +350,7 @@ namespace UITween
                     Transform childNumber = _objectToSetAlpha.GetChild(i);
 
                     if (childNumber.gameObject.activeSelf &&
-                        (!childNumber.GetComponent<ReferencedFrom>() || animationPart.FadePropetiesAnim.IsFadeOverrideEnabled()))
+                        (/* !childNumber.GetComponent<ReferencedFrom>() ||  */animationPart.FadePropetiesAnim.IsFadeOverrideEnabled()))
                     {
                         SetAlphaValue(childNumber, _counterTween);
                     }

@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222176995937097408}
   - component: {fileID: 114097099540922804}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 114817677280652626}
   - component: {fileID: 114187140885218722}
   m_Layer: 5
-  m_Name: Floating Action Button
+  m_Name: FloatingActionButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

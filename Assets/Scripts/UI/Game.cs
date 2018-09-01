@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class GameField : MonoBehaviour
+public class Game : MonoBehaviour
 {
 
     public string puzzleString;
