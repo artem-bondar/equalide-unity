@@ -174,19 +174,34 @@ public class TransitionManager : MonoBehaviour {
         lockedUI[to] = false;
     }
 
-    IEnumerator Shift(int index, Vector3 shift, float duration) 
+    IEnumerator Shift(int[] indexes, Vector3 shift, float duration) 
     {
         Vector3 delta = shift * Time.deltaTime / duration;
         float currentShift = 0;
-        Vector3 oldPos = UIElements[index].transform.position;
+        Vector3[] oldPos = new Vector3[indexes.Length]; // UIElements[index].transform.position;
+
+        for (int i = 0; i < indexes.Length; i++)
+        {
+            oldPos[i] = UIElements[indexes[i]].transform.position;
+        }
+
+
         while (currentShift  < shift.magnitude)
         {
             yield return new WaitForEndOfFrame();
             currentShift += delta.magnitude;
-            UIElements[index].transform.Translate(delta);
+            foreach (var i in indexes)
+            {
+                UIElements[i].transform.Translate(delta);
+            }
+            
         }
-        UIElements[index].transform.position = oldPos + shift;
-        lockedUI[index] = false;
+
+        for (int i = 0; i < indexes.Length; i++)
+        {
+            UIElements[indexes[i]].transform.position = oldPos[i] + shift;
+            lockedUI[indexes[i]] = false;
+        }
     }
 
     public void DoCustomTransition(int index, Vector3 shift, float duration)
@@ -194,7 +209,7 @@ public class TransitionManager : MonoBehaviour {
         if (lockedUI[index])
             return;
         lockedUI[index] = true;
-        StartCoroutine(Shift(index, shift, duration));
+        StartCoroutine(Shift(new int[] { index }, shift, duration));
     }
 
     public void DoTransition(int from, int to, Transition type, Direction dir, float duration)
@@ -244,12 +259,11 @@ public class TransitionManager : MonoBehaviour {
                 break;
 
             case Transition.slideOver:
-                StartCoroutine(Shift(to, shift, duration));
+                StartCoroutine(Shift(new int[] { to }, shift, duration));
                 break;
 
             case Transition.slide:
-                StartCoroutine(Shift(to, shift, duration));
-                StartCoroutine(Shift(from, shift, duration));
+                StartCoroutine(Shift(new int[] { to, from }, shift, duration));
                 break;
         }
     }
