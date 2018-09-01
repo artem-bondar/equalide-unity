@@ -16,7 +16,6 @@ public class TransitionManager : MonoBehaviour {
         slideOverL,
         slideOverB,
         slideOverT
-
     }
     Transition selectedTransition;
 
@@ -112,12 +111,19 @@ public class TransitionManager : MonoBehaviour {
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 newUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
-
-
         }
         Place();
     }
 
+    void Start()
+    {
+        lockedUI = new bool[UIElements.Length]; //what if UIElements are changed during run-time?
+        for (int i = 0; i < lockedUI.Length; i++)
+        {
+            lockedUI[i] = false;
+        }
+
+    }
     void AddComponents()
     {
         if(!oldUI.GetComponent<CanvasGroup>() && (selectedTransition == Transition.fade || (int)selectedTransition >= (int)Transition.slideOverR))
@@ -197,7 +203,7 @@ public class TransitionManager : MonoBehaviour {
         return new Vector2(width, height);
     }
 
-    IEnumerator Fade()
+    IEnumerator Fade(int fromLock, int toLock)
     {
 
         float delta = Time.deltaTime / timeInterval ;
@@ -216,10 +222,11 @@ public class TransitionManager : MonoBehaviour {
         oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
 
-        locked = false;
+        lockedUI[fromLock] = false;
+        lockedUI[toLock] = false;
     }
 
-    IEnumerator SlideHorizontal(int direction, bool singular = false)
+    IEnumerator SlideHorizontal(int fromLock, int toLock, int direction, bool singular = false)
     {
         float shift = Mathf.Min(sizeNew.x, sizeOld.x);
         float delta = shift * Time.deltaTime / timeInterval * direction;
@@ -249,10 +256,11 @@ public class TransitionManager : MonoBehaviour {
             oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
         }
 
-        locked = false;
+        lockedUI[fromLock] = false;
+        lockedUI[toLock] = false;
     }
 
-    IEnumerator SlideVertical(int direction, bool singular = false)
+    IEnumerator SlideVertical(int fromLock, int toLock, int direction, bool singular = false)
     {
         float shift = Mathf.Min(sizeNew.y, sizeOld.y);
         float delta = shift * Time.deltaTime / timeInterval * direction;
@@ -282,19 +290,44 @@ public class TransitionManager : MonoBehaviour {
             oldUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
         }
 
-        locked = false;
+        lockedUI[fromLock] = false;
+        lockedUI[toLock] = false;
     }
 
 
+    IEnumerator Shift(int index, Vector3 shift, float duration) 
+    {
+        Vector3 delta = shift * Time.deltaTime / duration;
+        float currentShift = 0;
+        Vector3 oldPos = UIElements[index].transform.position;
+        while (currentShift  < shift.magnitude)
+        {
+            yield return new WaitForEndOfFrame();
+            currentShift += delta.magnitude;
+            UIElements[index].transform.Translate(delta);
+        }
+        UIElements[index].transform.position = oldPos + shift;
+        lockedUI[index] = false;
+    }
+
+    public void Test()
+    {
+        StartCoroutine(Shift(0, new Vector3(0, 500, 0), 1));
+        StartCoroutine(Shift(1, new Vector3(0, 500, 0), 1));
+    }
+
     public void DoTransition(int from, int to, Transition type, float duration)
     {
-        if (locked) // does not allow transitions to overlap
+        if (lockedUI[to] || ( lockedUI[from] && (int)type < (int)Transition.slideOverR )) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
             return;
         oldUI = UIElements[from];
         newUI = UIElements[to];
         selectedTransition = type;
         timeInterval = duration;
-        locked = true;
+        lockedUI[to] = true;
+
+        if((int)type < (int)Transition.slideOverR)
+            lockedUI[from] = true;
 
         AddComponents();
         Init();
@@ -302,33 +335,33 @@ public class TransitionManager : MonoBehaviour {
         switch (type)
         {
             case Transition.fade:
-                StartCoroutine(Fade());
+                StartCoroutine(Fade(from,to));
                 break;
 
             case Transition.slideR:
-                StartCoroutine(SlideHorizontal(1));
+                StartCoroutine(SlideHorizontal(from, to,1));
                 break;
             case Transition.slideL:
-                StartCoroutine(SlideHorizontal(-1));
+                StartCoroutine(SlideHorizontal(from, to, -1));
                 break;
             case Transition.slideT:
-                StartCoroutine(SlideVertical(-1));
+                StartCoroutine(SlideVertical(from, to, -1));
                 break;
             case Transition.slideB:
-                StartCoroutine(SlideVertical(1));
+                StartCoroutine(SlideVertical(from, to, 1));
                 break;
 
             case Transition.slideOverR:
-                StartCoroutine(SlideHorizontal(1,true));
+                StartCoroutine(SlideHorizontal(from, to, 1,true));
                 break;
             case Transition.slideOverL:
-                StartCoroutine(SlideHorizontal(-1, true));
+                StartCoroutine(SlideHorizontal(from, to, -1, true));
                 break;
             case Transition.slideOverT:
-                StartCoroutine(SlideVertical(-1, true));
+                StartCoroutine(SlideVertical(from, to, -1, true));
                 break;
             case Transition.slideOverB:
-                StartCoroutine(SlideVertical(1, true));
+                StartCoroutine(SlideVertical(from, to, 1, true));
                 break;
 
         }
