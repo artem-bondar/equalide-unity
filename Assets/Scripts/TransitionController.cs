@@ -11,7 +11,7 @@ public class TransitionController : MonoBehaviour {
     public GameObject[] UIElements;
 
 
-    public enum Transition // your custom enumeration
+    public enum Transition
     {
         fade,
         slideRL,
@@ -22,26 +22,55 @@ public class TransitionController : MonoBehaviour {
     bool locked = false;
 
     float timeInterval = 0.5f;
-    // Use this for initialization
 
 
-    void InitPosition()
+
+    void Init()
     {
         switch (selectedTransition)
         {
             case Transition.slideRL:
-                secondaryUI.transform.position = new Vector3(-Screen.width / 2, Screen.height / 2, 0);
+                SetAbsolutePosition(secondaryUI, -Screen.width, 0);
+                //secondaryUI.transform.position = new Vector3(-Screen.width / 2, Screen.height / 2, 0);
                 secondaryUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
             case Transition.slideLR:
-                secondaryUI.transform.position = new Vector3(3 * Screen.width / 2, Screen.height / 2, 0);
+                SetAbsolutePosition(secondaryUI, Screen.width, 0);
+                //secondaryUI.transform.position = new Vector3(3 * Screen.width / 2, Screen.height / 2, 0);
                 secondaryUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
             case Transition.fade:
-                secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+                //secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+                SetAbsolutePosition(secondaryUI, 0, 0);
                 secondaryUI.GetComponent<CanvasGroup>().alpha = 0;
                 break;
         }
+        Place();
+    }
+
+    void Place()
+    {
+        float scale = secondaryUI.GetComponent<RectTransform>().parent.GetComponent<Canvas>().scaleFactor; //
+        Rect rect = secondaryUI.GetComponent<RectTransform>().rect;
+        float width = rect.width*scale;
+        float height = rect.height*scale;
+
+
+    }
+
+    //Allows UIElements have different pivots
+    //Absolute Position - As if with (0,0) pivot 
+    void SetAbsolutePosition(GameObject obj,float x, float y) 
+    {
+        float scale = obj.GetComponent<RectTransform>().parent.GetComponent<Canvas>().scaleFactor; //weak point. need canvas reference?
+        RectTransform rectXfrom = obj.GetComponent<RectTransform>();
+        float width = rectXfrom.rect.width * scale;
+        float height = rectXfrom.rect.height * scale;
+
+        float dx = rectXfrom.pivot.x * width;
+        float dy = rectXfrom.pivot.y * height;
+
+        obj.transform.position = new Vector3(x+dx, y+dy, 0);
     }
 
     IEnumerator Fade()
@@ -72,8 +101,10 @@ public class TransitionController : MonoBehaviour {
             mainUI.transform.Translate(new Vector3(delta, 0, 0));
             secondaryUI.transform.Translate(new Vector3(delta, 0, 0));
         }
-        mainUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
-        secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        SetAbsolutePosition(mainUI, direction * Screen.width, 0);
+        SetAbsolutePosition(secondaryUI, 0, 0);
+        //mainUI.transform.position = new Vector3(Screen.width / 2  + direction * Screen.width, Screen.height / 2, 0);
+        //secondaryUI.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         locked = false;
     }
 
@@ -85,7 +116,7 @@ public class TransitionController : MonoBehaviour {
         mainUI = UIElements[from];
         secondaryUI = UIElements[to];
         selectedTransition = type;
-        InitPosition();
+        Init();
         timeInterval = duration;
         locked = true;
         switch(type)
