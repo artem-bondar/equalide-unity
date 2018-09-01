@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class FloatingAction : MonoBehaviour {
+public class FloatingActionButton : MonoBehaviour {
 
     public float fadeInterval;
 	// Use this for initialization
