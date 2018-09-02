@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PackMenu : MonoBehaviour {
+public class PackSelection : MonoBehaviour {
 
     public GameObject[] packButtons;
     public string packStates;

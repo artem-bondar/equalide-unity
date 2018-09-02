@@ -57,11 +57,11 @@ public class TransitionManager : MonoBehaviour {
         switch(dir)
         {
             case Direction.R:
-                AlignByOrigins(oldUI, newUI, Vector2.zero, Vector2.right, true);
+                AlignByOrigins(oldUI, newUI, new Vector2(0, 1), new Vector2(1, 1), true);
                 break;
 
             case Direction.L:
-                AlignByOrigins(oldUI, newUI, Vector2.right, Vector2.zero, true);
+                AlignByOrigins(oldUI, newUI,  new Vector2(1, 1), new Vector2(0, 1), true);
                 break;
 
             case Direction.B:
@@ -110,7 +110,6 @@ public class TransitionManager : MonoBehaviour {
     {
         if (sharesRotation)
             annexObj.transform.eulerAngles = new Vector3(0, 0, targetObj.transform.eulerAngles.z);
-        Debug.Log(targetObj.transform.eulerAngles.ToString());
         Vector2 targetPos = GetPosOriginRelative(targetObj,targetOrigin);
         SetPosOriginRelative(annexObj, targetPos, annexOrigin);
     }
