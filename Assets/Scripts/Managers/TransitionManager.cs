@@ -28,7 +28,7 @@ public class TransitionManager : MonoBehaviour {
     void Init(Transition type, Direction dir, GameObject oldUI, GameObject newUI)
     {
 
-        Vector3 posOld = GetOriginPosition(oldUI);
+        Vector3 posOld = GetPosOriginRelative(oldUI);
 
         Vector3 sizeNew = GetAbsoluteSize(newUI);
         Vector3 sizeOld = GetAbsoluteSize(oldUI);
@@ -36,7 +36,7 @@ public class TransitionManager : MonoBehaviour {
         switch(type)
         {
             case Transition.fade:
-                SetOriginPosition(newUI, posOld.x, posOld.y);
+                SetPosOriginRelative(newUI, posOld.x, posOld.y);
                 newUI.GetComponent<CanvasGroup>().alpha = 0;
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 break;
@@ -57,19 +57,19 @@ public class TransitionManager : MonoBehaviour {
         switch(dir)
         {
             case Direction.R:
-                SetOriginPosition(newUI, posOld.x - sizeNew.x, posOld.y);
+                SetPosOriginRelative(newUI, posOld.x - sizeNew.x, posOld.y);
                 break;
 
             case Direction.L:
-                SetOriginPosition(newUI, posOld.x + sizeOld.x, posOld.y);
+                SetPosOriginRelative(newUI, posOld.x + sizeOld.x, posOld.y);
                 break;
 
             case Direction.B:
-                SetOriginPosition(newUI, posOld.x, posOld.y + sizeOld.y);                
+                SetPosOriginRelative(newUI, posOld.x, posOld.y + sizeOld.y);                
                 break;
 
             case Direction.T:
-                SetOriginPosition(newUI, posOld.x, posOld.y - sizeNew.y);
+                SetPosOriginRelative(newUI, posOld.x, posOld.y - sizeNew.y);
                 break;
         }
     }
@@ -106,44 +106,50 @@ public class TransitionManager : MonoBehaviour {
         }
     }
 
+    public void AlignByOrigins(GameObject obj1 , GameObject obg2, Vector2 origin1, Vector2 origin2)
+    {
+
+    }
+
     //Allows UIElements to have different pivots and scales
     //Origin Position - The Left-Bottom corner, As if with (0,0) pivot 
-    void SetOriginPosition(GameObject obj,float x, float y) 
+    void SetPosOriginRelative(GameObject obj,float x, float y) 
     {
-        float globalScale = obj.GetComponentInParent<Canvas>().scaleFactor; //weak point. need canvas reference?
+        
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
-        float width = rectXfrom.rect.width * globalScale * rectXfrom.localScale.x;
-        float height = rectXfrom.rect.height * globalScale * rectXfrom.localScale.y;        
 
-        float dx = rectXfrom.pivot.x * width;
-        float dy = rectXfrom.pivot.y * height;
+        float angle = rectXfrom.eulerAngles.z;
 
-        obj.transform.position = new Vector3(Mathf.Round(x+dx), Mathf.Round(y +dy), rectXfrom.position.z); //maybe allow to pass new z coord?
+        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * rectXfrom.pivot);
+
+        //float dx = rectXfrom.pivot.x * width* Mathf.Cos(angle) - rectXfrom.pivot.y * height * Mathf.Sin(angle);
+        //float dy = rectXfrom.pivot.x * width * Mathf.Sin(angle) + rectXfrom.pivot.y * height * Mathf.Cos(angle);
+
+        obj.transform.position = new Vector2(x,y) + delta; //maybe allow to pass new z coord?
+
     }
 
-    void SetOriginPosition(GameObject obj, Vector3 vec)
+    void SetPosOriginRelative(GameObject obj, Vector2 pos, Vector2 origin)
     {
-        SetOriginPosition(obj, vec.x, vec.y);
+        SetPosOriginRelative(obj, pos.x, pos.y);
     }
 
-    public Vector3 GetOriginPosition(GameObject obj)
+    public Vector2 GetPosOriginRelative(GameObject obj)
     {
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
-        float width = GetAbsoluteSize(obj).x;
-        float height = GetAbsoluteSize(obj).y;
+        float angle = rectXfrom.eulerAngles.z;
 
-        float dx = rectXfrom.pivot.x * width;
-        float dy = rectXfrom.pivot.y * height;
+        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * rectXfrom.pivot);
 
-        Vector3 pos = obj.transform.position;
-        pos = new Vector3(pos.x - dx, pos.y - dy, pos.z);
+        Vector2 pos = obj.transform.position;
+        pos -= delta;
         Debug.Log(pos.ToString());
         return pos;
     }
 
     public Vector2 GetAbsoluteSize(GameObject obj)
     {
-        float globalScale = obj.GetComponentInParent<Canvas>().scaleFactor;
+        float globalScale = obj.GetComponentInParent<Canvas>().scaleFactor; //weak point. need canvas reference?
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
         float width = rectXfrom.rect.width * globalScale * rectXfrom.localScale.x;
         float height = rectXfrom.rect.height * globalScale * rectXfrom.localScale.y;
@@ -176,8 +182,8 @@ public class TransitionManager : MonoBehaviour {
 
     IEnumerator Shift(int[] indexes, Vector3 shift, float duration) 
     {
-        Vector3 delta = shift * Time.deltaTime / duration;
-        float currentShift = 0;
+        Vector3 delta = delta = shift * Time.deltaTime / duration;
+        Vector3 currentShift = Vector3.zero;
         Vector3[] oldPos = new Vector3[indexes.Length]; // UIElements[index].transform.position;
 
         for (int i = 0; i < indexes.Length; i++)
@@ -186,10 +192,11 @@ public class TransitionManager : MonoBehaviour {
         }
 
 
-        while (currentShift  < shift.magnitude)
+        while (currentShift.magnitude < shift.magnitude)
         {
             yield return new WaitForEndOfFrame();
-            currentShift += delta.magnitude;
+            
+            currentShift += delta;
             foreach (var i in indexes)
             {
                 UIElements[i].transform.Translate(delta);
@@ -199,7 +206,12 @@ public class TransitionManager : MonoBehaviour {
 
         for (int i = 0; i < indexes.Length; i++)
         {
-            UIElements[indexes[i]].transform.position = oldPos[i] + shift;
+            float angle = UIElements[indexes[i]].transform.eulerAngles.z;
+            Vector3 rot =  Quaternion.AngleAxis(angle, Vector3.forward) * ( shift);
+            //SetOriginPosition(UIElements[indexes[i]], oldPos[i] + shift);
+            //UIElements[indexes[i]].transform.Translate(currentShift - shift);
+            UIElements[indexes[i]].transform.position = oldPos[i] + rot;
+            //UIElements[indexes[i]].transform.RotateAround(oldPos[i], new Vector3(0, 0, 1), -UIElements[indexes[i]].transform.eulerAngles.z);
             lockedUI[indexes[i]] = false;
         }
     }
@@ -225,6 +237,7 @@ public class TransitionManager : MonoBehaviour {
 
         AddComponents(type, oldUI, newUI);
         Init(type, dir, oldUI, newUI);
+        //return;
         Vector3 shift;
         Vector3 sizeNew = GetAbsoluteSize(newUI);
         Vector3 sizeOld = GetAbsoluteSize(oldUI);
