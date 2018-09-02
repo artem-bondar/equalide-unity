@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 // Contains puzzle with next representation:
 // '0-9' - colored cell
 // 'e' - empty cell, can be colored
 // 'b' - blank cell, can't be colored
 
-public class Puzzle  {
+public class Puzzle
+{
 
     // Holds string representation of 2D-array
     public string partition
@@ -31,10 +31,13 @@ public class Puzzle  {
                 return 'b';
         }
         set
-        {
-            char[] copy = partition.ToCharArray();
-            copy[i * width + j] = value;
-            partition = new string(copy);
+        {   
+            if (CheckIfValidIndexes(i, j))
+            {
+                var copy = partition.ToCharArray();
+                copy[i * width + j] = value;
+                partition = new string(copy);
+            }
         }
     }
 
@@ -62,9 +65,10 @@ public class Puzzle  {
     // Clears puzzle partition to initial state
     public void Clear()
     {
-        partition = Regex.Replace(partition, "[^eb]", "e");;
+        partition = Regex.Replace(partition, "[^eb]", "e");
     }
 
+    // Checks if puzzle partition is a solution and mark puzzle as solved if true 
     public bool CheckForSolution()
     {
         // Checks if puzzle contains any unpainted primitive
@@ -89,26 +93,33 @@ public class Puzzle  {
 
     private List<Element> SeparateInElements() 
     {
-        var unicalCells = new HashSet<char>();
-        for (int i = 0; i < partition.Length; i++)
-        {
-            if (partition[i] != 'b' && partition[i] != 'e')
-                unicalCells.Add(partition[i]);
-        }
-
         var result = new List<Element>();
+        
+        var unicalCells = new HashSet<char>(partition.ToCharArray());
+        unicalCells.RemoveWhere(IsPainted);
 
         foreach(char cell in unicalCells) {
-            var firstOccurance = partition.IndexOf(cell);
-            var lastOccurance = partition.LastIndexOf(cell);
-            var substr = partition.Substring(firstOccurance - firstOccurance % width,
-                        (lastOccurance - firstOccurance+1) + width - (lastOccurance - firstOccurance+1) % width);
-            substr = Regex.Replace(substr, "[^" + cell.ToString() + "]", "e");
-            substr = substr.Replace(cell, 'c');
-            result.Add(new Element(substr, width));
-            
+            int firstOccurance = partition.IndexOf(cell);
+            int lastOccurance = partition.LastIndexOf(cell);
+            int length = lastOccurance - firstOccurance + 1;
+
+            // Get partition that represent element cut by height
+            string substr = partition.Substring(
+                    firstOccurance - firstOccurance % width,
+                    length + width - length % width)
+
+            result.Add(new Element(
+                Regex.Replace(substr, String.Format("[^{0}]", cell), 'e')
+                    .Replace(cell, 'c'),
+                width));
         }
+        
         return result;
+    }
+
+    private bool IsPainted(char c)
+    {
+        return c != 'b' && c != 'e';
     }
 
     private bool CheckIfValidPartition(string partition)
