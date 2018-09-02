@@ -106,14 +106,14 @@ public class Puzzle
             // Get partition that represent element cut by height
             string substr = partition.Substring(
                     firstOccurance - firstOccurance % width,
-                    length + width - length % width)
+                    length + width - length % width);
 
             result.Add(new Element(
-                Regex.Replace(substr, String.Format("[^{0}]", cell), 'e')
-                    .Replace(cell, 'c'),
+                Regex.Replace(substr, System.String.Format("[^{0}]", cell), "e")
+                .Replace(cell, 'c'),
                 width));
         }
-        
+
         return result;
     }
 
