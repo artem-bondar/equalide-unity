@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,60 +26,65 @@ public class TransitionManager : MonoBehaviour {
 
     bool[] lockedUI;
 
-    void Init(Transition type, Direction dir, GameObject oldUI, GameObject newUI)
+    void Init(Transition type, Direction dir, GameObject targetUI, GameObject annexUI, float targetAlign = 1, float annexAlign = 1)
     {
+        Vector2 targetOrigin = Vector2.zero;
+        Vector2 annexOrigin = Vector2.zero;
 
-        Vector3 posOld = GetPosOriginRelative(oldUI);
-
-        Vector3 sizeNew = GetAbsoluteSize(newUI);
-        Vector3 sizeOld = GetAbsoluteSize(oldUI);
-
-        switch(type)
+        switch (type)
         {
             case Transition.fade:
-                AlignByOrigins(oldUI, newUI, new Vector2(0.5f,0.5f), new Vector2(0.5f, 0.5f), true);
-                newUI.GetComponent<CanvasGroup>().alpha = 0;
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                annexUI.GetComponent<CanvasGroup>().alpha = 0;
+                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 break;
 
             case Transition.slide:
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
+                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                annexUI.GetComponent<CanvasGroup>().alpha = 1;
                 break;
 
             case Transition.slideOver:
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                newUI.GetComponent<Canvas>().overrideSorting = true;
-                newUI.GetComponent<Canvas>().sortingOrder = oldUI.GetComponent<Canvas>().sortingOrder + 1;
+                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                annexUI.GetComponent<CanvasGroup>().alpha = 1;
+                annexUI.GetComponent<Canvas>().overrideSorting = true;
+                annexUI.GetComponent<Canvas>().sortingOrder = targetUI.GetComponent<Canvas>().sortingOrder + 1;
                 break;
 
             case Transition.slideAway:
-                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                newUI.GetComponent<CanvasGroup>().alpha = 1;
-                //newUI.GetComponent<Canvas>().overrideSorting = true;
-                //newUI.GetComponent<Canvas>().sortingOrder = oldUI.GetComponent<Canvas>().sortingOrder - 1;
-                return;
+                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                annexUI.GetComponent<CanvasGroup>().alpha = 1;
+                return; //slideAway does not require any annex positioning
         }
 
-        switch(dir)
+        switch (dir)
         {
             case Direction.R:
-                AlignByOrigins(oldUI, newUI, new Vector2(0, 1), new Vector2(1, 1), true);
+                targetOrigin = new Vector2(0, targetAlign);
+                annexOrigin = new Vector2(1, annexAlign);
                 break;
 
             case Direction.L:
-                AlignByOrigins(oldUI, newUI,  new Vector2(1, 1), new Vector2(0, 1), true);
+                targetOrigin = new Vector2(1, targetAlign);
+                annexOrigin = new Vector2(0, annexAlign);
                 break;
 
             case Direction.B:
-                AlignByOrigins(oldUI, newUI, Vector2.up, Vector2.zero, true);
+                targetOrigin = new Vector2(targetAlign, 1);
+                annexOrigin = new Vector2(annexAlign, 0);
                 break;
 
             case Direction.T:
-                AlignByOrigins(oldUI, newUI, Vector2.zero, Vector2.up,  true);
+                targetOrigin = new Vector2(targetAlign, 0);
+                annexOrigin = new Vector2(annexAlign, 1);
+                break;
+
+            case Direction.None:
+                targetOrigin = new Vector2(0.5f, 0.5f);
+                annexOrigin = new Vector2(0.5f, 0.5f);
                 break;
         }
+
+        AlignByOrigins(targetUI, annexUI, targetOrigin, annexOrigin, true);
     }
 
     void Start()
@@ -91,26 +96,26 @@ public class TransitionManager : MonoBehaviour {
         }
 
     }
-    void AddComponents(Transition type, GameObject oldUI, GameObject newUI)
+    void AddComponents(Transition type, GameObject targetUI, GameObject annexUI)
     {
-        if(!oldUI.GetComponent<CanvasGroup>())
+        if(!targetUI.GetComponent<CanvasGroup>())
         {
-            oldUI.AddComponent<CanvasGroup>();
+            targetUI.AddComponent<CanvasGroup>();
         }
-        if (!newUI.GetComponent<CanvasGroup>() )
+        if (!annexUI.GetComponent<CanvasGroup>() )
         {
-            newUI.AddComponent<CanvasGroup>();
+            annexUI.AddComponent<CanvasGroup>();
         }
 
-        if (!oldUI.GetComponent<Canvas>() && type == Transition.slideOver)
+        if (!targetUI.GetComponent<Canvas>() && type == Transition.slideOver)
         {
-            oldUI.AddComponent<Canvas>();
-            oldUI.AddComponent<GraphicRaycaster>();
+            targetUI.AddComponent<Canvas>();
+            targetUI.AddComponent<GraphicRaycaster>();
         }
-        if (!newUI.GetComponent<Canvas>() && type == Transition.slideOver)
+        if (!annexUI.GetComponent<Canvas>() && type == Transition.slideOver)
         {
-            newUI.AddComponent<Canvas>();
-            newUI.AddComponent<GraphicRaycaster>();
+            annexUI.AddComponent<Canvas>();
+            annexUI.AddComponent<GraphicRaycaster>();
         }
     }
 
@@ -122,20 +127,13 @@ public class TransitionManager : MonoBehaviour {
         SetPosOriginRelative(annexObj, targetPos, annexOrigin);
     }
 
-    //Allows UIElements to have different pivots and scales
-    //Origin Position - The Left-Bottom corner, As if with (0,0) pivot 
-
     void SetPosOriginRelative(GameObject obj, Vector2 pos, Vector2 origin)
-    {
-        
+    {        
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
 
         float angle = rectXfrom.eulerAngles.z;
 
         Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * (rectXfrom.pivot - origin));
-
-        //float dx = rectXfrom.pivot.x * width* Mathf.Cos(angle) - rectXfrom.pivot.y * height * Mathf.Sin(angle);
-        //float dy = rectXfrom.pivot.x * width * Mathf.Sin(angle) + rectXfrom.pivot.y * height * Mathf.Cos(angle);
 
         obj.transform.position = pos + delta; //maybe allow to pass new z coord?
     }
@@ -169,7 +167,6 @@ public class TransitionManager : MonoBehaviour {
 
     IEnumerator Fade(int from, int to, float duration)
     {
-
         float delta = Time.deltaTime / duration;
         float shift = 0;
         while (shift < 1)
@@ -185,14 +182,14 @@ public class TransitionManager : MonoBehaviour {
         UIElements[to].GetComponent<CanvasGroup>().blocksRaycasts = true;
         UIElements[from].GetComponent<CanvasGroup>().blocksRaycasts = false;
 
-
         lockedUI[from] = false;
         lockedUI[to] = false;
     }
 
-    IEnumerator Shift(int[] indexes, Vector3 shift, float duration) 
+
+    IEnumerator Shift(int[] indexes, Vector3[] shifts, float duration) 
     {
-        Vector3 delta = delta = shift * Time.deltaTime / duration;
+        Vector3[] deltas = shifts.Select(elem => elem * Time.deltaTime / duration).ToArray(); //select() is map() in c#
         Vector3 currentShift = Vector3.zero;
         Vector3[] oldPos = new Vector3[indexes.Length]; 
 
@@ -202,14 +199,14 @@ public class TransitionManager : MonoBehaviour {
         }
 
 
-        while (currentShift.magnitude < shift.magnitude)
+        while (currentShift.magnitude < shifts[0].magnitude)
         {
             yield return new WaitForEndOfFrame();
             
-            currentShift += delta;
-            foreach (var i in indexes)
+            currentShift += deltas[0];
+            for (int i = 0; i < indexes.Length; i++)
             {
-                UIElements[i].transform.Translate(delta);
+                UIElements[indexes[i]].transform.Translate(deltas[i]);
             }
             
         }
@@ -217,27 +214,33 @@ public class TransitionManager : MonoBehaviour {
         for (int i = 0; i < indexes.Length; i++)
         {
             float angle = UIElements[indexes[i]].transform.eulerAngles.z;
-            Vector3 rot =  Quaternion.AngleAxis(angle, Vector3.forward) * ( shift);
+            Vector3 rot =  Quaternion.AngleAxis(angle, Vector3.forward) * shifts[i];
             UIElements[indexes[i]].transform.position = oldPos[i] + rot;
 
             lockedUI[indexes[i]] = false;
         }
     }
 
-    public void DoCustomTransition(int index, Vector3 shift, float duration)
+    public void DoCustomShifts(int[] indexes, Vector3[] shifts, float duration)
     {
-        if (lockedUI[index])
-            return;
-        lockedUI[index] = true;
-        StartCoroutine(Shift(new int[] { index }, shift, duration));
+        foreach (var i in indexes)
+        {
+            if (lockedUI[i])
+                return;
+        }
+
+        foreach (var i in indexes)
+            lockedUI[i] = true;
+
+        StartCoroutine(Shift(indexes, shifts, duration));
     }
 
-    public void DoTransition(int from, int to, Transition type, Direction dir, float duration)
+    public void DoTransition(int from, int to, Transition type, Direction dir, float duration, float targetAlign = 1, float annexAlign = 1)
     {
         if ((lockedUI[to] && type != Transition.slideAway) || ( lockedUI[from] && type != Transition.slideOver )) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
             return;
-        GameObject oldUI = UIElements[from];
-        GameObject newUI = UIElements[to];
+        GameObject targetUI = UIElements[from];
+        GameObject annexUI = UIElements[to];
 
         if (type != Transition.slideAway)
             lockedUI[to] = true;
@@ -245,15 +248,15 @@ public class TransitionManager : MonoBehaviour {
         if(type != Transition.slideOver)
             lockedUI[from] = true;
 
-        AddComponents(type, oldUI, newUI);
-        Init(type, dir, oldUI, newUI);
+        AddComponents(type, targetUI, annexUI);
+        Init(type, dir, targetUI, annexUI, targetAlign, annexAlign);
 
         Vector3 shift;
-        Vector3 sizeNew = GetAbsoluteSize(newUI);
-        Vector3 sizeOld = GetAbsoluteSize(oldUI);
+        Vector3 sizeNew = GetAbsoluteSize(annexUI);
+        Vector3 sizeOld = GetAbsoluteSize(targetUI);
 
         // Mathf.Min(sizeNew., sizeOld.) isn't the most elegant solution, but it works in most of reasonable scenarios.
-        // Otherwise we can pass bool which size to use, or shift magnitude
+        // Otherwise we can pass bool to choose which size to use, or the shift itself
         switch (dir)
         {
             case Direction.R:
@@ -284,15 +287,15 @@ public class TransitionManager : MonoBehaviour {
                 break;
 
             case Transition.slideOver:
-                StartCoroutine(Shift(new int[] { to }, shift, duration));
+                StartCoroutine(Shift(new int[] { to }, new Vector3[] { shift }, duration));
                 break;
 
             case Transition.slideAway:
-                StartCoroutine(Shift(new int[] { from }, shift, duration));
+                StartCoroutine(Shift(new int[] { from }, new Vector3[] { shift }, duration));
                 break;
 
             case Transition.slide:
-                StartCoroutine(Shift(new int[] { to, from }, shift, duration));
+                StartCoroutine(Shift(new int[] { to, from }, new Vector3[] { shift, shift }, duration));
                 break;
         }
     }
@@ -303,6 +306,7 @@ public class TransitionManager : MonoBehaviour {
         int fst = System.Convert.ToInt32(argv[0]);
         int snd = System.Convert.ToInt32(argv[1]);
         float dur = (float)System.Convert.ToDouble(argv[4]);
+        float targetAlign = 0, annexAlign=0;
         Transition type;
         Direction dir;
         switch (argv[2].ToLower())
@@ -346,7 +350,12 @@ public class TransitionManager : MonoBehaviour {
                 dir = Direction.None;
                 break;
         }
+        if(argv.Length > 5)
+        {
+             targetAlign = (float)System.Convert.ToDouble(argv[5]);
+             annexAlign = (float)System.Convert.ToDouble(argv[6]);
+        }
 
-        DoTransition(fst, snd, type, dir, dur);
+        DoTransition(fst, snd, type, dir, dur, targetAlign, annexAlign);
     }
 }
