@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 // Contains puzzle with next representation:
 // '0-9' - colored cell
@@ -10,122 +10,84 @@ using System.Text.RegularExpressions;
 
 public class Puzzle  {
 
-
-    string cleaned;
-
-    string solution;
-    public int parts;
-
-    public int width;
-    public int height;
-
-    string partition;
-
-    public bool opened;
-    public bool solved;
-
-    public Puzzle(string source)
+    // Holds string representation of 2D-array
+    public string partition
     {
-        var elements = new HashSet<char>();
-        for (int i = 0; i < source.Length; i++)
+        get { return partition; }
+        set
+        { 
+            if (CheckIfValidPartition(value))
+                partition = value;
+        } 
+    }
+
+    public char this[int i, int j]
+    {
+        get
         {
-            if (source[i] != 'b' && source[i] != '\n')
-                elements.Add(source[i]);
+            if (CheckIfValidIndexes(i, j))
+                return partition[i * width + j];
+            else
+                return 'b';
         }
-
-        parts = elements.Count;
-
-        var lines = Regex.Split(source, "\r\n|\r|\n");
-
-        height = lines.Length;
-        width = lines[0].Length;
-
-        solution = Regex.Replace(source, "\r\n|\r|\n", "");
-        cleaned = Regex.Replace(solution, "[0-9]", "e");
-        partition = cleaned;
-
-        opened = false;
-        solved = false;
+        set
+        {
+            char[] copy = partition.ToCharArray();
+            copy[i * width + j] = value;
+            partition = new string(copy);
+        }
     }
 
-    public char get(int i, int j)
-    {
-        return partition[i * width + j];
-    }
+    // Amount of elements in puzzle
+    public int parts { get; private set; }
 
-    public char get(int i)
-    {
-        return partition[i];
-    }
+    public int width { get; private set; }
+    public int height { get; private set; }
 
-    public void set(int i, int j, char c)
-    {
-        var temp = partition.ToCharArray();
-        temp[i * width + j] = c;
-        partition = new string(temp);
-    }
+    public bool opened { get; private set; }
+    public bool solved { get; private set; }
 
-    public void set(int i, char c)
-    {
-        var temp = partition.ToCharArray();
-        temp[i] = c;
-        partition = new string(temp);
-    }
-
-    public void loadPartition(string partition)
+    public Puzzle(string partition, int parts,
+                  int width, int height,
+                  bool opened, bool solved)
     {
         this.partition = partition;
+        this.parts = parts;
+        this.width = width;
+        this.height = height;
+        this.opened = opened;
+        this.solved = solved;
     }
 
-    public void refresh()
+    // Clears puzzle partition to initial state
+    public void Clear()
     {
-        partition = cleaned;
+        partition = Regex.Replace(partition, "[^eb]", "e");;
     }
 
-    public bool checkIfSolved()
+    public bool CheckForSolution()
     {
         // Checks if puzzle contains any unpainted primitive
         if (partition.IndexOf('e') != -1)
             return false;
 
-        var elements = separateInElements();
+        List<Element> elements = SeparateInElements();
 
         if (elements.Count != parts)
             return false;
 
-        if (!elements[0].checkConnectivity())
+        if (!elements[0].CheckConnectivity())
             return false;
 
         // Checks if elements are equal
         for (int i = 1; i < elements.Count; i++)
-            if (!elements[0].compare(elements[i]))
-                return false;
-        return true;
-    }
-
-    public bool checkIfValid()
-    {
-        // Checks if puzzle contains any unpainted primitive
-        if (partition.IndexOf('e') != -1)
-            return false;
-
-        var elements = separateInElements();
-
-        if (elements.Count == 1)
-            return false;
-
-        if (!elements[0].checkConnectivity())
-            return false;
-
-        // Checks if elements are equal
-        for (int i = 1; i < elements.Count; i++)
-            if (elements[0] != elements[i])
+            if (!elements[0].Compare(elements[i]))
                 return false;
 
-        return true;
+        return solved = true;
     }
 
-    private List<Element> separateInElements() 
+    private List<Element> SeparateInElements() 
     {
         var unicalCells = new HashSet<char>();
         for (int i = 0; i < partition.Length; i++)
@@ -147,5 +109,25 @@ public class Puzzle  {
             
         }
         return result;
+    }
+
+    private bool CheckIfValidPartition(string partition)
+    {
+        if (this.partition.Length != partition.Length)
+            return false;
+        
+        for (int i = 0; i < partition.Length; i++)
+            if ((this.partition[i] == 'b' && partition[i] != 'b') ||
+                (this.partition[i] != 'b' && partition[i] == 'b') ||
+                !System.Char.IsDigit(partition[i]) ||
+                partition[i] - '0' >= this.parts)
+                return false;
+
+        return true;
+    }
+
+    private bool CheckIfValidIndexes(int i, int j)
+    {
+        return i * width + j > 0 && i * width + j < partition.Length;
     }
 }
