@@ -9,7 +9,8 @@ public class TransitionManager : MonoBehaviour {
     {
         fade,
         slide,
-        slideOver
+        slideOver,
+        slideAway
     }
 
     public enum Direction
@@ -52,6 +53,13 @@ public class TransitionManager : MonoBehaviour {
                 newUI.GetComponent<Canvas>().overrideSorting = true;
                 newUI.GetComponent<Canvas>().sortingOrder = oldUI.GetComponent<Canvas>().sortingOrder + 1;
                 break;
+
+            case Transition.slideAway:
+                newUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                newUI.GetComponent<CanvasGroup>().alpha = 1;
+                //newUI.GetComponent<Canvas>().overrideSorting = true;
+                //newUI.GetComponent<Canvas>().sortingOrder = oldUI.GetComponent<Canvas>().sortingOrder - 1;
+                return;
         }
 
         switch(dir)
@@ -85,11 +93,11 @@ public class TransitionManager : MonoBehaviour {
     }
     void AddComponents(Transition type, GameObject oldUI, GameObject newUI)
     {
-        if(!oldUI.GetComponent<CanvasGroup>() && (type == Transition.fade || type == Transition.slideOver))
+        if(!oldUI.GetComponent<CanvasGroup>())
         {
             oldUI.AddComponent<CanvasGroup>();
         }
-        if (!newUI.GetComponent<CanvasGroup>() && (type == Transition.fade || type == Transition.slideOver))
+        if (!newUI.GetComponent<CanvasGroup>() )
         {
             newUI.AddComponent<CanvasGroup>();
         }
@@ -186,7 +194,7 @@ public class TransitionManager : MonoBehaviour {
     {
         Vector3 delta = delta = shift * Time.deltaTime / duration;
         Vector3 currentShift = Vector3.zero;
-        Vector3[] oldPos = new Vector3[indexes.Length]; // UIElements[index].transform.position;
+        Vector3[] oldPos = new Vector3[indexes.Length]; 
 
         for (int i = 0; i < indexes.Length; i++)
         {
@@ -210,10 +218,8 @@ public class TransitionManager : MonoBehaviour {
         {
             float angle = UIElements[indexes[i]].transform.eulerAngles.z;
             Vector3 rot =  Quaternion.AngleAxis(angle, Vector3.forward) * ( shift);
-            //SetOriginPosition(UIElements[indexes[i]], oldPos[i] + shift);
-            //UIElements[indexes[i]].transform.Translate(currentShift - shift);
             UIElements[indexes[i]].transform.position = oldPos[i] + rot;
-            //UIElements[indexes[i]].transform.RotateAround(oldPos[i], new Vector3(0, 0, 1), -UIElements[indexes[i]].transform.eulerAngles.z);
+
             lockedUI[indexes[i]] = false;
         }
     }
@@ -228,22 +234,26 @@ public class TransitionManager : MonoBehaviour {
 
     public void DoTransition(int from, int to, Transition type, Direction dir, float duration)
     {
-        if (lockedUI[to] || ( lockedUI[from] && type != Transition.slideOver)) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
+        if ((lockedUI[to] && type != Transition.slideAway) || ( lockedUI[from] && type != Transition.slideOver )) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
             return;
         GameObject oldUI = UIElements[from];
         GameObject newUI = UIElements[to];
-        lockedUI[to] = true;
+
+        if (type != Transition.slideAway)
+            lockedUI[to] = true;
 
         if(type != Transition.slideOver)
             lockedUI[from] = true;
 
         AddComponents(type, oldUI, newUI);
         Init(type, dir, oldUI, newUI);
-        //return;
+
         Vector3 shift;
         Vector3 sizeNew = GetAbsoluteSize(newUI);
         Vector3 sizeOld = GetAbsoluteSize(oldUI);
 
+        // Mathf.Min(sizeNew., sizeOld.) isn't the most elegant solution, but it works in most of reasonable scenarios.
+        // Otherwise we can pass bool which size to use, or shift magnitude
         switch (dir)
         {
             case Direction.R:
@@ -277,6 +287,10 @@ public class TransitionManager : MonoBehaviour {
                 StartCoroutine(Shift(new int[] { to }, shift, duration));
                 break;
 
+            case Transition.slideAway:
+                StartCoroutine(Shift(new int[] { from }, shift, duration));
+                break;
+
             case Transition.slide:
                 StartCoroutine(Shift(new int[] { to, from }, shift, duration));
                 break;
@@ -299,6 +313,10 @@ public class TransitionManager : MonoBehaviour {
 
             case "slideover":
                 type = Transition.slideOver;
+                break;
+
+            case "slideaway":
+                type = Transition.slideAway;
                 break;
 
             default:
