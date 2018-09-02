@@ -306,7 +306,7 @@ public class TransitionManager : MonoBehaviour {
         int fst = System.Convert.ToInt32(argv[0]);
         int snd = System.Convert.ToInt32(argv[1]);
         float dur = (float)System.Convert.ToDouble(argv[4]);
-        float targetAlign = 0, annexAlign=0;
+        float targetAlign = 1, annexAlign = 1;
         Transition type;
         Direction dir;
         switch (argv[2].ToLower())

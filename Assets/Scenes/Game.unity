@@ -148,7 +148,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -400.9091}
+  m_AnchoredPosition: {x: 540, y: -400.9091}
   m_SizeDelta: {x: 496.8, y: 98.181816}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &26551664
@@ -450,7 +450,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 540, y: -0}
-  m_SizeDelta: {x: 0, y: 1840}
+  m_SizeDelta: {x: 1080, y: 1840}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &222867665
 MonoBehaviour:
@@ -821,7 +821,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -160.90909}
+  m_AnchoredPosition: {x: 540, y: -160.90909}
   m_SizeDelta: {x: 320, y: 261.81818}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &293998904
@@ -2011,6 +2011,7 @@ GameObject:
   - component: {fileID: 1314365542}
   - component: {fileID: 1314365541}
   - component: {fileID: 1314365540}
+  - component: {fileID: 1314365543}
   m_Layer: 5
   m_Name: Pack Button Panel
   m_TagString: Untagged
@@ -2042,7 +2043,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -1150}
+  m_AnchoredPosition: {x: 540, y: -1150}
   m_SizeDelta: {x: 1080, y: 1280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1314365540
@@ -2101,6 +2102,25 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1314365538}
   m_CullTransparentMesh: 0
+--- !u!114 &1314365543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1314365538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: 1280
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1001 &1345444053
 Prefab:
   m_ObjectHideFlags: 0
