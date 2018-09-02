@@ -36,7 +36,7 @@ public class TransitionManager : MonoBehaviour {
         switch(type)
         {
             case Transition.fade:
-                SetPosOriginRelative(newUI, posOld.x, posOld.y);
+                AlignByOrigins(oldUI, newUI, new Vector2(0.5f,0.5f), new Vector2(0.5f, 0.5f), true);
                 newUI.GetComponent<CanvasGroup>().alpha = 0;
                 newUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 break;
@@ -57,19 +57,19 @@ public class TransitionManager : MonoBehaviour {
         switch(dir)
         {
             case Direction.R:
-                SetPosOriginRelative(newUI, posOld.x - sizeNew.x, posOld.y);
+                AlignByOrigins(oldUI, newUI, Vector2.zero, Vector2.right, true);
                 break;
 
             case Direction.L:
-                SetPosOriginRelative(newUI, posOld.x + sizeOld.x, posOld.y);
+                AlignByOrigins(oldUI, newUI, Vector2.right, Vector2.zero, true);
                 break;
 
             case Direction.B:
-                SetPosOriginRelative(newUI, posOld.x, posOld.y + sizeOld.y);                
+                AlignByOrigins(oldUI, newUI, Vector2.up, Vector2.zero, true);
                 break;
 
             case Direction.T:
-                SetPosOriginRelative(newUI, posOld.x, posOld.y - sizeNew.y);
+                AlignByOrigins(oldUI, newUI, Vector2.zero, Vector2.up,  true);
                 break;
         }
     }
@@ -106,45 +106,48 @@ public class TransitionManager : MonoBehaviour {
         }
     }
 
-    public void AlignByOrigins(GameObject obj1 , GameObject obg2, Vector2 origin1, Vector2 origin2)
+    public void AlignByOrigins(GameObject targetObj, GameObject annexObj, Vector2 targetOrigin, Vector2 annexOrigin, bool sharesRotation = false)
     {
-
+        if (sharesRotation)
+            annexObj.transform.eulerAngles = new Vector3(0, 0, targetObj.transform.eulerAngles.z);
+        Debug.Log(targetObj.transform.eulerAngles.ToString());
+        Vector2 targetPos = GetPosOriginRelative(targetObj,targetOrigin);
+        SetPosOriginRelative(annexObj, targetPos, annexOrigin);
     }
 
     //Allows UIElements to have different pivots and scales
     //Origin Position - The Left-Bottom corner, As if with (0,0) pivot 
-    void SetPosOriginRelative(GameObject obj,float x, float y) 
+
+    void SetPosOriginRelative(GameObject obj, Vector2 pos, Vector2 origin)
     {
         
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
 
         float angle = rectXfrom.eulerAngles.z;
 
-        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * rectXfrom.pivot);
+        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * (rectXfrom.pivot - origin));
 
         //float dx = rectXfrom.pivot.x * width* Mathf.Cos(angle) - rectXfrom.pivot.y * height * Mathf.Sin(angle);
         //float dy = rectXfrom.pivot.x * width * Mathf.Sin(angle) + rectXfrom.pivot.y * height * Mathf.Cos(angle);
 
-        obj.transform.position = new Vector2(x,y) + delta; //maybe allow to pass new z coord?
-
+        obj.transform.position = pos + delta; //maybe allow to pass new z coord?
     }
 
-    void SetPosOriginRelative(GameObject obj, Vector2 pos, Vector2 origin)
-    {
-        SetPosOriginRelative(obj, pos.x, pos.y);
-    }
-
-    public Vector2 GetPosOriginRelative(GameObject obj)
+    public Vector2 GetPosOriginRelative(GameObject obj, Vector2 origin)
     {
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
         float angle = rectXfrom.eulerAngles.z;
 
-        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * rectXfrom.pivot);
+        Vector2 delta = Quaternion.AngleAxis(angle, Vector3.forward) * (GetAbsoluteSize(obj) * (rectXfrom.pivot - origin));
 
         Vector2 pos = obj.transform.position;
         pos -= delta;
-        Debug.Log(pos.ToString());
         return pos;
+    }
+
+    public Vector2 GetPosOriginRelative(GameObject obj)
+    {
+        return GetPosOriginRelative(obj, Vector2.zero);
     }
 
     public Vector2 GetAbsoluteSize(GameObject obj)

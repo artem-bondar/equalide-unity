@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4432363278063518}
   - component: {fileID: 212304251801558256}
   m_Layer: 0
-  m_Name: SquarePfb
+  m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
