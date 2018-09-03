@@ -130,7 +130,7 @@ public class Puzzle
         for (int i = 0; i < partition.Length; i++)
             if ((this.partition[i] == 'b' && partition[i] != 'b') ||
                 (this.partition[i] != 'b' && partition[i] == 'b') ||
-                !System.Char.IsDigit(partition[i]) ||
+                (!System.Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
                 partition[i] - '0' >= this.parts)
                 return false;
 
