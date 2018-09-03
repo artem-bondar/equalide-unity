@@ -85,7 +85,7 @@ public class Puzzle
 
         // Checks if elements are equal
         for (int i = 1; i < elements.Count; i++)
-            if (!elements[0].Compare(elements[i]))
+            if (elements[0] != elements[i])
                 return false;
 
         return solved = true;
