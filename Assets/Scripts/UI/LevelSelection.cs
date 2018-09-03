@@ -37,7 +37,6 @@ public class LevelSelection : MonoBehaviour
 
     public void Fill()
     {
-
         toolbar.GetComponentInChildren<Text>().text = "Pack " + packNumber;
 
         for (int index = 0; index < levelAmount; index++)

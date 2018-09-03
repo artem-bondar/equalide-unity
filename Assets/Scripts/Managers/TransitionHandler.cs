@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TransitionManager : MonoBehaviour {
+public class TransitionHandler : MonoBehaviour {
 
     public enum Transition
     {
