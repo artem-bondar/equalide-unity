@@ -204,11 +204,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!1 &61038528 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 438670963}
 --- !u!224 &61038529 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -244,7 +239,7 @@ RectTransform:
   m_Father: {fileID: 1868229366}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.000000029802322}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.99999994}
   m_AnchoredPosition: {x: 0.0000009536743, y: 0}
   m_SizeDelta: {x: 19.999998, y: 20}
@@ -358,7 +353,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 180689106}
   m_HandleRect: {fileID: 180689105}
   m_Direction: 2
-  m_Value: 0.5
+  m_Value: 0
   m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -501,6 +496,16 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
@@ -604,6 +609,16 @@ Prefab:
     - target: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
       propertyPath: m_Name
       value: Pack Button (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
@@ -798,6 +813,16 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
@@ -964,14 +989,19 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
---- !u!1 &782360006 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 1280693555}
 --- !u!224 &782360007 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -1078,6 +1108,16 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
@@ -1156,21 +1196,11 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 805726341}
   m_CullTransparentMesh: 0
---- !u!1 &896215774 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 278956912}
 --- !u!224 &896215775 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
     type: 2}
   m_PrefabInternal: {fileID: 278956912}
---- !u!1 &922384393 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 239756620}
 --- !u!224 &922384399 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -1454,17 +1484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 072cb1708db88f34cb6ce56a1182fb06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packButtons:
-  - {fileID: 782360006}
-  - {fileID: 61038528}
-  - {fileID: 1369555212}
-  - {fileID: 1797011045}
-  - {fileID: 896215774}
-  - {fileID: 1534141500}
-  - {fileID: 2091439591}
-  - {fileID: 2054462373}
-  - {fileID: 922384393}
+  packButton: {fileID: 0}
+  body: {fileID: 0}
   packStates: socsoc
+  amount: 0
   locked: {fileID: 21300000, guid: a1e06d9f6e6c43a499c3d7497788e71e, type: 3}
   star: {fileID: 21300000, guid: 6595884a0d012ca4ea4f15128b27aaf4, type: 3}
 --- !u!1001 &1280693555
@@ -1563,6 +1586,16 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
@@ -1783,14 +1816,19 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
---- !u!1 &1369555212 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 536956024}
 --- !u!224 &1369555213 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -1834,7 +1872,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.8}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000061035156}
+  m_AnchoredPosition: {x: 0, y: -0.000088472465}
   m_SizeDelta: {x: 0, y: 1536}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1419975316
@@ -1995,21 +2033,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1534141500 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 2128124107}
 --- !u!224 &1534141501 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
     type: 2}
   m_PrefabInternal: {fileID: 2128124107}
---- !u!1 &1797011045 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 2124989448}
 --- !u!224 &1797011046 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -2049,21 +2077,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &2054462373 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 788005847}
 --- !u!224 &2054462374 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
     type: 2}
   m_PrefabInternal: {fileID: 788005847}
---- !u!1 &2091439591 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32,
-    type: 2}
-  m_PrefabInternal: {fileID: 1345444053}
 --- !u!224 &2091439592 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224174258936330806, guid: 02d70738f96dc7142b579857dc36fa32,
@@ -2170,6 +2188,16 @@ Prefab:
       propertyPath: m_Name
       value: Pack Button (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   m_IsPrefabAsset: 0
@@ -2273,6 +2301,16 @@ Prefab:
     - target: {fileID: 1851797042892088, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
       propertyPath: m_Name
       value: Pack Button (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 224344785092020782, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 224715723291353908, guid: 02d70738f96dc7142b579857dc36fa32,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
