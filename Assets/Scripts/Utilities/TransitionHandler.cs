@@ -8,7 +8,8 @@ public class TransitionHandler : MonoBehaviour
 
     public enum Transition
     {
-        fade,
+        fadeIn,
+        fadeOut,
         slide,
         slideOver,
         slideAway
@@ -34,26 +35,27 @@ public class TransitionHandler : MonoBehaviour
 
         switch (type)
         {
-            case Transition.fade:
+            case Transition.fadeIn:
                 nextUI.GetComponent<CanvasGroup>().alpha = 0;
-                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
-                SetAsPrevSibling(currentUI, nextUI); 
+                SetAsNextSibling(currentUI, nextUI); 
+                break;
+
+            case Transition.fadeOut:
+                nextUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetAsPrevSibling(currentUI, nextUI);
                 break;
 
             case Transition.slide:
-                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 nextUI.GetComponent<CanvasGroup>().alpha = 1;
                 SetAsPrevSibling(currentUI, nextUI);
                 break;
 
             case Transition.slideOver:
-                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 nextUI.GetComponent<CanvasGroup>().alpha = 1;
                 SetAsNextSibling(currentUI, nextUI);
                 break;
 
             case Transition.slideAway:
-                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 nextUI.GetComponent<CanvasGroup>().alpha = 1;
                 SetAsPrevSibling(currentUI, nextUI);
                 return; //slideAway does not require any annex positioning
@@ -195,37 +197,36 @@ public class TransitionHandler : MonoBehaviour
         return new Vector2(width, height);
     }
 
-    IEnumerator Fade(int from, int to, float duration)
+    IEnumerator Fade(int target, int direction, float duration)
     {
-        float delta = Time.deltaTime / duration;
+        float delta = Time.deltaTime / duration * direction;
         float shift = 0;
-        while (shift < 1)
+        float oldAlpha = UIElements[target].GetComponent<CanvasGroup>().alpha;
+
+        while (Mathf.Abs(shift) < 1)
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            UIElements[from].GetComponent<CanvasGroup>().alpha = 1 - shift;
-            UIElements[to].GetComponent<CanvasGroup>().alpha = shift;
+            UIElements[target].GetComponent<CanvasGroup>().alpha += delta;
         }
-        UIElements[from].GetComponent<CanvasGroup>().alpha = 0;
-        UIElements[to].GetComponent<CanvasGroup>().alpha = 1;
+        UIElements[target].GetComponent<CanvasGroup>().alpha = oldAlpha + direction;
 
-        UIElements[to].GetComponent<CanvasGroup>().blocksRaycasts = true;
-        UIElements[from].GetComponent<CanvasGroup>().blocksRaycasts = false;
+        lockedUI[target] = false;
 
-        lockedUI[from] = false;
-        lockedUI[to] = false;
+        if (direction == -1)
+            UIElements[target].transform.SetAsFirstSibling(); // otherwise it will block raycasting for newUI
     }
 
 
-    IEnumerator Shift(int[] indexes, Vector3[] shifts, float duration)
+    IEnumerator Shift(int[] targets, Vector3[] shifts, float duration)
     {
         Vector3[] deltas = shifts.Select(elem => elem * Time.deltaTime / duration).ToArray(); //select() is map() in c#
         Vector3 currentShift = Vector3.zero;
-        Vector3[] oldPos = new Vector3[indexes.Length];
+        Vector3[] oldPos = new Vector3[targets.Length];
 
-        for (int i = 0; i < indexes.Length; i++)
+        for (int i = 0; i < targets.Length; i++)
         {
-            oldPos[i] = UIElements[indexes[i]].transform.position;
+            oldPos[i] = UIElements[targets[i]].transform.position;
         }
 
 
@@ -234,20 +235,20 @@ public class TransitionHandler : MonoBehaviour
             yield return new WaitForEndOfFrame();
 
             currentShift += deltas[0];
-            for (int i = 0; i < indexes.Length; i++)
+            for (int i = 0; i < targets.Length; i++)
             {
-                UIElements[indexes[i]].transform.Translate(deltas[i]);
+                UIElements[targets[i]].transform.Translate(deltas[i]);
             }
 
         }
 
-        for (int i = 0; i < indexes.Length; i++)
+        for (int i = 0; i < targets.Length; i++)
         {
-            float angle = UIElements[indexes[i]].transform.eulerAngles.z;
+            float angle = UIElements[targets[i]].transform.eulerAngles.z;
             Vector3 rot = Quaternion.AngleAxis(angle, Vector3.forward) * shifts[i];
-            UIElements[indexes[i]].transform.position = oldPos[i] + rot;
+            UIElements[targets[i]].transform.position = oldPos[i] + rot;
 
-            lockedUI[indexes[i]] = false;
+            lockedUI[targets[i]] = false;
         }
     }
 
@@ -267,16 +268,21 @@ public class TransitionHandler : MonoBehaviour
 
     public void DoTransition(int from, int to, Transition type, Direction dir, float duration, float targetAlign = 1, float annexAlign = 1)
     {
-        if ((lockedUI[to] && type != Transition.slideAway) || (lockedUI[from] && type != Transition.slideOver)) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
-            return;
         GameObject currentUI = UIElements[from];
         GameObject nextUI = UIElements[to];
 
-        if (type != Transition.slideAway)
-            lockedUI[to] = true;
+        if (type == Transition.slideOver || type == Transition.fadeIn || type == Transition.slide)
+            if (lockedUI[to])
+                return;
+            else
+                lockedUI[to] = true;
 
-        if (type != Transition.slideOver)
-            lockedUI[from] = true;
+        if (type == Transition.slideAway || type == Transition.fadeOut || type == Transition.slide)
+            if (lockedUI[from])
+                return;
+            else
+                lockedUI[from] = true;
+
 
         AddComponents(type, currentUI, nextUI);
         Init(type, dir, currentUI, nextUI, targetAlign, annexAlign);
@@ -312,8 +318,12 @@ public class TransitionHandler : MonoBehaviour
 
         switch (type)
         {
-            case Transition.fade:
-                StartCoroutine(Fade(from, to, duration));
+            case Transition.fadeIn:
+                StartCoroutine(Fade(to, 1, duration));
+                break;
+
+            case Transition.fadeOut:
+                StartCoroutine(Fade(from, -1, duration));
                 break;
 
             case Transition.slideOver:
@@ -353,8 +363,12 @@ public class TransitionHandler : MonoBehaviour
                 type = Transition.slideAway;
                 break;
 
+            case "fadeout":
+                type = Transition.fadeOut;
+                break;
+
             default:
-                type = Transition.fade;
+                type = Transition.fadeIn;
                 break;
         }
 

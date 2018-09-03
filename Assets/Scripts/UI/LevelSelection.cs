@@ -74,6 +74,6 @@ public class LevelSelection : MonoBehaviour
     void ButtonEvent(int level, int pack)
     {       
         Debug.Log("Pack №: " + pack.ToString() + " Level №: " + level.ToString());
-        transitionHandler.DoTransition(2, 0, TransitionHandler.Transition.fade, TransitionHandler.Direction.None, 0.3f);
+        transitionHandler.DoTransition(2, 0, TransitionHandler.Transition.fadeIn, TransitionHandler.Direction.None, 0.3f);
     }
 }
