@@ -3,7 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TransitionHandler : MonoBehaviour {
+public class TransitionHandler : MonoBehaviour
+{
 
     public enum Transition
     {
@@ -26,7 +27,7 @@ public class TransitionHandler : MonoBehaviour {
 
     bool[] lockedUI;
 
-    void Init(Transition type, Direction dir, GameObject targetUI, GameObject annexUI, float targetAlign = 1, float annexAlign = 1)
+    void Init(Transition type, Direction dir, GameObject currentUI, GameObject nextUI, float targetAlign = 1, float annexAlign = 1)
     {
         Vector2 targetOrigin = Vector2.zero;
         Vector2 annexOrigin = Vector2.zero;
@@ -34,25 +35,27 @@ public class TransitionHandler : MonoBehaviour {
         switch (type)
         {
             case Transition.fade:
-                annexUI.GetComponent<CanvasGroup>().alpha = 0;
-                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                nextUI.GetComponent<CanvasGroup>().alpha = 0;
+                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                SetAsPrevSibling(currentUI, nextUI); 
                 break;
 
             case Transition.slide:
-                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                annexUI.GetComponent<CanvasGroup>().alpha = 1;
+                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                nextUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetAsPrevSibling(currentUI, nextUI);
                 break;
 
             case Transition.slideOver:
-                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                annexUI.GetComponent<CanvasGroup>().alpha = 1;
-                annexUI.GetComponent<Canvas>().overrideSorting = true;
-                annexUI.GetComponent<Canvas>().sortingOrder = targetUI.GetComponent<Canvas>().sortingOrder + 1;
+                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                nextUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetAsNextSibling(currentUI, nextUI);
                 break;
 
             case Transition.slideAway:
-                annexUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                annexUI.GetComponent<CanvasGroup>().alpha = 1;
+                nextUI.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                nextUI.GetComponent<CanvasGroup>().alpha = 1;
+                SetAsPrevSibling(currentUI, nextUI);
                 return; //slideAway does not require any annex positioning
         }
 
@@ -84,7 +87,45 @@ public class TransitionHandler : MonoBehaviour {
                 break;
         }
 
-        AlignByOrigins(targetUI, annexUI, targetOrigin, annexOrigin, true);
+        AlignByOrigins(currentUI, nextUI, targetOrigin, annexOrigin, true);
+    }
+
+    public void SetAsNextSibling(GameObject target, GameObject next)
+    {
+        Transform parent = target.transform.parent;
+        if (!next.transform.IsChildOf(parent))
+        {
+            next.transform.SetParent(parent);
+        }
+
+        next.transform.SetAsLastSibling();
+        
+        int sibIndex = target.transform.GetSiblingIndex();
+
+        for (int i = parent.childCount - 2; i >= sibIndex+1; i--)
+        {
+            parent.GetChild(i).SetSiblingIndex(i + 1);
+        }
+        next.transform.SetSiblingIndex(sibIndex + 1);
+    }
+
+    public void SetAsPrevSibling(GameObject target, GameObject previous)
+    {
+        Transform parent = target.transform.parent;
+        if (!previous.transform.IsChildOf(parent))
+        {
+            previous.transform.SetParent(parent);
+        }
+
+        previous.transform.SetAsLastSibling();
+
+        int sibIndex = target.transform.GetSiblingIndex();
+
+        for (int i = parent.childCount - 2; i >= sibIndex; i--)
+        {
+            parent.GetChild(i).SetSiblingIndex(i + 1);
+        }
+        previous.transform.SetSiblingIndex(sibIndex);
     }
 
     void Start()
@@ -96,26 +137,15 @@ public class TransitionHandler : MonoBehaviour {
         }
 
     }
-    void AddComponents(Transition type, GameObject targetUI, GameObject annexUI)
+    void AddComponents(Transition type, GameObject currentUI, GameObject nextUI)
     {
-        if(!targetUI.GetComponent<CanvasGroup>())
+        if (!currentUI.GetComponent<CanvasGroup>())
         {
-            targetUI.AddComponent<CanvasGroup>();
+            currentUI.AddComponent<CanvasGroup>();
         }
-        if (!annexUI.GetComponent<CanvasGroup>() )
+        if (!nextUI.GetComponent<CanvasGroup>())
         {
-            annexUI.AddComponent<CanvasGroup>();
-        }
-
-        if (!targetUI.GetComponent<Canvas>() && type == Transition.slideOver)
-        {
-            targetUI.AddComponent<Canvas>();
-            targetUI.AddComponent<GraphicRaycaster>();
-        }
-        if (!annexUI.GetComponent<Canvas>() && type == Transition.slideOver)
-        {
-            annexUI.AddComponent<Canvas>();
-            annexUI.AddComponent<GraphicRaycaster>();
+            nextUI.AddComponent<CanvasGroup>();
         }
     }
 
@@ -123,12 +153,12 @@ public class TransitionHandler : MonoBehaviour {
     {
         if (sharesRotation)
             annexObj.transform.eulerAngles = new Vector3(0, 0, targetObj.transform.eulerAngles.z);
-        Vector2 targetPos = GetPosOriginRelative(targetObj,targetOrigin);
+        Vector2 targetPos = GetPosOriginRelative(targetObj, targetOrigin);
         SetPosOriginRelative(annexObj, targetPos, annexOrigin);
     }
 
     void SetPosOriginRelative(GameObject obj, Vector2 pos, Vector2 origin)
-    {        
+    {
         RectTransform rectXfrom = obj.GetComponent<RectTransform>();
 
         float angle = rectXfrom.eulerAngles.z;
@@ -187,11 +217,11 @@ public class TransitionHandler : MonoBehaviour {
     }
 
 
-    IEnumerator Shift(int[] indexes, Vector3[] shifts, float duration) 
+    IEnumerator Shift(int[] indexes, Vector3[] shifts, float duration)
     {
         Vector3[] deltas = shifts.Select(elem => elem * Time.deltaTime / duration).ToArray(); //select() is map() in c#
         Vector3 currentShift = Vector3.zero;
-        Vector3[] oldPos = new Vector3[indexes.Length]; 
+        Vector3[] oldPos = new Vector3[indexes.Length];
 
         for (int i = 0; i < indexes.Length; i++)
         {
@@ -202,19 +232,19 @@ public class TransitionHandler : MonoBehaviour {
         while (currentShift.magnitude < shifts[0].magnitude)
         {
             yield return new WaitForEndOfFrame();
-            
+
             currentShift += deltas[0];
             for (int i = 0; i < indexes.Length; i++)
             {
                 UIElements[indexes[i]].transform.Translate(deltas[i]);
             }
-            
+
         }
 
         for (int i = 0; i < indexes.Length; i++)
         {
             float angle = UIElements[indexes[i]].transform.eulerAngles.z;
-            Vector3 rot =  Quaternion.AngleAxis(angle, Vector3.forward) * shifts[i];
+            Vector3 rot = Quaternion.AngleAxis(angle, Vector3.forward) * shifts[i];
             UIElements[indexes[i]].transform.position = oldPos[i] + rot;
 
             lockedUI[indexes[i]] = false;
@@ -237,23 +267,23 @@ public class TransitionHandler : MonoBehaviour {
 
     public void DoTransition(int from, int to, Transition type, Direction dir, float duration, float targetAlign = 1, float annexAlign = 1)
     {
-        if ((lockedUI[to] && type != Transition.slideAway) || ( lockedUI[from] && type != Transition.slideOver )) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
+        if ((lockedUI[to] && type != Transition.slideAway) || (lockedUI[from] && type != Transition.slideOver)) // does not allow transitions to overlap. slideOver's only change 'to' Gameobj
             return;
-        GameObject targetUI = UIElements[from];
-        GameObject annexUI = UIElements[to];
+        GameObject currentUI = UIElements[from];
+        GameObject nextUI = UIElements[to];
 
         if (type != Transition.slideAway)
             lockedUI[to] = true;
 
-        if(type != Transition.slideOver)
+        if (type != Transition.slideOver)
             lockedUI[from] = true;
 
-        AddComponents(type, targetUI, annexUI);
-        Init(type, dir, targetUI, annexUI, targetAlign, annexAlign);
+        AddComponents(type, currentUI, nextUI);
+        Init(type, dir, currentUI, nextUI, targetAlign, annexAlign);
 
         Vector3 shift;
-        Vector3 sizeNew = GetAbsoluteSize(annexUI);
-        Vector3 sizeOld = GetAbsoluteSize(targetUI);
+        Vector3 sizeNew = GetAbsoluteSize(nextUI);
+        Vector3 sizeOld = GetAbsoluteSize(currentUI);
 
         // Mathf.Min(sizeNew., sizeOld.) isn't the most elegant solution, but it works in most of reasonable scenarios.
         // Otherwise we can pass bool to choose which size to use, or the shift itself
@@ -276,14 +306,14 @@ public class TransitionHandler : MonoBehaviour {
                 break;
 
             default:
-                shift =  Vector3.one;
+                shift = Vector3.one;
                 break;
         }
 
         switch (type)
         {
             case Transition.fade:
-                StartCoroutine(Fade(from,to, duration));
+                StartCoroutine(Fade(from, to, duration));
                 break;
 
             case Transition.slideOver:
@@ -350,10 +380,10 @@ public class TransitionHandler : MonoBehaviour {
                 dir = Direction.None;
                 break;
         }
-        if(argv.Length > 5)
+        if (argv.Length > 5)
         {
-             targetAlign = (float)System.Convert.ToDouble(argv[5]);
-             annexAlign = (float)System.Convert.ToDouble(argv[6]);
+            targetAlign = (float)System.Convert.ToDouble(argv[5]);
+            annexAlign = (float)System.Convert.ToDouble(argv[6]);
         }
 
         DoTransition(fst, snd, type, dir, dur, targetAlign, annexAlign);

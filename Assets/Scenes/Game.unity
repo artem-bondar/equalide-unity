@@ -653,7 +653,7 @@ GameObject:
   - component: {fileID: 265641958}
   - component: {fileID: 265641957}
   m_Layer: 5
-  m_Name: Transition Manager
+  m_Name: Transition Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -673,6 +673,7 @@ MonoBehaviour:
   UIElements:
   - {fileID: 1505377500}
   - {fileID: 1419975314}
+  - {fileID: 171221181}
 --- !u!224 &265641958
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1356,15 +1357,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 446270138}
-        m_MethodName: Clear
-        m_Mode: 1
+      - m_Target: {fileID: 265641957}
+        m_MethodName: DoTransitionString
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: 2 0 fade None 0.2
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
@@ -1808,15 +1809,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 446270138}
-        m_MethodName: Fill
-        m_Mode: 1
+      - m_Target: {fileID: 265641957}
+        m_MethodName: DoTransitionString
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: 2 1 slideaway R 0.2
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,

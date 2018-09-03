@@ -18,12 +18,16 @@ public class LevelSelection : MonoBehaviour
     public GameObject toolbar;
     public GameObject body;
 
-    private List<GameObject> buttons;
-    private int width;
-    private int height;
+    List<GameObject> buttons;
+    int width;
+    int height;
 
-    void Awake()
-    {        
+    TransitionHandler transitionHandler;
+
+
+    void Start()
+    {
+        transitionHandler = GameObject.FindObjectOfType<TransitionHandler>();
         buttons = new List<GameObject>();
         Fill();
     }
@@ -70,5 +74,6 @@ public class LevelSelection : MonoBehaviour
     void ButtonEvent(int level, int pack)
     {       
         Debug.Log("Pack №: " + pack.ToString() + " Level №: " + level.ToString());
+        transitionHandler.DoTransition(2, 0, TransitionHandler.Transition.fade, TransitionHandler.Direction.None, 0.3f);
     }
 }
