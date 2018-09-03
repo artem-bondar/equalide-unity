@@ -55,7 +55,7 @@ public class Game : MonoBehaviour
             toolbarScenario = Screen.height / 10;
 
         puzzleString = puzzleString.Replace(' ', '\n');
-        currentPuzzle = new Puzzle(puzzleString);
+        currentPuzzle = new Puzzle("b0011b", 2, 3, 2, false, false);
 
         cols = currentPuzzle.width;
         rows = currentPuzzle.height;
@@ -84,7 +84,7 @@ public class Game : MonoBehaviour
 
                 tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
                 tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
-                switch(currentPuzzle.get(i,j))
+                switch(currentPuzzle[i, j])
                 {
                     case 'b': tiles[index].GetComponent<Image>().color = Color.clear; break;
                     case 'e': tiles[index].GetComponent<Image>().color = Color.white; break;
@@ -112,7 +112,7 @@ public class Game : MonoBehaviour
         if (!down)
             return;
 
-        if (currentPuzzle.get(index) == 'b')
+        if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
         if (palette.GetComponent<Palette>().selectedIndex == -1)
@@ -121,23 +121,22 @@ public class Game : MonoBehaviour
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
 
 
-        if (currentColor == (currentPuzzle.get(index) - '0') && eraseMode)
+        if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
         {
-            currentPuzzle.set(index, 'e');
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
             gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
             return;
         }
 
-        if (currentColor != (currentPuzzle.get(index) - '0') && !eraseMode)
+        if (currentColor != (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && !eraseMode)
         {
-            currentPuzzle.set(index, (char)('0' + currentColor));
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
-        if (currentPuzzle.checkIfSolved()) {
-            currentPuzzle.solved = true;
+        if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
 
@@ -147,7 +146,7 @@ public class Game : MonoBehaviour
 
     void TileDown(int index)
     {
-        if (currentPuzzle.get(index) == 'b')
+        if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
         if (palette.GetComponent<Palette>().selectedIndex == -1)
@@ -156,23 +155,22 @@ public class Game : MonoBehaviour
         down = true;
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
     
-        if (currentColor == (currentPuzzle.get(index) - '0'))
+        if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
         {
-            currentPuzzle.set(index, 'e');
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
             gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
         {
-            currentPuzzle.set(index, (char)('0' + currentColor));
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
             gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
-        if (currentPuzzle.checkIfSolved()) {
-            currentPuzzle.solved = true;
+        if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
 
