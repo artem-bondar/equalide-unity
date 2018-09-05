@@ -11,7 +11,8 @@ public class Puzzle
 {
 
     // Holds string representation of 2D-array
-    public string partition
+    public string partition;
+    public string Partition
     {
         get { return partition; }
         set
@@ -49,7 +50,7 @@ public class Puzzle
 
     public bool opened { get; private set; }
     public bool solved { get; private set; }
-
+     
     public Puzzle(string partition, int parts,
                   int width, int height,
                   bool opened, bool solved)
@@ -96,7 +97,7 @@ public class Puzzle
         var result = new List<Element>();
         
         var unicalCells = new HashSet<char>(partition.ToCharArray());
-        unicalCells.RemoveWhere(IsPainted);
+        unicalCells.RemoveWhere( elem => !IsPainted(elem));
 
         foreach(char cell in unicalCells) {
             int firstOccurance = partition.IndexOf(cell);

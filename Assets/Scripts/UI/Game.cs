@@ -55,7 +55,9 @@ public class Game : MonoBehaviour
             toolbarScenario = Screen.height / 10;
 
         puzzleString = puzzleString.Replace(' ', '\n');
+
         currentPuzzle = new Puzzle("b0011b", 2, 3, 2, false, false);
+        currentPuzzle.Clear();
 
         cols = currentPuzzle.width;
         rows = currentPuzzle.height;
@@ -119,7 +121,7 @@ public class Game : MonoBehaviour
             return;
        
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
-
+        //Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
 
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
         {
@@ -152,6 +154,7 @@ public class Game : MonoBehaviour
         if (palette.GetComponent<Palette>().selectedIndex == -1)
             return;
 
+        Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
         down = true;
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
     
