@@ -11,7 +11,7 @@ public class Puzzle
 {
 
     // Holds string representation of 2D-array
-    public string partition;
+    private string partition;
     public string Partition
     {
         get { return partition; }

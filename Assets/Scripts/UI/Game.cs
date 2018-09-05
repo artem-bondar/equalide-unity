@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
-
+    public GameObject gameField;
     public string puzzleString;
     public bool toolbarMode;
 
@@ -82,7 +82,7 @@ public class Game : MonoBehaviour
                 int Y = Screen.height - toolbarScenario - centringTop - verticalFieldMargin - tileMargin - i * (tileSize + 2 * tileMargin);
 
                 tiles.Add(Instantiate(tile, new Vector3(X, Y, 0), Quaternion.identity) as GameObject);
-                tiles[index].transform.SetParent(gameObject.transform, true);
+                tiles[index].transform.SetParent(gameField.transform, true);
 
                 tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
                 tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
@@ -154,7 +154,6 @@ public class Game : MonoBehaviour
         if (palette.GetComponent<Palette>().selectedIndex == -1)
             return;
 
-        Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
         down = true;
         int currentColor = palette.GetComponent<Palette>().selectedIndex;
     
