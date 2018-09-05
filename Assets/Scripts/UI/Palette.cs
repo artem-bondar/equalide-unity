@@ -5,7 +5,17 @@ using UnityEngine.UI;
 
 public class Palette : MonoBehaviour {
 
-    public int colorCount;
+    private int colorCount;
+    public int ColorCount
+    {
+        get { return colorCount; }
+        set
+        {
+            colorCount = value;
+            Clear();
+            Fill();
+        }
+    }
 
     public GameObject paletteButton;
     public int selectedIndex;
@@ -23,38 +33,41 @@ public class Palette : MonoBehaviour {
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
 
         buttons = new List<GameObject>();
-        int tileSize = (int)(0.2 * Screen.width);
-        int margin = (int)(Screen.width / 360.0); // brute replacement for dpi margins
-        gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
-        gameObject.transform.position = new Vector3(0, 0, 0);
+    }
 
+    public void Clear()
+    {
+        if (buttons.Count == 0)
+            return;
+        foreach (var obj in buttons)
+            Destroy(obj);
+        buttons.Clear();
+    }
+
+    public void Fill()
+    {
         for (int i = 0; i < colorCount; i++)
         {
-            int X = Screen.width/2 -colorCount*tileSize/2 - (colorCount-1)*margin + i*(tileSize+2*margin);
-            int Y = tileSize;
-
-            buttons.Add(Instantiate(paletteButton, new Vector3(X, Y, 0), Quaternion.identity) as GameObject);
+            buttons.Add(Instantiate(paletteButton) as GameObject);
             buttons[i].transform.SetParent(gameObject.transform, true);
-            buttons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
-            buttons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
 
             buttons[i].GetComponent<Image>().color = colors[i];
             buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; //Pencil image
 
-            int copy = i; 
+            int copy = i;
             buttons[i].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
         }
 
-        buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
+        buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true;
     }
 	
-     void ButtonEvent(int index)
-     {
+    void ButtonEvent(int index)
+    {
         if (selectedIndex == index)
             return;
         if(selectedIndex!=-1)
             buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; 
         selectedIndex = index;
         buttons[index].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
-     }
+    }
 }

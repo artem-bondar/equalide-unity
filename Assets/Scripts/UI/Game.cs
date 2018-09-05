@@ -26,7 +26,7 @@ public class Game : MonoBehaviour
 
     private Color[] colors;
     public GameObject tile;
-    public GameObject palette;
+    public Palette palette;
 
     public AudioClip drawSoundDown;
     public AudioClip eraseSoundDown;
@@ -49,6 +49,9 @@ public class Game : MonoBehaviour
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
         ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
+        palette = GameObject.FindObjectOfType<Palette>();
+
+        palette.ColorCount = 2; // It must be taken from Puzzle
 
         int toolbarScenario = 0;
         if(toolbarMode)
@@ -117,10 +120,10 @@ public class Game : MonoBehaviour
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
-        if (palette.GetComponent<Palette>().selectedIndex == -1)
+        if (palette.selectedIndex == -1)
             return;
        
-        int currentColor = palette.GetComponent<Palette>().selectedIndex;
+        int currentColor = palette.selectedIndex;
         //Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
 
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
@@ -151,11 +154,11 @@ public class Game : MonoBehaviour
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
-        if (palette.GetComponent<Palette>().selectedIndex == -1)
+        if (palette.selectedIndex == -1)
             return;
 
         down = true;
-        int currentColor = palette.GetComponent<Palette>().selectedIndex;
+        int currentColor = palette.selectedIndex;
     
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
         {
