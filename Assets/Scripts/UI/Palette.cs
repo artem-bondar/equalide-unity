@@ -49,7 +49,7 @@ public class Palette : MonoBehaviour {
         for (int i = 0; i < colorCount; i++)
         {
             buttons.Add(Instantiate(paletteButton) as GameObject);
-            buttons[i].transform.SetParent(gameObject.transform, true);
+            buttons[i].transform.SetParent(gameObject.transform, false);
 
             buttons[i].GetComponent<Image>().color = colors[i];
             buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; //Pencil image

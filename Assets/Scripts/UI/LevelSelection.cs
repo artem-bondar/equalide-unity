@@ -62,7 +62,7 @@ public class LevelSelection : MonoBehaviour
                 buttons.Add(Instantiate(unSolved) as GameObject);
             }
 
-            buttons[index].transform.SetParent(body.transform);
+            buttons[index].transform.SetParent(body.transform, false);
 
             buttons[index].GetComponentInChildren<Text>().text = text;
 

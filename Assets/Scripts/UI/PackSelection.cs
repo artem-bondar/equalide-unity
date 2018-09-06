@@ -36,7 +36,7 @@ public class PackSelection : MonoBehaviour {
         for (int i = 0; i < amount; i++)
         {
             buttons.Add(Instantiate(packButton) as GameObject);
-            buttons[i].transform.SetParent(body.transform);
+            buttons[i].transform.SetParent(body.transform, false);
 
             if (i >= packStates.Length || packStates[i] == 'c')
                 buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = locked;
