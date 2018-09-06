@@ -35,15 +35,20 @@ public class Game : MonoBehaviour
     public AudioClip eraseSoundHover;
 
     private List<GameObject> tiles;
+    private List<GameObject> contour;
 
     private bool eraseMode;
     private bool down;
+
+    private bool solved = false; // used to clear everything after a click if solved
+
 
     public void Start()
     {
         eraseMode = false;
         down = false;
         tiles = new List<GameObject>();
+        contour = new List<GameObject>();
         colors = new Color[4];
         ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
@@ -66,9 +71,9 @@ public class Game : MonoBehaviour
         rows = currentPuzzle.height;
 
         
-        tileMargin = (int) Mathf.Ceil( Screen.width / 360.0f);
+        tileMargin = (int) Mathf.Ceil( Screen.width / 720.0f);
 
-        verticalFieldMargin = 0; //Screen.width * 5 / 180; 
+        verticalFieldMargin = tileMargin; //Screen.width * 5 / 180; 
 
         fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
 
@@ -132,7 +137,7 @@ public class Game : MonoBehaviour
         {
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
+           // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
             return;
         }
 
@@ -140,14 +145,13 @@ public class Game : MonoBehaviour
         {
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
+            //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
         if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
-
-            ClearColors();
+            RemovePartitions();
         }
     }
 
@@ -167,21 +171,20 @@ public class Game : MonoBehaviour
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
+            //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
         {
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
+            //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
         if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
-
-            ClearColors();
+            RemovePartitions();
         }
     }
 
@@ -199,10 +202,22 @@ public class Game : MonoBehaviour
                 currentPuzzle[i, j] = 'e';
             }
         }
+
+        foreach (var obj in contour)
+        {
+            Destroy(obj);
+        }
+        contour.Clear();
     }
 
     void Update()
     {
+        if(solved && Input.GetMouseButtonDown(0))
+        {
+            ClearColors();
+            solved = false;
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
             down = false;
@@ -218,53 +233,82 @@ public class Game : MonoBehaviour
     {
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
-                RemovePartitionsForSingleTile(i, j);
+                if(currentPuzzle[i,j] != 'b')
+                    RemovePartitionsForSingleTile(i, j);
             }
         }
+        StartCoroutine(SetSolved());
     }    
 
-    void RemovePartitionsForSingleTile(int tileRow, int tileColumn)
+    IEnumerator SetSolved()
     {
-	int longSide = tileSize;
-	int shortSide = 2 * tileMargin;
+        yield return new WaitForSeconds(0.1f); //may change later
+        solved = true;
+    }
 
-        int tileIndex = tileRow * cols + tileColumn;
-        var tileColor = tiles[tileIndex].GetComponent<Image>().color;
+    void RemovePartitionsForSingleTile(int i, int j)
+    {
+	    int longSide = tileSize;
+	    int shortSide = 2 * tileMargin;
 
-        int X = (int)tiles[tileIndex].transform.position.x;
-        int Y = (int)tiles[tileIndex].transform.position.y;
+        int tileIndex = i * cols + j;
+        var color = tiles[tileIndex].GetComponent<Image>().color;
+        char colorIndex = currentPuzzle[i, j];
+
+        float X = tiles[tileIndex].transform.position.x;
+        float Y = tiles[tileIndex].transform.position.y;
+
+        bool rightMatch = false;
+        bool downMatch = false;
         		
-        if (tileColumn != cols - 1) { // has right neighbor
-            int rightTileIndex = tileRow * cols + (tileColumn + 1);
-            var rightTileColor = tiles[rightTileIndex].GetComponent<Image>().color;
+        if (j != cols - 1) { // has right neighbor
+            var rightTileColor = currentPuzzle[i, j + 1];
 
-            if (tileColor == rightTileColor) {
+            if (colorIndex == rightTileColor) {
                 var verticalPartition = Instantiate(tile, new Vector3(X + tileSize, Y, 0), Quaternion.identity) as GameObject;
-                verticalPartition.transform.SetParent(gameObject.transform, true);
+                verticalPartition.transform.SetParent(gameField.transform, true);
 
                 verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, shortSide);
                 verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, longSide);
 
-                verticalPartition.GetComponent<Image>().color = tileColor;
+                verticalPartition.GetComponent<Image>().color = color;
 
-                tiles.Add(verticalPartition);
+                contour.Add(verticalPartition);
+                rightMatch = true;
             }
         }
 
-        if (tileRow != rows - 1) { // has down neighbor
-            int downTileIndex = (tileRow + 1) * cols + tileColumn;
-            var downTileColor = tiles[downTileIndex].GetComponent<Image>().color;
+        if (i != rows - 1) { // has down neighbor
+            var downTileColor = currentPuzzle[i + 1, j];
 
-            if (tileColor == downTileColor) {
+            if (colorIndex == downTileColor) {
                 var horizontalPartition = Instantiate(tile, new Vector3(X, Y - tileSize, 0), Quaternion.identity) as GameObject;
-                horizontalPartition.transform.SetParent(gameObject.transform, true);
+                horizontalPartition.transform.SetParent(gameField.transform, true);
 
                 horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, longSide);
                 horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, shortSide);
 
-                horizontalPartition.GetComponent<Image>().color = tileColor;
+                horizontalPartition.GetComponent<Image>().color = color;
 
-                tiles.Add(horizontalPartition);
+                contour.Add(horizontalPartition);
+                downMatch = true;
+            }
+        }
+
+        if(rightMatch && downMatch) //if there is a 2x2 square of same-colored tiles - we need to color the center of this square
+        {
+            var diagonalTileColor = currentPuzzle[i + 1, j + 1];
+            if(colorIndex == diagonalTileColor)
+            {
+                var centerPartition = Instantiate(tile, new Vector3(X + tileSize, Y - tileSize, 0), Quaternion.identity) as GameObject;
+                centerPartition.transform.SetParent(gameField.transform, true);
+
+                centerPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, shortSide);
+                centerPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, shortSide);
+
+                centerPartition.GetComponent<Image>().color = color;
+
+                contour.Add(centerPartition);
             }
         }
     }
