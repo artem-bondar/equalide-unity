@@ -59,14 +59,16 @@ public class Game : MonoBehaviour
 
         puzzleString = puzzleString.Replace(' ', '\n');
 
-        currentPuzzle = new Puzzle("b0011b", 2, 3, 2, false, false);
+        currentPuzzle = new Puzzle("bb0bb00b0001b011b111bb1b", 2, 4,6, false, false);
         currentPuzzle.Clear();
 
         cols = currentPuzzle.width;
         rows = currentPuzzle.height;
 
-        verticalFieldMargin = Screen.width * 5 / 180;
-        tileMargin = Screen.width / 360;
+        
+        tileMargin = (int) Mathf.Ceil( Screen.width / 360.0f);
+
+        verticalFieldMargin = 0; //Screen.width * 5 / 180; 
 
         fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
 
@@ -145,7 +147,7 @@ public class Game : MonoBehaviour
 
             Debug.Log("Solved!");
 
-            RemovePartitions();
+            ClearColors();
         }
     }
 
@@ -179,7 +181,23 @@ public class Game : MonoBehaviour
 
             Debug.Log("Solved!");
 
-            RemovePartitions();
+            ClearColors();
+        }
+    }
+
+    void ClearColors()
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                if (currentPuzzle[i, j] == 'b')
+                    continue;
+
+                int index = i * cols + j;
+                tiles[index].GetComponent<Image>().color = Color.white;
+                currentPuzzle[i, j] = 'e';
+            }
         }
     }
 
