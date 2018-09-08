@@ -9,16 +9,15 @@ using System.Text.RegularExpressions;
 
 public class Puzzle
 {
-
     // Holds string representation of 2D-array
-    private string partition;
-    public string Partition
+    private string Partition;
+    public string partition
     {
-        get { return partition; }
+        get { return Partition; }
         set
         { 
             if (CheckIfValidPartition(value))
-                partition = value;
+                Partition = value;
         } 
     }
 
@@ -27,17 +26,21 @@ public class Puzzle
         get
         {
             if (CheckIfValidIndexes(i, j))
-                return partition[i * width + j];
+            {
+                return Partition[i * width + j];
+            }
             else
+            {
                 return 'b';
+            }
         }
         set
         {   
             if (CheckIfValidIndexes(i, j))
             {
-                var copy = partition.ToCharArray();
+                var copy = Partition.ToCharArray();
                 copy[i * width + j] = value;
-                partition = new string(copy);
+                Partition = new string(copy);
             }
         }
     }
@@ -45,17 +48,19 @@ public class Puzzle
     // Amount of elements in puzzle
     public int parts { get; private set; }
 
+    // Dimensions in cells
     public int width { get; private set; }
     public int height { get; private set; }
 
+    // Status for game progress
     public bool opened { get; private set; }
     public bool solved { get; private set; }
-     
+    
     public Puzzle(string partition, int parts,
                   int width, int height,
                   bool opened, bool solved)
     {
-        this.partition = partition;
+        this.Partition = partition;
         this.parts = parts;
         this.width = width;
         this.height = height;
@@ -66,46 +71,58 @@ public class Puzzle
     // Clears puzzle partition to initial state
     public void Clear()
     {
-        partition = Regex.Replace(partition, "[^be]", "e");
+        Partition = Regex.Replace(Partition, "[^be]", "e");
     }
 
     // Checks if puzzle partition is a solution and mark puzzle as solved if true 
     public bool CheckForSolution()
     {
         // Checks if puzzle contains any unpainted primitive
-        if (partition.IndexOf('e') != -1)
+        if (Partition.IndexOf('e') != -1)
+        {
             return false;
+        }
 
         List<Element> elements = SeparateInElements();
 
         if (elements.Count != parts)
+        {
             return false;
+        }
 
         if (!elements[0].CheckConnectivity())
+        {
             return false;
+        }
 
         // Checks if elements are equal
-        for (int i = 1; i < elements.Count; i++)
+        for (var i = 1; i < elements.Count; i++)
+        {
             if (elements[0] != elements[i])
+            {
                 return false;
+            }
+        }
 
         return solved = true;
     }
 
+    // Separates current partition in elements of same color
     private List<Element> SeparateInElements() 
     {
         var result = new List<Element>();
         
-        var unicalCells = new HashSet<char>(partition.ToCharArray());
-        unicalCells.RemoveWhere( elem => !IsPainted(elem));
+        var unicalCells = new HashSet<char>(Partition.ToCharArray());
+        unicalCells.RemoveWhere(IsNotPainted);
 
-        foreach(char cell in unicalCells) {
-            int firstOccurance = partition.IndexOf(cell);
-            int lastOccurance = partition.LastIndexOf(cell);
+        foreach(var cell in unicalCells)
+        {
+            int firstOccurance = Partition.IndexOf(cell);
+            int lastOccurance = Partition.LastIndexOf(cell);
             int length = lastOccurance - firstOccurance + 1;
 
             // Get partition that represent element cut by height
-            string substr = partition.Substring(
+            string substr = Partition.Substring(
                     firstOccurance - firstOccurance % width,
                     length + width - length % width);
 
@@ -118,28 +135,35 @@ public class Puzzle
         return result;
     }
 
-    private bool IsPainted(char c)
+    private bool IsNotPainted(char c)
     {
-        return c != 'b' && c != 'e';
+        return c == 'b' || c == 'e';
     }
 
+    // Checks if partition for loading has the same shape and contains only valid cells
     private bool CheckIfValidPartition(string partition)
     {
-        if (this.partition.Length != partition.Length)
+        if (Partition.Length != partition.Length)
+        {
             return false;
-        
-        for (int i = 0; i < partition.Length; i++)
-            if ((this.partition[i] == 'b' && partition[i] != 'b') ||
-                (this.partition[i] != 'b' && partition[i] == 'b') ||
-                (!System.Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
+        }
+
+        for (var i = 0; i < partition.Length; i++)
+        {
+            if ((Partition[i] == 'b' && partition[i] != 'b') ||
+                (Partition[i] != 'b' && partition[i] == 'b') ||
+                (!System.Char.IsDigit(partition[i]) && !IsNotPainted(partition[i])) ||
                 partition[i] - '0' >= this.parts)
+            {
                 return false;
+            }
+        }
 
         return true;
     }
 
     private bool CheckIfValidIndexes(int i, int j)
     {
-        return i * width + j > 0 && i * width + j < partition.Length;
+        return i * width + j > 0 && i * width + j < Partition.Length;
     }
 }
