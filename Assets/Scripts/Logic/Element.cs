@@ -8,8 +8,10 @@ using System.Linq;
 
 public class Element
 {
+    // Holds string representation of 2D-array
     private string body;
 
+    // Dimensions in cells
     private int height;
     private int width;
 
@@ -36,9 +38,13 @@ public class Element
         var element = obj as Element;
 
         if (element == null)
+        {
             return false;
+        }
         else
+        {
             return this == element;
+        }
     }
 
     public override int GetHashCode()
@@ -51,7 +57,9 @@ public class Element
     {
         if ((first.width != second.width || first.height != second.height) &&
             (first.height != second.width || first.width != second.height))
+        {
             return false;
+        }
 
         bool equal = first.body == second.body || first.GetBodyMirroredByHeight() == second.body;
 
@@ -59,13 +67,15 @@ public class Element
         {
             Element elementForRotate = first;
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Element rotatedElement = elementForRotate.GetElementRotatedClockWise();
 
                 if (equal =
                     rotatedElement.body == second.body || rotatedElement.GetBodyMirroredByHeight() == second.body)
+                {
                     return true;
+                }
             }
         }
 
@@ -84,21 +94,25 @@ public class Element
         List<int> endIndexes = new List<int>();
 
         // Gets all starting and ending indexes of non-empty cells on every row
-        for (int i = 0; i < height; i++)
+        for (var i = 0; i < height; i++)
         {
-            for (int j = 0; j < width; j++)
+            for (var j = 0; j < width; j++)
+            {
                 if (body[i * width + j] != 'e')
                 {
                     startIndexes.Add(j);
                     break;
                 }
+            }
 
-            for (int j = width - 1; j >= 0; j--)
+            for (var j = width - 1; j >= 0; j--)
+            {
                 if (body[i * width + j] != 'e')
                 {
                     endIndexes.Add(j);
                     break;
                 }
+            }
         }
 
         // Calculate bounds by width
@@ -110,9 +124,13 @@ public class Element
         {
             string cutBody = "";
 
-            for (int i = 0; i < height; i++)
-                for (int j = start; j <= end; j++)
+            for (var i = 0; i < height; i++)
+            {
+                for (var j = start; j <= end; j++)
+                {
                     cutBody += body[i * width + j];
+                }
+            }
 
             body = cutBody;
             width = end - start + 1;
@@ -123,9 +141,13 @@ public class Element
     {
         string rotatedBody = "";
 
-        for (int i = 0; i < width; i++)
-            for (int j = height - 1; j >= 0; j--)
+        for (var i = 0; i < width; i++)
+        {
+            for (var j = height - 1; j >= 0; j--)
+            {
                 rotatedBody += body[j * width + i];
+            }
+        }
 
         return new Element(rotatedBody, height, width);
     }
@@ -134,9 +156,13 @@ public class Element
     {
         string mirroredBody = "";
 
-        for (int i = 0; i < height; i++)
-            for (int j = width - 1; j >= 0; j--)
+        for (var i = 0; i < height; i++)
+        {
+            for (var j = width - 1; j >= 0; j--)
+            {
                 mirroredBody += body[i * width + j];
+            }
+        }
 
         return mirroredBody;
     }
@@ -169,23 +195,35 @@ public class Element
                 var indexesForCheck = new List<int?> { up, down, left, right };
 
                 foreach (var i in indexesForCheck)
+                {
                     if (((i != null) && (body[(int) i] == 'c')) && !(checkedIndexes.Contains((int) i)))
+                    {
                         findedIndexes.Add((int) i);
+                    }
+                }
             }
 
             foreach (var index in pendingIndexes)
+            {
                 checkedIndexes.Add(index);
+            }
 
             pendingIndexes.Clear();
 
             foreach (var index in findedIndexes)
+            {
                 pendingIndexes.Add(index);
+            }
         }
 
         // Checks if element has any non-traversed cells
-        for (int i = 0; i < body.Length; i++)
+        for (var i = 0; i < body.Length; i++)
+        {
             if ((body[i] == 'c') && !(checkedIndexes.Contains(i)))
+            {
                 return false;
+            }
+        }
 
         return true;
     }
