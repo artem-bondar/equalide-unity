@@ -150,13 +150,7 @@ public class Game : MonoBehaviour
             grid.Add(line);
         }
 
-        GameObject paletteLine = Instantiate(tile, new Vector3(0, Screen.width/5 + 2 * tileMargin, 0), Quaternion.identity) as GameObject;
-        paletteLine.GetComponent<Image>().color = new Color32(255, 0, 0, 255);
-        paletteLine.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.width);
-        paletteLine.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 2 * tileMargin);
-        paletteLine.transform.SetParent(gameField.transform, true);
 
-        grid.Add(paletteLine);
 
     }
 

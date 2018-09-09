@@ -17,10 +17,13 @@ public class Palette : MonoBehaviour {
         }
     }
 
+    public GameObject gridPanel;
+    public GameObject gridElement;
     public GameObject paletteButton;
     public int selectedIndex;
 
     private List<GameObject> buttons;
+    private List<GameObject> grid;
 
     private Color[] colors;
 
@@ -33,6 +36,7 @@ public class Palette : MonoBehaviour {
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
 
         buttons = new List<GameObject>();
+        grid = new List<GameObject>();
     }
 
     public void Clear()
@@ -59,6 +63,7 @@ public class Palette : MonoBehaviour {
         }
 
         buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true;
+        DrawGrid();
     }
 	
     void ButtonEvent(int index)
@@ -69,5 +74,17 @@ public class Palette : MonoBehaviour {
             buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; 
         selectedIndex = index;
         buttons[index].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
+    }
+
+    void DrawGrid()
+    {
+        for (int i = 0; i < 5 - colorCount%2; i++)
+        {
+            grid.Add(Instantiate(gridElement) as GameObject);
+            grid[i].GetComponent<Image>().color = new Color32(0, 191, 255, 255);
+            grid[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 4);
+            grid[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 216);
+            grid[i].transform.SetParent(gridPanel.transform, false);
+        }
     }
 }
