@@ -15,16 +15,6 @@ public class Game : MonoBehaviour
 
     private Puzzle currentPuzzle;
 
-    private int fieldHeight;
-
-    private int verticalFieldMargin;
-    private int tileMargin;
-    private int tileSize;
-
-    private int cols;
-    private int rows;
-
-    private Color[] colors;
     public GameObject tile;
     public Palette palette;
 
@@ -36,12 +26,26 @@ public class Game : MonoBehaviour
 
     private List<GameObject> tiles;
     private List<GameObject> contour;
+    private List<GameObject> grid;
 
     private bool eraseMode;
     private bool down;
 
     private bool solved = false; // used to clear everything after a click if solved
 
+    private Color[] colors;
+
+    private int fieldHeight;
+
+    private int verticalFieldMargin;
+    private int tileMargin;
+    private int tileSize;
+
+    private int cols;
+    private int rows;
+
+    private int centringTop;
+    private int centringLeft;
 
     public void Start()
     {
@@ -49,6 +53,7 @@ public class Game : MonoBehaviour
         down = false;
         tiles = new List<GameObject>();
         contour = new List<GameObject>();
+        grid = new List<GameObject>();
         colors = new Color[4];
         ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
         ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
@@ -79,8 +84,8 @@ public class Game : MonoBehaviour
 
         tileSize = Mathf.Min((fieldHeight - 2 * tileMargin * rows) / rows, (Screen.width - 2 * tileMargin * cols) / cols);
 
-        int centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
-        int centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
+        centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
+        centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
 
         for (int i = 0; i < rows; i++)
         {
@@ -117,7 +122,44 @@ public class Game : MonoBehaviour
 
             }
         }
+
+        DrawGrid();
     }
+
+    void DrawGrid()
+    {
+        for(int x = centringLeft - tileMargin; x <= Screen.width;  x += tileSize + 2*tileMargin)
+        {
+            GameObject line = Instantiate(tile, new Vector3(x, Screen.height, 0), Quaternion.identity) as GameObject;
+            line.GetComponent<Image>().color = new Color32(0, 191, 255,255);
+            line.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 2*tileMargin);
+            line.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.height);
+            line.transform.SetParent(gameField.transform, true);
+
+            grid.Add(line);
+        }
+
+        for (int y = Screen.height - centringTop; y >= 0; y -= tileSize + 2 * tileMargin)
+        {
+            GameObject line = Instantiate(tile, new Vector3(0, y, 0), Quaternion.identity) as GameObject;
+            line.GetComponent<Image>().color = new Color32(0, 191, 255, 255);
+            line.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.width);
+            line.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 2 * tileMargin );
+            line.transform.SetParent(gameField.transform, true);
+
+            grid.Add(line);
+        }
+
+        GameObject paletteLine = Instantiate(tile, new Vector3(0, Screen.width/5 + 2 * tileMargin, 0), Quaternion.identity) as GameObject;
+        paletteLine.GetComponent<Image>().color = new Color32(255, 0, 0, 255);
+        paletteLine.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.width);
+        paletteLine.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 2 * tileMargin);
+        paletteLine.transform.SetParent(gameField.transform, true);
+
+        grid.Add(paletteLine);
+
+    }
+
 
     void TileHover(int index)
     {
