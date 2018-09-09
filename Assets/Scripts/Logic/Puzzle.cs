@@ -15,9 +15,11 @@ public class Puzzle
     {
         get { return Partition; }
         set
-        { 
+        {
             if (CheckIfValidPartition(value))
+            {
                 Partition = value;
+            }
         } 
     }
 
