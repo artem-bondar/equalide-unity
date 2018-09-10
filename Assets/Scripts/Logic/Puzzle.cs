@@ -48,11 +48,11 @@ public class Puzzle
     }
 
     // Amount of elements in puzzle
-    public int parts { get; private set; }
+    public readonly int parts;
 
     // Dimensions in cells
-    public int width { get; private set; }
-    public int height { get; private set; }
+    public readonly int width;
+    public readonly int height;
 
     // Status for game progress
     public bool opened { get; private set; }
