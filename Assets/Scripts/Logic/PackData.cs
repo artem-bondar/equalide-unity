@@ -1,6 +1,18 @@
 ﻿[System.Serializable]
 public class PackData
 {
-	public string[] puzzles;
-	public int[] puzzlesWidth;
+	public readonly string[] puzzles;
+	public readonly int[] puzzlesWidth;
+
+	public PackData(Pack pack)
+	{
+		puzzles = new string[pack.size];
+		puzzlesWidth = new int[pack.size];
+
+		for (var i = 0; i < pack.size; i++)
+		{
+			puzzles[i] = pack[i].partition;
+			puzzlesWidth[i] = pack[i].width;
+		}
+	}
 }
