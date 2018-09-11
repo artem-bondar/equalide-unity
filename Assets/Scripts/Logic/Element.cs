@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 // Contains element with next representation:
@@ -187,18 +186,18 @@ public class Element
             foreach (var index in pendingIndexes)
             {
                 // Indexes of all neighbour cells
-                int? up = (index - width >= 0) ? index - width : (int?) null;
-                int? down = (index + width < body.Length) ? index + width : (int?) null;
-                int? left = (index % width != 0) ? index - 1 : (int?) null;
-                int? right = (index % width != width - 1) ? index + 1 : (int?) null;
+                int? up = (index - width >= 0) ? index - width : (int?)null;
+                int? down = (index + width < body.Length) ? index + width : (int?)null;
+                int? left = (index % width != 0) ? index - 1 : (int?)null;
+                int? right = (index % width != width - 1) ? index + 1 : (int?)null;
 
                 var indexesForCheck = new List<int?> { up, down, left, right };
 
                 foreach (var i in indexesForCheck)
                 {
-                    if (((i != null) && (body[(int) i] == 'c')) && !(checkedIndexes.Contains((int) i)))
+                    if (((i != null) && (body[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
                     {
-                        findedIndexes.Add((int) i);
+                        findedIndexes.Add((int)i);
                     }
                 }
             }

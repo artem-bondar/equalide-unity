@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 // Contains puzzle with next representation:
@@ -23,6 +22,7 @@ public class Puzzle
         } 
     }
 
+    // Indexer interface to get/set char using [,] operator
     public char this[int i, int j]
     {
         get

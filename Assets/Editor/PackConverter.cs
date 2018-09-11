@@ -6,8 +6,9 @@ using System.IO;
 
 public class PackConverter : EditorWindow
 {
-	private string packsDirectoryPath = "Assets/Editor Default Resources/Levels Data";
-	private int packsAmount = 9;
+	private readonly string packsDirectoryPath = "Assets/Editor Default Resources/Packs Data";
+	private readonly string packsSaveDirectoryPath = $"{Application.persistentDataPath}/Packs Data";
+	private readonly int packsAmount = 9;
 
 	private List<string> packsForConvert;
 
@@ -49,7 +50,11 @@ public class PackConverter : EditorWindow
 	{
 		if (packsForConvert.Count > 0)
 		{
-			
+			for (var i = 1; i <= packsForConvert.Count; i++)
+			{
+				var fileName = $"pack-{i.ToString().PadLeft(2, '0')}";
+				var filePath = $"{Application.persistentDataPath}/{fileName}";
+			}
 		}
 		else
 		{
