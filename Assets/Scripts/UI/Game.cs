@@ -75,7 +75,7 @@ public class Game : MonoBehaviour
 
         verticalFieldMargin = tileMargin; //Screen.width * 5 / 180; 
 
-        fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
+        fieldHeight = Screen.height - 2 * verticalFieldMargin- toolbarScenario - Screen.width / 5 - 8 * tileMargin;        
 
         tileSize = Mathf.Min((fieldHeight - 2 * tileMargin * rows) / rows, (Screen.width - 2 * tileMargin * cols) / cols);
 
