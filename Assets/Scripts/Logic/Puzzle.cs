@@ -20,7 +20,7 @@ public class Puzzle
             {
                 Partition = value;
             }
-        } 
+        }
     }
 
     // Indexer interface to get/set char using [,] operator
@@ -38,7 +38,7 @@ public class Puzzle
             }
         }
         set
-        {   
+        {
             if (CheckIfValidIndexes(i, j))
             {
                 var copy = Partition.ToCharArray();
@@ -56,9 +56,9 @@ public class Puzzle
     public readonly int height;
 
     // Status for game progress
-    public bool opened { get; private set; }
-    public bool solved { get; private set; }
-    
+    public bool opened = false;
+    public bool solved { get; private set; } = false;
+
     public Puzzle(string partition, int parts,
                   int width, int height,
                   bool opened, bool solved)
@@ -69,6 +69,33 @@ public class Puzzle
         this.height = height;
         this.opened = opened;
         this.solved = solved;
+    }
+
+    // Receives puzzle with solution in simple text format.
+    // '\n' between lines (no '\n' for last line)
+    //
+    // Example of input text:
+    // "b10\n10b"
+    // ---
+    // b10
+    // 10b
+    // ---
+    public Puzzle(string rawPuzzleText)
+    {
+        var unicalCells = new HashSet<char>(rawPuzzleText.ToCharArray());
+        unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
+
+        var lines = rawPuzzleText.Split('\n');
+
+        var height = lines.Length;
+        var width = lines[0].Length;
+
+        this.Partition = String.Join("", lines);
+        Clear();
+
+        this.parts = unicalCells.Count;
+        this.width = width;
+        this.height = height;
     }
 
     // Clears puzzle partition to initial state
@@ -111,14 +138,14 @@ public class Puzzle
     }
 
     // Separates current partition in elements of same color
-    private List<Element> SeparateInElements() 
+    private List<Element> SeparateInElements()
     {
         var result = new List<Element>();
-        
+
         var unicalCells = new HashSet<char>(Partition.ToCharArray());
         unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
 
-        foreach(var cell in unicalCells)
+        foreach (var cell in unicalCells)
         {
             int firstOccurance = Partition.IndexOf(cell);
             int lastOccurance = Partition.LastIndexOf(cell);

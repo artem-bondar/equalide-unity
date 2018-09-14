@@ -46,18 +46,18 @@ public class Pack : IEnumerable<Puzzle>
         this.solved = solved;
     }
 
-    // Receives pack in simple text format.
+    // Receives pack with solutions in simple text format.
     // '\n\n' between two puzzles
     // '\n' between lines in puzzle (no '\n' for last line)
     //
     // Example of input text:
-    // "10\n10\n\n10\n10"
+    // "b10\n10b\n\nb10\n10b"
     // ---
-    // 10
-    // 10
+    // b10
+    // 10b
     //
-    // 10
-    // 10
+    // b10
+    // 10b
     // ---
     public Pack(string rawPackText)
     {
@@ -68,17 +68,7 @@ public class Pack : IEnumerable<Puzzle>
 
         for (var i = 0; i < size; i++)
         {
-            var unicalCells = new HashSet<char>(puzzles[i].ToCharArray());
-            unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
-
-            var lines = puzzles[i].Split('\n');
-
-            var height = lines.Length;
-            var width = lines[0].Length;
-
-            this.puzzles[i] = new Puzzle(
-                String.Join("", lines), unicalCells.Count,
-                width, height, false, false);
+            this.puzzles[i] = new Puzzle(puzzles[i]);
         }
     }
 }
