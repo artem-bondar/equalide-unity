@@ -4,30 +4,25 @@
 public class ProgressData
 {
 	// Current level related data
-	public int currentPack;
-	public int currentLevel;
-	public string savedPartition;
-	
-	// Overall progress related data
-	[NonSerialized]
-	private int packAmount = 9;
+	public readonly int currentPack;
+	public readonly int currentPuzzle;
+	public readonly string savedPartition;
 
 	// Strings that represent packs's/levels's statuses,
 	// one char for one entity with next alphabet:
 	// 'c' - closed
 	// 'o' - opened
 	// 's' - solved
-
-	public string packProgress;
+	public readonly string packProgress;
 
 	// Contains one progress string per each pack
-	public string[] puzzleProgress;
+	public readonly string[] puzzleProgress;
 
-	public ProgressData(int currentPack, int currentLevel, string savedPartition,
+	public ProgressData(int currentPack, int currentPuzzle, string savedPartition,
 						string packProgress, string[] puzzleProgress)
 	{
 		this.currentPack = currentPack;
-		this.currentLevel = currentLevel;
+		this.currentPuzzle = currentPuzzle;
 		this.savedPartition = savedPartition;
 		this.packProgress = packProgress;
 		this.puzzleProgress = puzzleProgress;
