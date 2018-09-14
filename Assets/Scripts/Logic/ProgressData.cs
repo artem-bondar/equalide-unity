@@ -1,4 +1,6 @@
-﻿[System.Serializable]
+﻿using System;
+
+[Serializable]
 public class ProgressData
 {
 	// Current level related data
@@ -7,7 +9,7 @@ public class ProgressData
 	public string savedPartition;
 	
 	// Overall progress related data
-	[System.NonSerialized]
+	[NonSerialized]
 	private int packAmount = 9;
 
 	// Strings that represent packs's/levels's statuses,

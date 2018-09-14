@@ -5,6 +5,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEditor;
 
+using static System.IO.Directory;
+
 public class PackConverter : EditorWindow
 {
     private readonly string packsDirectoryPath = "Assets/Editor Default Resources/Packs Data";
@@ -55,7 +57,7 @@ public class PackConverter : EditorWindow
 			BinaryFormatter bf = new BinaryFormatter();
 
             var filePath = $"{Application.persistentDataPath}/{packsSaveDirectoryPath}";
-            System.IO.Directory.CreateDirectory(filePath);
+            CreateDirectory(filePath);
 
             for (var i = 1; i <= packsForConvert.Count; i++)
             {

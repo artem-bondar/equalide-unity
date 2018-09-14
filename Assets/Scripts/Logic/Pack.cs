@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class Pack : IEnumerable<Puzzle>
@@ -37,9 +38,9 @@ public class Pack : IEnumerable<Puzzle>
         return puzzles.GetEnumerator();
     }
 
-    public Pack(int size, Puzzle[] puzzles, bool opened, bool solved)
+    public Pack(Puzzle[] puzzles, bool opened, bool solved)
     {
-        this.size = size;
+        this.size = puzzles.Length;
         this.puzzles = puzzles;
         this.opened = opened;
         this.solved = solved;
@@ -76,7 +77,7 @@ public class Pack : IEnumerable<Puzzle>
             var width = lines[0].Length;
 
             this.puzzles[i] = new Puzzle(
-                System.String.Join("", lines), unicalCells.Count,
+                String.Join("", lines), unicalCells.Count,
                 width, height, false, false);
         }
     }

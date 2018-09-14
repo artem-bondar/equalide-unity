@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -343,9 +344,9 @@ public class TransitionHandler : MonoBehaviour
     public void DoTransitionString(string args)
     {
         string[] argv = args.Split(' ');
-        int fst = System.Convert.ToInt32(argv[0]);
-        int snd = System.Convert.ToInt32(argv[1]);
-        float dur = (float)System.Convert.ToDouble(argv[4]);
+        int fst = Convert.ToInt32(argv[0]);
+        int snd = Convert.ToInt32(argv[1]);
+        float dur = (float)Convert.ToDouble(argv[4]);
         float targetAlign = 1, annexAlign = 1;
         Transition type;
         Direction dir;
@@ -396,8 +397,8 @@ public class TransitionHandler : MonoBehaviour
         }
         if (argv.Length > 5)
         {
-            targetAlign = (float)System.Convert.ToDouble(argv[5]);
-            annexAlign = (float)System.Convert.ToDouble(argv[6]);
+            targetAlign = (float)Convert.ToDouble(argv[5]);
+            annexAlign = (float)Convert.ToDouble(argv[6]);
         }
 
         DoTransition(fst, snd, type, dir, dur, targetAlign, annexAlign);

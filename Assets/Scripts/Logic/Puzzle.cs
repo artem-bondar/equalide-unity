@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 // Contains puzzle with next representation:
@@ -129,7 +130,7 @@ public class Puzzle
                     length + width - length % width);
 
             result.Add(new Element(
-                Regex.Replace(substr, System.String.Format("[^{0}]", cell), "e")
+                Regex.Replace(substr, String.Format("[^{0}]", cell), "e")
                 .Replace(cell, 'c'),
                 width));
         }
@@ -149,7 +150,7 @@ public class Puzzle
         {
             if ((Partition[i] == 'b' && partition[i] != 'b') ||
                 (Partition[i] != 'b' && partition[i] == 'b') ||
-                (!System.Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
+                (!Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
                 partition[i] - '0' >= this.parts)
             {
                 return false;
