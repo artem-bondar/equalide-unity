@@ -11,7 +11,7 @@ public class PackConverter : EditorWindow
     private readonly string packsSaveDirectoryPath = $"Packs Data";
     private readonly int packsAmount = 9;
 
-    private List<Pack> packsForConvert;
+    private List<PackData> packsForConvert = new List<PackData>();
 
     [MenuItem("Window/Pack Converter")]
     static void Init()
@@ -30,6 +30,8 @@ public class PackConverter : EditorWindow
 
     private void ReadPacks()
     {
+        packsForConvert.Clear();
+
         for (var i = 1; i <= packsAmount; i++)
         {
             var fileName = $"pack-{i.ToString().PadLeft(2, '0')}.eqld";
@@ -37,8 +39,7 @@ public class PackConverter : EditorWindow
 
             if (File.Exists(filePath))
             {
-                packsForConvert.Add(new Pack(File.ReadAllText(filePath)));
-                Debug.Log($"Successfully read: {fileName}");
+                packsForConvert.Add((PackData)File.ReadAllText(filePath));
             }
             else
             {
@@ -53,15 +54,19 @@ public class PackConverter : EditorWindow
         {
 			BinaryFormatter bf = new BinaryFormatter();
 
+            var filePath = $"{Application.persistentDataPath}/{packsSaveDirectoryPath}";
+            System.IO.Directory.CreateDirectory(filePath);
+
             for (var i = 1; i <= packsForConvert.Count; i++)
             {
                 var fileName = $"pack-{i.ToString().PadLeft(2, '0')}";
-                var filePath = $"{Application.persistentDataPath}/{fileName}";
 
-                FileStream file = File.Open(Application.persistentDataPath + "/gamesave.save", FileMode.Create);
-                bf.Serialize(file, packsForConvert[i]);
+                FileStream file = File.Open($"{filePath}/{fileName}", FileMode.Create);
+                bf.Serialize(file, packsForConvert[i - 1]);
   				file.Close();
             }
+
+            Debug.Log($"Successfully converted {packsForConvert.Count} packs!");
         }
         else
         {

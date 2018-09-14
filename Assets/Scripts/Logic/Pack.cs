@@ -1,4 +1,6 @@
-﻿public class Pack
+﻿using System.Collections.Generic;
+
+public class Pack
 {
     // Pack content
     public readonly int size;
@@ -47,11 +49,24 @@
     // ---
     public Pack(string rawPackText)
     {
-        
-    }
+        string[] puzzles = rawPackText.Split(new[] { "\n\n " }, 0);
 
-    public static explicit operator Pack(string rawPackText)
-    {
-        return new Pack(rawPackText);
+        size = puzzles.Length;
+        this.puzzles = new Puzzle[size];
+
+        for (var i = 0; i < size; i++)
+        {
+            var unicalCells = new HashSet<char>(puzzles[i].ToCharArray());
+            unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
+
+            var lines = puzzles[i].Split('\n');
+
+            var height = lines.Length;
+            var width = lines[0].Length;
+
+            this.puzzles[i] = new Puzzle(
+                System.String.Join("", lines), unicalCells.Count,
+                width, height, false, false);
+        }
     }
 }

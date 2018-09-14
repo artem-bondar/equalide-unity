@@ -15,4 +15,9 @@ public class PackData
 			puzzlesWidth[i] = pack[i].width;
 		}
 	}
+
+	public static explicit operator PackData(string rawPackText)
+    {
+        return new PackData(new Pack(rawPackText));
+    }
 }
