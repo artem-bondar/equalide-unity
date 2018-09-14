@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
-public class Pack
+public class Pack : IEnumerable<Puzzle>
 {
     // Pack content
     public readonly int size;
@@ -24,6 +25,16 @@ public class Pack
                 return null;
             }
         }
+    }
+
+    public IEnumerator<Puzzle> GetEnumerator()
+    {
+        return (IEnumerator<Puzzle>)puzzles.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return puzzles.GetEnumerator();
     }
 
     public Pack(int size, Puzzle[] puzzles, bool opened, bool solved)

@@ -17,5 +17,15 @@ public class ProgressData
 	// 's' - solved
 
 	public string packProgress;
-	public string[] levelProgress;
+	public string[] puzzleProgress;
+
+	public ProgressData(int currentPack, int currentLevel, string savedPartition,
+						string packProgress, string[] puzzleProgress)
+	{
+		this.currentPack = currentPack;
+		this.currentLevel = currentLevel;
+		this.savedPartition = savedPartition;
+		this.packProgress = packProgress;
+		this.puzzleProgress = puzzleProgress;
+	}
 }
