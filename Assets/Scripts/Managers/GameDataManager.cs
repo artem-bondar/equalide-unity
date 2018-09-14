@@ -13,7 +13,6 @@ public class GameDataManager : MonoBehaviour
 
     public int currentPack { get; private set; }
     public int currentPuzzle { get; private set; }
-    public string savedPartition { get; private set; }
 
     private List<Pack> packs;
 
@@ -21,10 +20,11 @@ public class GameDataManager : MonoBehaviour
     {
         List<PackData> packsData = LoadPacksData();
         ProgressData progressData = LoadGameProgress();
+        packs = AssemblePacks(packsData, progressData);
 
         currentPack = progressData.currentPack;
         currentPuzzle = progressData.currentPuzzle;
-        packs = AssemblePacks(packsData, progressData);
+        packs[currentPack][currentPuzzle].partition = progressData.savedPartition;
     }
 
     private List<PackData> LoadPacksData()
@@ -48,6 +48,7 @@ public class GameDataManager : MonoBehaviour
                 foreach (var packPath in packPathes)
                 {
                     FileStream file = File.Open(packPath, FileMode.Open);
+
                     PackData packData = (PackData)bf.Deserialize(file);
                     file.Close();
 
@@ -72,8 +73,8 @@ public class GameDataManager : MonoBehaviour
         if (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}"))
         {
             BinaryFormatter bf = new BinaryFormatter();
-
             FileStream file = File.Open($"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
+            
             ProgressData progressData = (ProgressData)bf.Deserialize(file);
             file.Close();
 
@@ -81,17 +82,17 @@ public class GameDataManager : MonoBehaviour
         }
         else
         {
-            return InitGameProgress();
+            ProgressData progressData = InitGameProgress();
+            SaveGameProgress (progressData);
+
+            return progressData;
         }
     }
 
     private ProgressData InitGameProgress()
     {
-        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
-
         currentPack = 0;
         currentPuzzle = 0;
-        savedPartition = String.Empty;
 
         var packProgress = 'o' + new String('c', packs.Count - 1);
         var puzzleProgress = new string[packs.Count];
@@ -102,7 +103,7 @@ public class GameDataManager : MonoBehaviour
             puzzleProgress[i] += '\n' + new String('c', packs[i].size);
         }
 
-        return new ProgressData(currentPack, currentPuzzle, savedPartition, packProgress, puzzleProgress);
+        return new ProgressData(currentPack, currentPuzzle, String.Empty, packProgress, puzzleProgress);
     }
 
     private List<Pack> AssemblePacks(List<PackData> packsData, ProgressData progressData)
@@ -178,11 +179,9 @@ public class GameDataManager : MonoBehaviour
         return progressData;
     }
 
-    private void SaveGameProgress()
+    private ProgressData GetProgressData()
     {
-        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
-
-        var packProgress = "";
+        var packProgress = String.Empty;
         var puzzleProgress = new string[packs.Count];
 
         for (var i = 0; i < packs.Count; i++)
@@ -195,10 +194,20 @@ public class GameDataManager : MonoBehaviour
             }
         }
 
+        return new ProgressData(
+            currentPack, currentPuzzle,
+            packs[currentPack][currentPuzzle].partition,
+            packProgress, puzzleProgress);
+    }
+
+    private void SaveGameProgress(ProgressData progressData)
+    {
+        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
+
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(filePath, FileMode.Create);
-        bf.Serialize(file, new ProgressData(
-            currentPack, currentPuzzle, savedPartition, packProgress, puzzleProgress));
+
+        bf.Serialize(file, progressData);
         file.Close();
     }
 }
