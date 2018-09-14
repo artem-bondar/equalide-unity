@@ -115,7 +115,7 @@ public class Puzzle
         var result = new List<Element>();
         
         var unicalCells = new HashSet<char>(Partition.ToCharArray());
-        unicalCells.RemoveWhere(IsNotPainted);
+        unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
 
         foreach(var cell in unicalCells)
         {
@@ -137,11 +137,6 @@ public class Puzzle
         return result;
     }
 
-    private bool IsNotPainted(char c)
-    {
-        return c == 'b' || c == 'e';
-    }
-
     // Checks if partition for loading has the same shape and contains only valid cells
     private bool CheckIfValidPartition(string partition)
     {
@@ -154,7 +149,7 @@ public class Puzzle
         {
             if ((Partition[i] == 'b' && partition[i] != 'b') ||
                 (Partition[i] != 'b' && partition[i] == 'b') ||
-                (!System.Char.IsDigit(partition[i]) && !IsNotPainted(partition[i])) ||
+                (!System.Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
                 partition[i] - '0' >= this.parts)
             {
                 return false;
