@@ -19,6 +19,8 @@ public class ProgressData
 	// 's' - solved
 
 	public string packProgress;
+
+	// Contains one progress string per each pack
 	public string[] puzzleProgress;
 
 	public ProgressData(int currentPack, int currentLevel, string savedPartition,
