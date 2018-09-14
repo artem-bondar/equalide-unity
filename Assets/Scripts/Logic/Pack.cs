@@ -31,4 +31,27 @@
         this.opened = opened;
         this.solved = solved;
     }
+
+    // Receives pack in simple text format.
+    // '\n\n' between two puzzles
+    // '\n' between lines in puzzle (no '\n' for last line)
+    //
+    // Example of input text:
+    // "10\n10\n\n10\n10"
+    // ---
+    // 10
+    // 10
+    //
+    // 10
+    // 10
+    // ---
+    public Pack(string rawPackText)
+    {
+        
+    }
+
+    public static explicit operator Pack(string rawPackText)
+    {
+        return new Pack(rawPackText);
+    }
 }
