@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TransitionHandler : MonoBehaviour
+public class TransitionController : MonoBehaviour
 {
 
     public enum Transition

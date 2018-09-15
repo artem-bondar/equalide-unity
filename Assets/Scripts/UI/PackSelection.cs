@@ -14,12 +14,12 @@ public class PackSelection : MonoBehaviour {
     public Sprite locked;
     public Sprite star;
 
-    TransitionHandler transitionHandler;
+    TransitionController transitionHandler;
 
 
     void Start () {
 
-        transitionHandler = GameObject.FindObjectOfType<TransitionHandler>();
+        transitionHandler = GameObject.FindObjectOfType<TransitionController>();
         buttons = new List<GameObject>();
         Fill();
 	}
@@ -51,7 +51,7 @@ public class PackSelection : MonoBehaviour {
 
     void PackClick(int index)
     {
-        transitionHandler.DoTransition(1, 2, TransitionHandler.Transition.slideOver, TransitionHandler.Direction.L, 0.3f);
+        transitionHandler.DoTransition(1, 2, TransitionController.Transition.slideOver, TransitionController.Direction.L, 0.3f);
     }
 
 }

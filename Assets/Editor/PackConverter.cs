@@ -73,8 +73,8 @@ public class PackConverter : EditorWindow
             for (var i = 1; i <= packsForConvert.Count; i++)
             {
                 var fileName = $"pack-{i.ToString().PadLeft(2, '0')}";
-
                 FileStream file = File.Open($"{filePath}/{fileName}", FileMode.Create);
+
                 bf.Serialize(file, packsForConvert[i - 1]);
   				file.Close();
             }
