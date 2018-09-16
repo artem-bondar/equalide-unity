@@ -66,7 +66,7 @@ public class Puzzle
     // Clears puzzle partition to initial state
     public void Clear()
     {
-        partition = Regex.Replace(partition, "[^be]", "e");
+        partition = Regex.Replace(partition, "[^be]", "0");
     }
 
     // Checks if puzzle partition is a solution and mark puzzle as solved if true 

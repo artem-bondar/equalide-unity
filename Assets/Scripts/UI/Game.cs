@@ -26,7 +26,7 @@ public class Game : MonoBehaviour
 
     private Color[] colors;
     public GameObject tile;
-    public Palette palette;
+    //public Palette palette;
 
     public AudioClip drawSoundDown;
     public AudioClip eraseSoundDown;
@@ -41,7 +41,9 @@ public class Game : MonoBehaviour
     private bool down;
 
     private bool solved = false; // used to clear everything after a click if solved
+    private bool preSolved = false;
 
+    private int selectedIndex = 1;
 
     public void Start()
     {
@@ -50,13 +52,13 @@ public class Game : MonoBehaviour
         tiles = new List<GameObject>();
         contour = new List<GameObject>();
         colors = new Color[4];
-        ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
-        ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
+        ColorUtility.TryParseHtmlString("#FFFFFF", out colors[0]);
+        ColorUtility.TryParseHtmlString("#4285F4", out colors[1]);
         ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
-        palette = GameObject.FindObjectOfType<Palette>();
+        //palette = GameObject.FindObjectOfType<Palette>();
 
-        palette.ColorCount = 2; // It must be taken from Puzzle
+        //palette.ColorCount = 2; // It must be taken from Puzzle
 
         int toolbarScenario = 0;
         if(toolbarMode)
@@ -75,7 +77,7 @@ public class Game : MonoBehaviour
 
         verticalFieldMargin = tileMargin; //Screen.width * 5 / 180; 
 
-        fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
+        fieldHeight = Screen.height - 2 * verticalFieldMargin - toolbarScenario;        
 
         tileSize = Mathf.Min((fieldHeight - 2 * tileMargin * rows) / rows, (Screen.width - 2 * tileMargin * cols) / cols);
 
@@ -127,15 +129,15 @@ public class Game : MonoBehaviour
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
-        if (palette.selectedIndex == -1)
+        if (selectedIndex == -1 || preSolved)
             return;
        
-        int currentColor = palette.selectedIndex;
+        int currentColor = selectedIndex;
         //Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
 
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = '0';
             tiles[index].GetComponent<Image>().color = Color.white;
            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
             return;
@@ -150,6 +152,7 @@ public class Game : MonoBehaviour
 
         if (currentPuzzle.CheckForSolution()) {
 
+            preSolved = true;
             Debug.Log("Solved!");
             RemovePartitions();
         }
@@ -160,15 +163,15 @@ public class Game : MonoBehaviour
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
-        if (palette.selectedIndex == -1)
+        if (selectedIndex == -1 || preSolved)
             return;
 
         down = true;
-        int currentColor = palette.selectedIndex;
+        int currentColor = selectedIndex;
     
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
+            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = '0';
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
             //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
@@ -183,6 +186,7 @@ public class Game : MonoBehaviour
 
         if (currentPuzzle.CheckForSolution()) {
 
+            preSolved = true;
             Debug.Log("Solved!");
             RemovePartitions();
         }
@@ -199,7 +203,7 @@ public class Game : MonoBehaviour
 
                 int index = i * cols + j;
                 tiles[index].GetComponent<Image>().color = Color.white;
-                currentPuzzle[i, j] = 'e';
+                currentPuzzle[i, j] = '0';
             }
         }
 
@@ -216,6 +220,7 @@ public class Game : MonoBehaviour
         {
             ClearColors();
             solved = false;
+            preSolved = false;
         }
 
         if (Input.GetMouseButtonUp(0))
