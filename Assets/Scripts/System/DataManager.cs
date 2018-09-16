@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-public class GameDataManager : MonoBehaviour
+public class DataManager : MonoBehaviour
 {
     private const string saveDirectoryPath = "Packs Data";
     private const string gameProgressFileName = "save";
