@@ -17,12 +17,7 @@ public class Palette : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        Init(2);    
-    }
-
-    public void Init(int size)
+    public void Create(int size)
     {
         if (size < 0 || size > Colors.cellColors.Length)
         {

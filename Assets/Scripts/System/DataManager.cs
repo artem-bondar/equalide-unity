@@ -27,6 +27,11 @@ public class DataManager : MonoBehaviour
         packs[currentPack][currentPuzzle].partition = progressData.savedPartition;
     }
 
+    public Puzzle GetCurrentPuzzle()
+    {
+        return packs[currentPack][currentPuzzle];
+    }
+
     private List<PackData> LoadPacksData()
     {
         var packsData = new List<PackData>();
