@@ -51,8 +51,6 @@ public class GameManager : MonoBehaviour
         ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
         palette = GameObject.FindObjectOfType<Palette>();
 
-        palette.ColorCount = 2; // It must be taken from Puzzle
-
         int toolbarScenario = 0;
         if(toolbarMode)
             toolbarScenario = Screen.height / 10;
@@ -119,11 +117,8 @@ public class GameManager : MonoBehaviour
 
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
-
-        if (palette.selectedIndex == -1)
-            return;
        
-        int currentColor = palette.selectedIndex;
+        int currentColor = 0; // !!!
         //Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
 
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
@@ -154,11 +149,8 @@ public class GameManager : MonoBehaviour
         if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
             return;
 
-        if (palette.selectedIndex == -1)
-            return;
-
         down = true;
-        int currentColor = palette.selectedIndex;
+        int currentColor = 0; // !!!
     
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
         {

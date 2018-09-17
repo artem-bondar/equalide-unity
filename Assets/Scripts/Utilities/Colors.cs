@@ -25,8 +25,8 @@ public static class Colors
 		ColorUtility.TryParseHtmlString("#1a2932", out unsolvedTileCheckedColor);
 
 		ColorUtility.TryParseHtmlString("#4285F4", out cellColors[0]); // blue
-		ColorUtility.TryParseHtmlString("#EA4335", out cellColors[1]); // red
+		ColorUtility.TryParseHtmlString("#34A853", out cellColors[1]); // green
         ColorUtility.TryParseHtmlString("#FBBC05", out cellColors[2]); // yellow
-        ColorUtility.TryParseHtmlString("#34A853", out cellColors[3]); // green
+		ColorUtility.TryParseHtmlString("#EA4335", out cellColors[3]); // red
 	}
 }

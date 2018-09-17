@@ -3,71 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Palette : MonoBehaviour {
-
-    private int colorCount;
-    public int ColorCount
-    {
-        get { return colorCount; }
-        set
-        {
-            colorCount = value;
-            Clear();
-            Fill();
-        }
-    }
-
+public class Palette : MonoBehaviour
+{
     public GameObject paletteButton;
-    public int selectedIndex;
+    private readonly List<Transform> paletteButtons = new List<Transform>();
 
-    private List<GameObject> buttons;
-
-    private Color[] colors;
-
-
-    void Start () {
-        colors = new Color[4];
-        ColorUtility.TryParseHtmlString("#4285F4", out colors[0]);
-        ColorUtility.TryParseHtmlString("#FBBC05", out colors[1]);
-        ColorUtility.TryParseHtmlString("#EA4335", out colors[2]);
-        ColorUtility.TryParseHtmlString("#34A853", out colors[3]);
-
-        buttons = new List<GameObject>();
-    }
-
-    public void Clear()
+    private int pencilPosition;
+    public Color paintColor
     {
-        if (buttons.Count == 0)
-            return;
-        foreach (var obj in buttons)
-            Destroy(obj);
-        buttons.Clear();
-    }
-
-    public void Fill()
-    {
-        for (int i = 0; i < colorCount; i++)
+        get
         {
-            buttons.Add(Instantiate(paletteButton) as GameObject);
-            buttons[i].transform.SetParent(gameObject.transform, false);
+            return Colors.cellColors[pencilPosition];
+        }
+    }
 
-            buttons[i].GetComponent<Image>().color = colors[i];
-            buttons[i].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; //Pencil image
+    private void Start()
+    {
+        Init(2);    
+    }
 
-            int copy = i;
-            buttons[i].GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(copy); });
+    public void Init(int size)
+    {
+        if (size < 0 || size > Colors.cellColors.Length)
+        {
+            Debug.Log("Incorrect palette size was passed!");
+            return;
         }
 
-        buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true;
+        for (var i = 0; i < size; i++)
+        {
+            Transform button = Instantiate(paletteButton).transform;
+
+            button.SetParent(gameObject.transform, false);
+            button.Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];
+
+            var copy = i; // Outer variable trap
+            button.gameObject.GetComponent<Button>()
+                .onClick.AddListener(delegate { ChangePencilPosition(copy); });
+
+            paletteButtons.Add(button);
+        }
+
+        pencilPosition = size / 2;
+        paletteButtons[pencilPosition].Find("PaletteButtonIcon")
+            .gameObject.GetComponent<Image>().enabled = true;
     }
-	
-    void ButtonEvent(int index)
+
+    public void Destroy()
     {
-        if (selectedIndex == index)
+        foreach (var button in paletteButtons)
+        {
+            Destroy(button.gameObject);
+        }
+
+        paletteButtons.Clear();
+    }
+
+    private void ChangePencilPosition(int newPosition)
+    {
+        if (pencilPosition == newPosition)
+        {
             return;
-        if(selectedIndex!=-1)
-            buttons[selectedIndex].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = false; 
-        selectedIndex = index;
-        buttons[index].transform.GetChild(0).gameObject.GetComponent<Image>().enabled = true; 
+        }
+
+        paletteButtons[pencilPosition].Find("PaletteButtonIcon")
+            .gameObject.GetComponent<Image>().enabled = false;
+
+        paletteButtons[newPosition].Find("PaletteButtonIcon")
+            .gameObject.GetComponent<Image>().enabled = true;
+
+        pencilPosition = newPosition;
     }
 }
