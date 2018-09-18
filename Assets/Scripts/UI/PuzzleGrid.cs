@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class PuzzleGrid : MonoBehaviour
 {
     public GameObject primitive;
+    private const int primitiveMargin = 3; // 1 dp
     private readonly List<Image> primitives = new List<Image>();
 
     private Puzzle puzzle;
@@ -22,27 +23,31 @@ public class PuzzleGrid : MonoBehaviour
 
     public void RenderPuzzle(Puzzle puzzle)
     {
+        Debug.Log(puzzle.partition);
         this.puzzle = puzzle;
 
         var grid = gameObject.GetComponent<GridLayoutGroup>();
+        var gridRectTransorm = grid.GetComponent<RectTransform>().rect;
 
         var primitiveSize = Mathf.Min(
-            grid.GetComponent<RectTransform>().rect.width / puzzle.width,
-            grid.GetComponent<RectTransform>().rect.height / puzzle.height);
+            (gridRectTransorm.width - (puzzle.width - 1) * primitiveMargin) / puzzle.width,
+            (gridRectTransorm.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
 
-        gameObject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(primitiveSize, primitiveSize);
+        grid.cellSize = new Vector2(primitiveSize, primitiveSize);
 
         for (var i = 0; i < puzzle.height; i++)
         {
             for (var j = 0; j < puzzle.width; j++)
             {
-                GameObject newPrimitive = Instantiate(primitive);
+                var newPrimitive = Instantiate(primitive).GetComponent<Image>();
                 newPrimitive.transform.SetParent(grid.transform);
 
-                switch (puzzle[i, j])
+                Debug.Log(puzzle[i, j]);
+                if (puzzle[i, j] != 'e')
                 {
-                    case 'b': newPrimitive.GetComponent<Image>().color = Color.clear; break;
-                    case 'e': newPrimitive.GetComponent<Image>().color = Color.white; break;
+                    newPrimitive.GetComponent<Image>().color = 
+                        (puzzle[i, j] == 'b') ? Colors.backgroundColor :
+                            Colors.cellColors[puzzle[i, j] - '0'];
                 }
 
                 var trigger = newPrimitive.GetComponent<EventTrigger>();
@@ -59,7 +64,7 @@ public class PuzzleGrid : MonoBehaviour
                 entry.callback.AddListener(delegate { TileHover(iCopy, jCopy); });
                 trigger.triggers.Add(entry);
 
-                primitives.Add(primitive.GetComponent<Image>());
+                primitives.Add(newPrimitive);
             }
         }
     }
