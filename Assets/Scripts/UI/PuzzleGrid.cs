@@ -21,9 +21,10 @@ public class PuzzleGrid : MonoBehaviour
     private bool eraseMode;
     private bool duringSwipe;
 
+    public bool paintLock = true;
+
     public void RenderPuzzle(Puzzle puzzle)
     {
-        Debug.Log(puzzle.partition);
         this.puzzle = puzzle;
 
         var grid = gameObject.GetComponent<GridLayoutGroup>();
@@ -42,7 +43,6 @@ public class PuzzleGrid : MonoBehaviour
                 var newPrimitive = Instantiate(primitive).GetComponent<Image>();
                 newPrimitive.transform.SetParent(grid.transform);
 
-                Debug.Log(puzzle[i, j]);
                 if (puzzle[i, j] != 'e')
                 {
                     newPrimitive.GetComponent<Image>().color = 
@@ -67,11 +67,13 @@ public class PuzzleGrid : MonoBehaviour
                 primitives.Add(newPrimitive);
             }
         }
+
+        paintLock = false;
     }
 
     void TileHover(int i, int j)
     {
-        if (!duringSwipe || puzzle[i, j] == 'b')
+        if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
         {
             return;
         }
@@ -101,7 +103,7 @@ public class PuzzleGrid : MonoBehaviour
 
     void TileDown(int i, int j)
     {
-        if (puzzle[i, j] == 'b')
+        if (paintLock || puzzle[i, j] == 'b')
         {
             return;
         }

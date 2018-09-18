@@ -19,7 +19,7 @@ public class Palette : MonoBehaviour
 
     public void Create(int size)
     {
-        if (size < 0 || size > Colors.cellColors.Length)
+        if (size <= 0 || size > Colors.cellColors.Length)
         {
             Debug.Log("Incorrect palette size was passed!");
             return;

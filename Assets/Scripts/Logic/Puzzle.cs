@@ -83,13 +83,13 @@ public class Puzzle
     public Puzzle(string rawPuzzleText)
     {
         var unicalCells = new HashSet<char>(rawPuzzleText.ToCharArray());
-        unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
+        unicalCells.RemoveWhere(c => c == 'b' || c == 'e' || c == '\n');
 
         var lines = rawPuzzleText.Split('\n');
 
         this.Partition = String.Join("", lines);
         Clear();
-
+        
         this.parts = unicalCells.Count;
         this.width = lines[0].Length;
         this.height = lines.Length;
