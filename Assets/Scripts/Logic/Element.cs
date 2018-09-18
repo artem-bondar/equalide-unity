@@ -60,7 +60,7 @@ public class Element
             return false;
         }
 
-        bool equal = first.body == second.body || first.GetBodyMirroredByHeight() == second.body;
+        var equal = first.body == second.body || first.GetBodyMirroredByHeight() == second.body;
 
         if (!equal)
         {
@@ -89,8 +89,8 @@ public class Element
     // Cut element to it's bounding rectangle of the same height
     private void CutBodyByWidth()
     {
-        List<int> startIndexes = new List<int>();
-        List<int> endIndexes = new List<int>();
+        var startIndexes = new List<int>();
+        var endIndexes = new List<int>();
 
         // Gets all starting and ending indexes of non-empty cells on every row
         for (var i = 0; i < height; i++)
@@ -115,13 +115,13 @@ public class Element
         }
 
         // Calculate bounds by width
-        int start = startIndexes.Min();
-        int end = endIndexes.Max();
+        var start = startIndexes.Min();
+        var end = endIndexes.Max();
 
         // Perform cutting if possible
         if ((start != 0) || (end != width - 1))
         {
-            string cutBody = "";
+            var cutBody = "";
 
             for (var i = 0; i < height; i++)
             {
@@ -138,7 +138,7 @@ public class Element
 
     private Element GetElementRotatedClockWise()
     {
-        string rotatedBody = "";
+        var rotatedBody = string.Empty;
 
         for (var i = 0; i < width; i++)
         {
@@ -153,7 +153,7 @@ public class Element
 
     private string GetBodyMirroredByHeight()
     {
-        string mirroredBody = "";
+        var mirroredBody = string.Empty;
 
         for (var i = 0; i < height; i++)
         {

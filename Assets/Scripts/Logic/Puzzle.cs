@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-
+using UnityEngine;
 // Contains puzzle with next representation:
 // '0-9' - colored cell
 // 'e' - empty cell, can be colored
@@ -89,7 +89,7 @@ public class Puzzle
 
         this.Partition = String.Join("", lines);
         Clear();
-        
+
         this.parts = unicalCells.Count;
         this.width = lines[0].Length;
         this.height = lines.Length;
@@ -144,14 +144,17 @@ public class Puzzle
 
         foreach (var cell in unicalCells)
         {
-            int firstOccurance = Partition.IndexOf(cell);
-            int lastOccurance = Partition.LastIndexOf(cell);
-            int length = lastOccurance - firstOccurance + 1;
+            var firstOccurance = Partition.IndexOf(cell);
+            var lastOccurance = Partition.LastIndexOf(cell);
+            var length = lastOccurance - firstOccurance + 1;
 
-            // Get partition that represent element cut by height
+            // Get partition that represent element cut by height bounds
             string substr = Partition.Substring(
                     firstOccurance - firstOccurance % width,
-                    length + width - length % width);
+                    length / width +
+                        (firstOccurance % width == 0 ? 0 : 1) +
+                        (lastOccurance % width == 0 ? 0 : 1) -
+                        (length < width ? 1 : 0));
 
             result.Add(new Element(
                 Regex.Replace(substr, String.Format("[^{0}]", cell), "e")
