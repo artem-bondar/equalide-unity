@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
         dataManager = GameObject.FindObjectOfType<DataManager>();
-
+        
         puzzleGrid.RenderPuzzle(dataManager.GetCurrentPuzzle());
     }
 }

@@ -1,139 +1,127 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PuzzleGrid : MonoBehaviour
 {
-    private readonly List<GameObject> tiles = new List<GameObject>();
+    public GameObject primitive;
+    private readonly List<Image> primitives = new List<Image>();
 
-    private Puzzle currentPuzzle;
+    private Puzzle puzzle;
 
-    private int cols;
-    private int rows;
+    // public AudioClip drawSoundDown;
+    // public AudioClip eraseSoundDown;
 
-    public AudioClip drawSoundDown;
-    public AudioClip eraseSoundDown;
-
-    public AudioClip drawSoundHover;
-    public AudioClip eraseSoundHover;
+    // public AudioClip drawSoundHover;
+    // public AudioClip eraseSoundHover;
 
     private bool eraseMode;
-    private bool down;
+    private bool duringSwipe;
 
     public void RenderPuzzle(Puzzle puzzle)
     {
-        cols = currentPuzzle.width;
-        rows = currentPuzzle.height;
+        this.puzzle = puzzle;
 
-        verticalFieldMargin = Screen.width * 5 / 180;
-        tileMargin = Screen.width / 360;
+        var grid = gameObject.GetComponent<GridLayoutGroup>();
 
-        fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5;
+        var primitiveSize = Mathf.Min(
+            grid.GetComponent<RectTransform>().rect.width / puzzle.width,
+            grid.GetComponent<RectTransform>().rect.height / puzzle.height);
 
-        tileSize = Mathf.Min((fieldHeight - 2 * tileMargin * rows) / rows, (Screen.width - 2 * tileMargin * cols) / cols);
+        gameObject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(primitiveSize, primitiveSize);
 
-        int centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
-        int centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
-
-        for (int i = 0; i < rows; i++)
+        for (var i = 0; i < puzzle.height; i++)
         {
-            for (int j = 0; j < cols; j++)
+            for (var j = 0; j < puzzle.width; j++)
             {
-                int index = i * cols + j;
+                GameObject newPrimitive = Instantiate(primitive);
+                newPrimitive.transform.SetParent(grid.transform);
 
-                int X = centringLeft + tileMargin + j * (tileSize + 2 * tileMargin);
-                int Y = Screen.height - centringTop - verticalFieldMargin - tileMargin - i * (tileSize + 2 * tileMargin);
-
-                tiles.Add(Instantiate(tile, new Vector3(X, Y, 0), Quaternion.identity) as GameObject);
-                tiles[index].transform.SetParent(gameField.transform, true);
-
-                tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, tileSize);
-                tiles[index].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tileSize);
-                switch (currentPuzzle[i, j])
+                switch (puzzle[i, j])
                 {
-                    case 'b': tiles[index].GetComponent<Image>().color = Color.clear; break;
-                    case 'e': tiles[index].GetComponent<Image>().color = Color.white; break;
+                    case 'b': newPrimitive.GetComponent<Image>().color = Color.clear; break;
+                    case 'e': newPrimitive.GetComponent<Image>().color = Color.white; break;
                 }
 
-                EventTrigger trigger = tiles[index].GetComponent<EventTrigger>();
+                var trigger = newPrimitive.GetComponent<EventTrigger>();
+                var iCopy = i;
+                var jCopy = j;
 
-                EventTrigger.Entry entry = new EventTrigger.Entry();
+                var entry = new EventTrigger.Entry();
                 entry.eventID = EventTriggerType.PointerDown;
-                entry.callback.AddListener(delegate { TileDown(index); });
+                entry.callback.AddListener(delegate { TileDown(iCopy, jCopy); });
                 trigger.triggers.Add(entry);
 
                 entry = new EventTrigger.Entry();
                 entry.eventID = EventTriggerType.PointerEnter;
-                entry.callback.AddListener(delegate { TileHover(index); });
+                entry.callback.AddListener(delegate { TileHover(iCopy, jCopy); });
                 trigger.triggers.Add(entry);
+
+                primitives.Add(primitive.GetComponent<Image>());
             }
         }
     }
 
-    void TileHover(int index)
+    void TileHover(int i, int j)
     {
-        if (!down)
+        if (!duringSwipe || puzzle[i, j] == 'b')
+        {
             return;
-
-        if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
-            return;
+        }
 
         int currentColor = 0; // !!!
-        //Debug.Log(currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width]);
 
-        if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && eraseMode)
+        if (currentColor == (puzzle[i, j] - '0') && eraseMode)
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
-            tiles[index].GetComponent<Image>().color = Color.white;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
+            puzzle[i, j] = 'e';
+            primitives[i * puzzle.width + j].GetComponent<Image>().color = Color.white;
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
             return;
         }
 
-        if (currentColor != (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0') && !eraseMode)
+        if (currentColor != (puzzle[i, j] - '0') && !eraseMode)
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
-            tiles[index].GetComponent<Image>().color = Colors.cellColors[currentColor];
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
+            puzzle[i, j] = (char)('0' + currentColor);
+            primitives[i * puzzle.width + j].GetComponent<Image>().color = Colors.cellColors[currentColor];
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
-        if (currentPuzzle.CheckForSolution())
+        if (puzzle.CheckForSolution())
         {
-
-            Debug.Log("Solved!");
-
-            RemovePartitions();
+            // RemovePartitions();
         }
     }
 
-    void TileDown(int index)
+    void TileDown(int i, int j)
     {
-        if (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] == 'b')
+        if (puzzle[i, j] == 'b')
+        {
             return;
+        }
 
-        down = true;
+        duringSwipe = true;
         int currentColor = 0; // !!!
 
-        if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
+        if (currentColor == (puzzle[i, j] - '0'))
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
-            tiles[index].GetComponent<Image>().color = Color.white;
+            puzzle[i, j] = 'e';
+            primitives[i * puzzle.width + j].GetComponent<Image>().color = Color.white;
             eraseMode = true;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
         {
-            currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
-            tiles[index].GetComponent<Image>().color = Colors.cellColors[currentColor];
+            puzzle[i, j] = (char)('0' + currentColor);
+            primitives[i * puzzle.width + j].GetComponent<Image>().color = Colors.cellColors[currentColor];
             eraseMode = false;
-            gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
-        if (currentPuzzle.CheckForSolution())
+        if (puzzle.CheckForSolution())
         {
-
-            Debug.Log("Solved!");
-
-            RemovePartitions();
+            // RemovePartitions();
         }
     }
 
@@ -141,16 +129,11 @@ public class PuzzleGrid : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(0))
         {
-            down = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+            duringSwipe = false;
         }
     }
 
-    void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
+    /* void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
     {
         for (int i = 0; i < rows; ++i)
         {
@@ -164,22 +147,22 @@ public class PuzzleGrid : MonoBehaviour
     void RemovePartitionsForSingleTile(int tileRow, int tileColumn)
     {
         int longSide = tileSize;
-        int shortSide = 2 * tileMargin;
+        int shortSide = 2 * primitiveMargin;
 
         int tileIndex = tileRow * cols + tileColumn;
-        var tileColor = tiles[tileIndex].GetComponent<Image>().color;
+        var tileColor = primitives[tileIndex].GetComponent<Image>().color;
 
-        int X = (int)tiles[tileIndex].transform.position.x;
-        int Y = (int)tiles[tileIndex].transform.position.y;
+        int X = (int)primitives[tileIndex].transform.position.x;
+        int Y = (int)primitives[tileIndex].transform.position.y;
 
         if (tileColumn != cols - 1)
         { // has right neighbor
             int rightTileIndex = tileRow * cols + (tileColumn + 1);
-            var rightTileColor = tiles[rightTileIndex].GetComponent<Image>().color;
+            var rightTileColor = primitives[rightTileIndex].GetComponent<Image>().color;
 
             if (tileColor == rightTileColor)
             {
-                var verticalPartition = Instantiate(tile, new Vector3(X + tileSize, Y, 0), Quaternion.identity) as GameObject;
+                var verticalPartition = Instantiate(primitive, new Vector3(X + tileSize, Y, 0), Quaternion.identity) as GameObject;
                 verticalPartition.transform.SetParent(gameObject.transform, true);
 
                 verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, shortSide);
@@ -187,18 +170,18 @@ public class PuzzleGrid : MonoBehaviour
 
                 verticalPartition.GetComponent<Image>().color = tileColor;
 
-                tiles.Add(verticalPartition);
+                primitives.Add(verticalPartition);
             }
         }
 
         if (tileRow != rows - 1)
         { // has down neighbor
             int downTileIndex = (tileRow + 1) * cols + tileColumn;
-            var downTileColor = tiles[downTileIndex].GetComponent<Image>().color;
+            var downTileColor = primitives[downTileIndex].GetComponent<Image>().color;
 
             if (tileColor == downTileColor)
             {
-                var horizontalPartition = Instantiate(tile, new Vector3(X, Y - tileSize, 0), Quaternion.identity) as GameObject;
+                var horizontalPartition = Instantiate(primitive, new Vector3(X, Y - tileSize, 0), Quaternion.identity) as GameObject;
                 horizontalPartition.transform.SetParent(gameObject.transform, true);
 
                 horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, longSide);
@@ -206,8 +189,8 @@ public class PuzzleGrid : MonoBehaviour
 
                 horizontalPartition.GetComponent<Image>().color = tileColor;
 
-                tiles.Add(horizontalPartition);
+                primitives.Add(horizontalPartition);
             }
         }
-    }
+    } */
 }

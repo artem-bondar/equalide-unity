@@ -454,7 +454,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 100, y: 100}
@@ -479,6 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5e31ed7610a614da0187af539fbf79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primitive: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
 --- !u!1 &645323711
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,7 +713,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1056047870
 Transform:
   m_ObjectHideFlags: 0
@@ -861,14 +862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba7ef5bfb395a1f4fac15a76615b9a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameField: {fileID: 0}
-  puzzleString: 
-  sceneName: 
-  drawSoundDown: {fileID: 0}
-  eraseSoundDown: {fileID: 0}
-  drawSoundHover: {fileID: 0}
-  eraseSoundHover: {fileID: 0}
-  tile: {fileID: 0}
 --- !u!1 &1245774239
 GameObject:
   m_ObjectHideFlags: 0
