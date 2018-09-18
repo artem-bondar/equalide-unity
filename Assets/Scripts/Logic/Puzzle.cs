@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine;
 // 'e' - empty cell, can be colored
 // 'b' - blank cell, can't be colored
 
-public class Puzzle
+public class Puzzle : IEnumerable<char>
 {
     // Holds string representation of 2D-array
     private string Partition;
@@ -46,6 +47,16 @@ public class Puzzle
                 Partition = new string(copy);
             }
         }
+    }
+
+    public IEnumerator<char> GetEnumerator()
+    {
+        return partition.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return partition.GetEnumerator();
     }
 
     // Amount of elements in puzzle

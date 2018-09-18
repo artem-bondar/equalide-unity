@@ -43,7 +43,7 @@ public class PuzzleGrid : MonoBehaviour
 
         grid.cellSize = new Vector2(primitiveSize, primitiveSize);
 
-        foreach (var cell in puzzle.partition)
+        foreach (var cell in puzzle)
         {
             var newPrimitive = Instantiate(primitive).GetComponent<Image>();
             newPrimitive.transform.SetParent(grid.transform);
