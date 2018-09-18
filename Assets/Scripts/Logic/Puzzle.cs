@@ -88,7 +88,7 @@ public class Puzzle
         var lines = rawPuzzleText.Split('\n');
 
         this.Partition = String.Join("", lines);
-        Clear();
+        Refresh();
 
         this.parts = unicalCells.Count;
         this.width = lines[0].Length;
@@ -96,7 +96,7 @@ public class Puzzle
     }
 
     // Clears puzzle partition to initial state
-    public void Clear()
+    public void Refresh()
     {
         Partition = Regex.Replace(Partition, "[^be]", "e");
     }

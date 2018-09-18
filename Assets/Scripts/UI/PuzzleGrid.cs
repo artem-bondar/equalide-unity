@@ -43,36 +43,34 @@ public class PuzzleGrid : MonoBehaviour
 
         grid.cellSize = new Vector2(primitiveSize, primitiveSize);
 
-        for (var i = 0; i < puzzle.height; i++)
+        foreach (var cell in puzzle.partition)
         {
-            for (var j = 0; j < puzzle.width; j++)
+            var newPrimitive = Instantiate(primitive).GetComponent<Image>();
+            newPrimitive.transform.SetParent(grid.transform);
+
+            if (cell != 'e')
             {
-                var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-                newPrimitive.transform.SetParent(grid.transform);
-
-                if (puzzle[i, j] != 'e')
-                {
-                    newPrimitive.GetComponent<Image>().color =
-                        (puzzle[i, j] == 'b') ? Colors.backgroundColor :
-                            Colors.cellColors[puzzle[i, j] - '0'];
-                }
-
-                var iCopy = i;
-                var jCopy = j;
-                var trigger = newPrimitive.GetComponent<EventTrigger>();
-
-                var entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerDown;
-                entry.callback.AddListener(delegate { PointerDown(iCopy, jCopy); });
-                trigger.triggers.Add(entry);
-
-                entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerEnter;
-                entry.callback.AddListener(delegate { PointerEnter(iCopy, jCopy); });
-                trigger.triggers.Add(entry);
-
-                primitives.Add(newPrimitive);
+                newPrimitive.GetComponent<Image>().color =
+                    (cell == 'b') ? Colors.backgroundColor :
+                        Colors.cellColors[cell - '0'];
             }
+
+            var i = primitives.Count / puzzle.width;
+            var j = primitives.Count % puzzle.width;
+            var trigger = newPrimitive.GetComponent<EventTrigger>();
+
+            var entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerDown;
+            entry.callback.AddListener(delegate { PointerDown(i, j); });
+            trigger.triggers.Add(entry);
+
+            entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerEnter;
+            entry.callback.AddListener(delegate { PointerEnter(i, j); });
+            trigger.triggers.Add(entry);
+
+            primitives.Add(newPrimitive);
+
         }
 
         paintLock = false;
@@ -80,15 +78,13 @@ public class PuzzleGrid : MonoBehaviour
 
     public void Refresh()
     {
-        for (var i = 0; i < puzzle.height; i++)
+        puzzle.Refresh();
+
+        foreach (var primitive in primitives)
         {
-            for (var j = 0; j < puzzle.width; j++)
+            if (primitive.color != Colors.backgroundColor)
             {
-                if (puzzle[i, j] != 'b')
-                {
-                    puzzle[i, j] = 'e';
-                    primitives[i * puzzle.width + j].color = Color.white;
-                }
+                primitive.color = Color.white;
             }
         }
     }
