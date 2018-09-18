@@ -16,6 +16,13 @@ public class Palette : MonoBehaviour
             return Colors.cellColors[pencilPosition];
         }
     }
+    public char paintColorChar
+    {
+        get
+        {
+            return (char)(pencilPosition + '0');
+        }
+    }
 
     public void Create(int size)
     {

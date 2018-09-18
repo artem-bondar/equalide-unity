@@ -10,6 +10,7 @@ public class PuzzleGrid : MonoBehaviour
     private const int primitiveMargin = 3; // 1 dp
     private readonly List<Image> primitives = new List<Image>();
 
+    private Palette palette;
     private Puzzle puzzle;
 
     // public AudioClip drawSoundDown;
@@ -22,6 +23,12 @@ public class PuzzleGrid : MonoBehaviour
     private bool duringSwipe;
 
     public bool paintLock = true;
+
+
+    public void Start()
+    {
+        palette = GameObject.FindObjectOfType<Palette>();
+    }
 
     public void RenderPuzzle(Puzzle puzzle)
     {
@@ -50,18 +57,18 @@ public class PuzzleGrid : MonoBehaviour
                             Colors.cellColors[puzzle[i, j] - '0'];
                 }
 
-                var trigger = newPrimitive.GetComponent<EventTrigger>();
                 var iCopy = i;
                 var jCopy = j;
+                var trigger = newPrimitive.GetComponent<EventTrigger>();
 
                 var entry = new EventTrigger.Entry();
                 entry.eventID = EventTriggerType.PointerDown;
-                entry.callback.AddListener(delegate { TileDown(iCopy, jCopy); });
+                entry.callback.AddListener(delegate { PointerDown(iCopy, jCopy); });
                 trigger.triggers.Add(entry);
 
                 entry = new EventTrigger.Entry();
                 entry.eventID = EventTriggerType.PointerEnter;
-                entry.callback.AddListener(delegate { TileHover(iCopy, jCopy); });
+                entry.callback.AddListener(delegate { PointerEnter(iCopy, jCopy); });
                 trigger.triggers.Add(entry);
 
                 primitives.Add(newPrimitive);
@@ -71,28 +78,28 @@ public class PuzzleGrid : MonoBehaviour
         paintLock = false;
     }
 
-    void TileHover(int i, int j)
+    void PointerDown(int i, int j)
     {
-        if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
+        if (paintLock || puzzle[i, j] == 'b')
         {
             return;
         }
 
-        int currentColor = 0; // !!!
+        duringSwipe = true;
 
-        if (currentColor == (puzzle[i, j] - '0') && eraseMode)
+        if (puzzle[i, j] == palette.paintColorChar)
         {
             puzzle[i, j] = 'e';
-            primitives[i * puzzle.width + j].GetComponent<Image>().color = Color.white;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
-            return;
+            primitives[i * puzzle.width + j].color = Color.white;
+            eraseMode = true;
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
-
-        if (currentColor != (puzzle[i, j] - '0') && !eraseMode)
+        else
         {
-            puzzle[i, j] = (char)('0' + currentColor);
-            primitives[i * puzzle.width + j].GetComponent<Image>().color = Colors.cellColors[currentColor];
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
+            puzzle[i, j] = palette.paintColorChar;
+            primitives[i * puzzle.width + j].color = palette.paintColor;
+            eraseMode = false;
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
         if (puzzle.CheckForSolution())
@@ -101,29 +108,25 @@ public class PuzzleGrid : MonoBehaviour
         }
     }
 
-    void TileDown(int i, int j)
+    void PointerEnter(int i, int j)
     {
-        if (paintLock || puzzle[i, j] == 'b')
+        if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
         {
             return;
         }
 
-        duringSwipe = true;
-        int currentColor = 0; // !!!
-
-        if (currentColor == (puzzle[i, j] - '0'))
+        if (puzzle[i, j] == palette.paintColorChar && eraseMode)
         {
             puzzle[i, j] = 'e';
-            primitives[i * puzzle.width + j].GetComponent<Image>().color = Color.white;
-            eraseMode = true;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
+            primitives[i * puzzle.width + j].color = Color.white;
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
+            return;
         }
         else
         {
-            puzzle[i, j] = (char)('0' + currentColor);
-            primitives[i * puzzle.width + j].GetComponent<Image>().color = Colors.cellColors[currentColor];
-            eraseMode = false;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
+            puzzle[i, j] = palette.paintColorChar;
+            primitives[i * puzzle.width + j].color = palette.paintColor;
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
         if (puzzle.CheckForSolution())
