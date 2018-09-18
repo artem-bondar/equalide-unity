@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowPackSelectScreen()
     {
-
+        SceneManager.LoadScene("PackSelection", LoadSceneMode.Additive);
     }
 
     public void OnMailIntent()
