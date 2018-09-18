@@ -21,8 +21,6 @@ public class PackData
 		}
 	}
 
-	public static explicit operator PackData(string rawPackText)
-    {
-        return new PackData(new Pack(rawPackText));
-    }
+	public static explicit operator PackData(string rawPackText) =>
+        new PackData(new Pack(rawPackText));
 }

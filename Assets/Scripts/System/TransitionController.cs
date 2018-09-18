@@ -183,10 +183,7 @@ public class TransitionController : MonoBehaviour
         return pos;
     }
 
-    public Vector2 GetPosOriginRelative(GameObject obj)
-    {
-        return GetPosOriginRelative(obj, Vector2.zero);
-    }
+    public Vector2 GetPosOriginRelative(GameObject obj) => GetPosOriginRelative(obj, Vector2.zero);
 
     public Vector2 GetAbsoluteSize(GameObject obj)
     {

@@ -29,10 +29,7 @@ public class DataManager : MonoBehaviour
         packs[currentPack][currentPuzzle].partition = progressData.savedPartition;
     }
 
-    public Puzzle GetCurrentPuzzle()
-    {
-        return packs[currentPack][currentPuzzle];
-    }
+    public Puzzle GetCurrentPuzzle() => packs[currentPack][currentPuzzle];
 
     private List<PackData> LoadPacksData()
     {
@@ -174,7 +171,8 @@ public class DataManager : MonoBehaviour
     }
 
     // TODO
-    private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
+    private ProgressData RepairProgressData(
+        List<PackData> packsData, ProgressData progressData)
     {
         return InitGameProgress(packsData);
     }

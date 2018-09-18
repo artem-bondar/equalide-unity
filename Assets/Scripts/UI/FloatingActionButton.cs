@@ -44,17 +44,8 @@ public class FloatingActionButton : MonoBehaviour {
         gameObject.transform.localScale = Vector3.one;
         gameObject.GetComponent<CanvasGroup>().alpha = 1;
     }
-    void Start () {
-        StartCoroutine(Appear());
-	}
 
-    public void ClickDisappear()
-    {
-        StartCoroutine(Disappear());
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void Start () => StartCoroutine(Appear());
+
+    public void ClickDisappear() => StartCoroutine(Disappear());
 }

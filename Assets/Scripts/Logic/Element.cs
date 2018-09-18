@@ -46,12 +46,10 @@ public class Element
         }
     }
 
-    public override int GetHashCode()
-    {
-        return body.GetHashCode();
-    }
+    public override int GetHashCode() => body.GetHashCode();
 
     // Checks equality to another element with accuracy to rotations and reflections
+    public static bool operator !=(Element first, Element second) => !(first == second);    
     public static bool operator ==(Element first, Element second)
     {
         if ((first.width != second.width || first.height != second.height) &&
@@ -79,11 +77,6 @@ public class Element
         }
 
         return equal;
-    }
-
-    public static bool operator !=(Element first, Element second)
-    {
-        return !(first == second);
     }
 
     // Cut element to it's bounding rectangle of the same height

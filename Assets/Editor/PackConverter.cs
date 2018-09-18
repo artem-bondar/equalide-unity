@@ -15,10 +15,7 @@ public class PackConverter : EditorWindow
     private List<PackData> packsForConvert;
 
     [MenuItem("Window/Pack Converter")]
-    static void Init()
-    {
-        EditorWindow.GetWindow(typeof(PackConverter)).Show();
-    }
+    static void Init() => EditorWindow.GetWindow(typeof(PackConverter)).Show();
 
     private void OnGUI()
     {

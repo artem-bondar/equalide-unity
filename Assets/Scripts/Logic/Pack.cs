@@ -28,15 +28,10 @@ public class Pack : IEnumerable<Puzzle>
         }
     }
 
-    public IEnumerator<Puzzle> GetEnumerator()
-    {
-        return ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
-    }
+    public IEnumerator<Puzzle> GetEnumerator() =>
+        ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return puzzles.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => puzzles.GetEnumerator();
 
     public Pack(Puzzle[] puzzles, bool opened, bool solved)
     {

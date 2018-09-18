@@ -49,15 +49,8 @@ public class Puzzle : IEnumerable<char>
         }
     }
 
-    public IEnumerator<char> GetEnumerator()
-    {
-        return partition.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return partition.GetEnumerator();
-    }
+    public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
 
     // Amount of elements in puzzle
     public readonly int parts;
@@ -198,8 +191,6 @@ public class Puzzle : IEnumerable<char>
         return true;
     }
 
-    private bool CheckIfValidIndexes(int i, int j)
-    {
-        return i * width + j >= 0 && i * width + j <= Partition.Length;
-    }
+    private bool CheckIfValidIndexes(int i, int j) =>
+        i * width + j >= 0 && i * width + j <= Partition.Length;
 }
