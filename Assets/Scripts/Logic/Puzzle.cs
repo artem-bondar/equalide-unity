@@ -186,6 +186,6 @@ public class Puzzle
 
     private bool CheckIfValidIndexes(int i, int j)
     {
-        return i * width + j > 0 && i * width + j < Partition.Length;
+        return i * width + j >= 0 && i * width + j <= Partition.Length;
     }
 }
