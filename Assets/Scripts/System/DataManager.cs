@@ -19,7 +19,9 @@ public class DataManager : MonoBehaviour
     private void Start()
     {
         List<PackData> packsData = LoadPacksData();
-        ProgressData progressData = LoadGameProgress();
+        ProgressData progressData =
+            (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
+            LoadGameProgress() : InitGameProgress(packsData);
         packs = AssemblePacks(packsData, progressData);
 
         currentPack = progressData.currentPack;
@@ -56,7 +58,7 @@ public class DataManager : MonoBehaviour
 
                     PackData packData = (PackData)bf.Deserialize(file);
                     file.Close();
-
+                    
                     packsData.Add(packData);
                 }
             }
@@ -75,40 +77,33 @@ public class DataManager : MonoBehaviour
 
     private ProgressData LoadGameProgress()
     {
-        if (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}"))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open($"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
-            
-            ProgressData progressData = (ProgressData)bf.Deserialize(file);
-            file.Close();
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Open($"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
 
-            return progressData;
-        }
-        else
-        {
-            ProgressData progressData = InitGameProgress();
-            SaveGameProgress (progressData);
+        ProgressData progressData = (ProgressData)bf.Deserialize(file);
+        file.Close();
 
-            return progressData;
-        }
+        return progressData;
     }
 
-    private ProgressData InitGameProgress()
+    private ProgressData InitGameProgress(List<PackData> packsData)
     {
         currentPack = 0;
         currentPuzzle = 0;
 
-        var packProgress = 'o' + new String('c', packs.Count - 1);
-        var puzzleProgress = new string[packs.Count];
+        var packProgress = 'o' + new String('c', packsData.Count - 1);
+        var puzzleProgress = new string[packsData.Count];
 
-        puzzleProgress[0] = 'o' + new String('c', packs[0].size - 1);
-        for (int i = 1; i < packs.Count; i++)
+        puzzleProgress[0] = 'o' + new String('c', packsData[0].puzzles.Length - 1);
+        for (int i = 1; i < packsData.Count; i++)
         {
-            puzzleProgress[i] += '\n' + new String('c', packs[i].size);
+            puzzleProgress[i] += '\n' + new String('c', packsData[i].puzzles.Length);
         }
 
-        return new ProgressData(currentPack, currentPuzzle, String.Empty, packProgress, puzzleProgress);
+        var progressData = new ProgressData(currentPack, currentPuzzle, String.Empty, packProgress, puzzleProgress);
+        SaveGameProgress(progressData);
+
+        return progressData;
     }
 
     private List<Pack> AssemblePacks(List<PackData> packsData, ProgressData progressData)
@@ -181,7 +176,7 @@ public class DataManager : MonoBehaviour
     // TODO
     private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
     {
-        return progressData;
+        return InitGameProgress(packsData);
     }
 
     private ProgressData GetProgressData()

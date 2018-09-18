@@ -28,6 +28,7 @@ public class Pack : IEnumerable<Puzzle>
         }
     }
 
+    // FIXME
     public IEnumerator<Puzzle> GetEnumerator()
     {
         return (IEnumerator<Puzzle>)puzzles.GetEnumerator();
@@ -61,7 +62,7 @@ public class Pack : IEnumerable<Puzzle>
     // ---
     public Pack(string rawPackText)
     {
-        string[] puzzles = rawPackText.Split(new[] { "\n\n " }, 0);
+        string[] puzzles = rawPackText.Split(new[] { "\n\n" }, 0);
 
         size = puzzles.Length;
         this.puzzles = new Puzzle[size];

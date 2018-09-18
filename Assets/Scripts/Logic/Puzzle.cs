@@ -87,15 +87,12 @@ public class Puzzle
 
         var lines = rawPuzzleText.Split('\n');
 
-        var height = lines.Length;
-        var width = lines[0].Length;
-
         this.Partition = String.Join("", lines);
         Clear();
 
         this.parts = unicalCells.Count;
-        this.width = width;
-        this.height = height;
+        this.width = lines[0].Length;
+        this.height = lines.Length;
     }
 
     // Clears puzzle partition to initial state
