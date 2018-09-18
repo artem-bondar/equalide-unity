@@ -28,10 +28,9 @@ public class Pack : IEnumerable<Puzzle>
         }
     }
 
-    // FIXME
     public IEnumerator<Puzzle> GetEnumerator()
     {
-        return (IEnumerator<Puzzle>)puzzles.GetEnumerator();
+        return ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
