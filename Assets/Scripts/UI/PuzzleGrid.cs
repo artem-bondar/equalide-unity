@@ -25,7 +25,7 @@ public class PuzzleGrid : MonoBehaviour
     public bool paintLock = true;
 
 
-    public void Start()
+    private void Start()
     {
         palette = GameObject.FindObjectOfType<Palette>();
     }
@@ -52,7 +52,7 @@ public class PuzzleGrid : MonoBehaviour
 
                 if (puzzle[i, j] != 'e')
                 {
-                    newPrimitive.GetComponent<Image>().color = 
+                    newPrimitive.GetComponent<Image>().color =
                         (puzzle[i, j] == 'b') ? Colors.backgroundColor :
                             Colors.cellColors[puzzle[i, j] - '0'];
                 }
@@ -78,7 +78,22 @@ public class PuzzleGrid : MonoBehaviour
         paintLock = false;
     }
 
-    void PointerDown(int i, int j)
+    public void Refresh()
+    {
+        for (var i = 0; i < puzzle.height; i++)
+        {
+            for (var j = 0; j < puzzle.width; j++)
+            {
+                if (puzzle[i, j] != 'b')
+                {
+                    puzzle[i, j] = 'e';
+                    primitives[i * puzzle.width + j].color = Color.white;
+                }
+            }
+        }
+    }
+
+    private void PointerDown(int i, int j)
     {
         if (paintLock || puzzle[i, j] == 'b')
         {
@@ -108,7 +123,7 @@ public class PuzzleGrid : MonoBehaviour
         }
     }
 
-    void PointerEnter(int i, int j)
+    private void PointerEnter(int i, int j)
     {
         if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
         {
@@ -135,7 +150,7 @@ public class PuzzleGrid : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButtonUp(0))
         {

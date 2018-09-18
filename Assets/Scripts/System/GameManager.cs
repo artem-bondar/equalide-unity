@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     private PuzzleGrid puzzleGrid;
     private DataManager dataManager;
 
-    public void Start()
+    private void Start()
     {
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
@@ -20,5 +20,15 @@ public class GameManager : MonoBehaviour
         Puzzle puzzle = dataManager.GetCurrentPuzzle();
         puzzleGrid.RenderPuzzle(puzzle);
         palette.Create(puzzle.parts);
+    }
+
+    public void ShowPackSelectScreen()
+    {
+
+    }
+
+    public void OnMailIntent()
+    {
+        
     }
 }
