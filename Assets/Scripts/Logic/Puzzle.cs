@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEngine;
+
 // Contains puzzle with next representation:
 // '0-9' - colored cell
 // 'e' - empty cell, can be colored
@@ -91,7 +90,7 @@ public class Puzzle : IEnumerable<char>
 
         var lines = rawPuzzleText.Split('\n');
 
-        this.Partition = String.Join("", lines);
+        this.Partition = string.Join("", lines);
         Refresh();
 
         this.parts = unicalCells.Count;
@@ -161,7 +160,7 @@ public class Puzzle : IEnumerable<char>
                         (length < width ? 1 : 0));
 
             result.Add(new Element(
-                Regex.Replace(substr, String.Format("[^{0}]", cell), "e")
+                Regex.Replace(substr, string.Format("[^{0}]", cell), "e")
                 .Replace(cell, 'c'),
                 width));
         }
@@ -181,7 +180,7 @@ public class Puzzle : IEnumerable<char>
         {
             if ((Partition[i] == 'b' && partition[i] != 'b') ||
                 (Partition[i] != 'b' && partition[i] == 'b') ||
-                (!Char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
+                (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
                 partition[i] - '0' >= this.parts)
             {
                 return false;
