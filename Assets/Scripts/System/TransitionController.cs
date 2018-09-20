@@ -23,27 +23,15 @@ public enum Direction
 
 public class TransitionController : MonoBehaviour
 {
+    // Remove it
     public GameObject[] UIElements;
-
-    bool[] lockedUI;
-
-    void Start()
-    {
-        //what if UIElements are changed during run-time?
-        lockedUI = new bool[UIElements.Length];
-        
-        for (var i = 0; i < lockedUI.Length; i++)
-        {
-            lockedUI[i] = false;
-        }
-    }
 
     void Init(TransitionType transitionType, Direction direction,
               GameObject startUI, GameObject endUI,
               float targetAlign = 1, float annexAlign = 1)
     {
-        Vector2 targetOrigin = Vector2.zero;
-        Vector2 annexOrigin = Vector2.zero;
+        Vector2 targetOrigin;
+        Vector2 annexOrigin;
 
         switch (transitionType)
         {
@@ -80,7 +68,7 @@ public class TransitionController : MonoBehaviour
                 annexOrigin = new Vector2(1, annexAlign);
                 break;
 
-            case Direction.None:
+            default:
                 targetOrigin = new Vector2(0.5f, 0.5f);
                 annexOrigin = new Vector2(0.5f, 0.5f);
                 break;
@@ -89,6 +77,7 @@ public class TransitionController : MonoBehaviour
         AlignByOrigins(startUI, endUI, targetOrigin, annexOrigin, true);
     }
 
+    // Same logic as in SetAsPrevSibling, remove one
     public void SetAsNextSibling(GameObject target, GameObject next)
     {
         Transform parent = target.transform.parent;
@@ -129,19 +118,6 @@ public class TransitionController : MonoBehaviour
         }
 
         previous.transform.SetSiblingIndex(sibIndex);
-    }
-
-    void AddComponents(TransitionType type, GameObject startUI, GameObject endUI)
-    {
-        if (!startUI.GetComponent<CanvasGroup>())
-        {
-            startUI.AddComponent<CanvasGroup>();
-        }
-
-        if (!endUI.GetComponent<CanvasGroup>())
-        {
-            endUI.AddComponent<CanvasGroup>();
-        }
     }
 
     public void AlignByOrigins(GameObject targetObj, GameObject annexObj, Vector2 targetOrigin, Vector2 annexOrigin, bool sharesRotation = false)
@@ -191,32 +167,30 @@ public class TransitionController : MonoBehaviour
         return new Vector2(width, height);
     }
 
-    IEnumerator Fade(int target, int direction, float duration)
+    IEnumerator Fade(GameObject UI, int direction, float duration)
     {
         float delta = Time.deltaTime / duration * direction;
         float shift = 0;
-        float oldAlpha = UIElements[target].GetComponent<CanvasGroup>().alpha;
+        float oldAlpha = UI.GetComponent<CanvasGroup>().alpha;
 
         while (Mathf.Abs(shift) < 1)
         {
             yield return new WaitForEndOfFrame();
             shift += delta;
-            UIElements[target].GetComponent<CanvasGroup>().alpha += delta;
+            UI.GetComponent<CanvasGroup>().alpha += delta;
         }
 
-        UIElements[target].GetComponent<CanvasGroup>().alpha = oldAlpha + direction;
-
-        lockedUI[target] = false;
+        UI.GetComponent<CanvasGroup>().alpha = oldAlpha + direction;
 
         // otherwise it will block raycasting for newUI
         if (direction == -1)
         {
-            UIElements[target].transform.SetAsFirstSibling();
+            UI.transform.SetAsFirstSibling();
         }
     }
 
 
-    IEnumerator Shift(int[] targets, Vector3[] shifts, float duration)
+    IEnumerator Shift(GameObject[] targets, Vector3[] shifts, float duration)
     {
         //select() is map() in C#
         Vector3[] deltas = shifts.Select(elem => elem * Time.deltaTime / duration).ToArray();
@@ -225,9 +199,8 @@ public class TransitionController : MonoBehaviour
 
         for (int i = 0; i < targets.Length; i++)
         {
-            oldPosition[i] = UIElements[targets[i]].transform.position;
+            oldPosition[i] = targets[i].transform.position;
         }
-
 
         while (currentShift.magnitude < shifts[0].magnitude)
         {
@@ -237,76 +210,23 @@ public class TransitionController : MonoBehaviour
 
             for (int i = 0; i < targets.Length; i++)
             {
-                UIElements[targets[i]].transform.Translate(deltas[i]);
+                targets[i].transform.Translate(deltas[i]);
             }
 
         }
 
         for (int i = 0; i < targets.Length; i++)
         {
-            float angle = UIElements[targets[i]].transform.eulerAngles.z;
+            float angle = targets[i].transform.eulerAngles.z;
             Vector3 rot = Quaternion.AngleAxis(angle, Vector3.forward) * shifts[i];
-            UIElements[targets[i]].transform.position = oldPosition[i] + rot;
-
-            lockedUI[targets[i]] = false;
+            targets[i].transform.position = oldPosition[i] + rot;
         }
     }
 
-    public void DoCustomShifts(int[] indexes, Vector3[] shifts, float duration)
-    {
-        foreach (var i in indexes)
-        {
-            if (lockedUI[i])
-            {
-                return;
-            }
-        }
-
-        foreach (var i in indexes)
-        {
-            lockedUI[i] = true;
-        }
-
-        StartCoroutine(Shift(indexes, shifts, duration));
-    }
-
-    public void DoTransition(int from, int to,
+    public void DoTransition(GameObject startUI, GameObject endUI,
         TransitionType transitionType, Direction direction,
         float duration, float targetAlign = 1, float annexAlign = 1)
     {
-        GameObject startUI = UIElements[from];
-        GameObject endUI = UIElements[to];
-
-        if (transitionType == TransitionType.SlideOver ||
-            transitionType == TransitionType.FadeIn ||
-            transitionType == TransitionType.Slide)
-        {
-            if (lockedUI[to])
-            {
-                return;
-            }
-            else
-            {
-                lockedUI[to] = true;
-            }
-        }
-
-        if (transitionType == TransitionType.SlideAway ||
-            transitionType == TransitionType.FadeOut ||
-            transitionType == TransitionType.Slide)
-        {
-            if (lockedUI[from])
-            {
-                return;
-            }
-            else
-            {
-                lockedUI[from] = true;
-            }
-        }
-
-
-        AddComponents(transitionType, startUI, endUI);
         Init(transitionType, direction, startUI, endUI, targetAlign, annexAlign);
 
         Vector3 shift;
@@ -341,23 +261,23 @@ public class TransitionController : MonoBehaviour
         switch (transitionType)
         {
             case TransitionType.FadeIn:
-                StartCoroutine(Fade(to, 1, duration));
+                StartCoroutine(Fade(endUI, 1, duration));
                 break;
 
             case TransitionType.FadeOut:
-                StartCoroutine(Fade(from, -1, duration));
+                StartCoroutine(Fade(startUI, -1, duration));
                 break;
 
             case TransitionType.SlideOver:
-                StartCoroutine(Shift(new int[] { to }, new Vector3[] { shift }, duration));
+                StartCoroutine(Shift(new GameObject[] { endUI }, new Vector3[] { shift }, duration));
                 break;
 
             case TransitionType.SlideAway:
-                StartCoroutine(Shift(new int[] { from }, new Vector3[] { shift }, duration));
+                StartCoroutine(Shift(new GameObject[] { startUI }, new Vector3[] { shift }, duration));
                 break;
 
             case TransitionType.Slide:
-                StartCoroutine(Shift(new int[] { to, from }, new Vector3[] { shift, shift }, duration));
+                StartCoroutine(Shift(new GameObject[] { endUI, startUI }, new Vector3[] { shift, shift }, duration));
                 break;
         }
     }

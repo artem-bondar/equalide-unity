@@ -50,7 +50,7 @@ public class PackSelection : MonoBehaviour {
 
     void PackClick(int index)
     {
-        transitionHandler.DoTransition(1, 2, TransitionType.SlideOver, Direction.Left, 0.3f);
+        // transitionHandler.DoTransition(1, 2, TransitionType.SlideOver, Direction.Left, 0.3f);
     }
 
 }
