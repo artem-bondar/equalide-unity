@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -43,14 +44,15 @@ public class Game : MonoBehaviour
     private bool solved = false; // used to clear everything after a click if solved
 
     public Font font;
-    private int[] TextMas ={10,15,5,12,13,7,17,18,4,2,16,14,19,8};
+    public int[,] TextMas ={{10,15,5,12,13,7,17,18,4,2,16,14,19,8},{0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
     private int TextCounter = 0; 
     public int fontsize;
     public GameObject[] TextGameMas;
-    public GameObject[] BlueYellowText = new GameObject[2];
     public Transform TextTransform;
     public int CounterFirst;
     public int CounterLast;
+    int BlueTextSum=0;
+    int YellowTextSum=0;
 
     public void Start()
     {   
@@ -92,7 +94,6 @@ public class Game : MonoBehaviour
         int centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
         int centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
         TextGameMas = new GameObject[(rows-1)*cols+(cols-1)];
-        BlueYellowTextCreator();
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -139,7 +140,7 @@ public class Game : MonoBehaviour
         if(TextCounter >13) return;    
         GameObject newText = new GameObject("ButtonText"+index, typeof(Text));
         newText.transform.SetParent(tiles[index].transform);
-        newText.GetComponent<Text>().text ="" + TextMas[TextCounter];
+        newText.GetComponent<Text>().text ="" + TextMas[0,TextCounter];
         newText.GetComponent<Text>().font = font;
         newText.GetComponent<Text>().fontSize=40;
         fontsize=newText.GetComponent<Text>().fontSize;
@@ -151,33 +152,12 @@ public class Game : MonoBehaviour
         newText.GetComponent<Text>().color = Color.black;
         newText.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
         TextGameMas[index] = newText;
+        TextMas[1,TextCounter] = index;
         TextCounter++;
         
     }
 
-    void BlueYellowTextCreator()
-    {
-        for(int i=0; i<2;i++)
-        {
-            GameObject newText = new GameObject("BlueYellowText"+i, typeof(Text));
-            newText.transform.SetParent(TextTransform);
-            newText.GetComponent<Text>().text ="" + TextMas[TextCounter];
-            newText.GetComponent<Text>().font = font;
-            newText.GetComponent<Text>().fontSize=40;
-            fontsize=newText.GetComponent<Text>().fontSize;
-            RectTransform rt = newText.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 0);
-            rt.anchorMax = new Vector2(1, 1);
-            rt.anchoredPosition = new Vector2(0, 0);
-            rt.sizeDelta = new Vector2(0, 0);
-            newText.GetComponent<Text>().color = Color.black;
-            newText.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-            BlueYellowText[i] = newText;
-            BlueYellowText[i].gameObject.SetActive(false);
-        }
-    }
-
-    GameObject MiddleTile(int ColorIndex)
+    int MiddleTile(int ColorIndex)
     {   
         CounterFirst = 0;
         while(tiles[CounterFirst].GetComponent<Image>().color != colors[ColorIndex])
@@ -189,44 +169,37 @@ public class Game : MonoBehaviour
         {
             CounterLast++;
         }
-        if(tiles[CounterLast].GetComponent<Image>().color != colors[0])
+        if(tiles[CounterLast].GetComponent<Image>().color != colors[ColorIndex])
         {
-            while(tiles[CounterLast].GetComponent<Image>().color != colors[0])
+            while(tiles[CounterLast].GetComponent<Image>().color != colors[ColorIndex])
             {
                 CounterLast--;
             }
         }
-        for(int i=CounterFirst; i<=CounterLast; i++)
-        {   
-            if(tiles[i].GetComponent<Image>().color != Color.black)
-            {
-                TextGameMas[i].gameObject.SetActive(false);
-            }
-        }
-        int MiddleCounter = (CounterFirst+CounterLast)/2;
-        return tiles[MiddleCounter];
-
+        return (CounterFirst+CounterLast)/2;
     }
 
     void TilesSum (int index)
-    {      
-        if(index-1>=0)
+    {
+        int j =0;  
+        while(TextMas[1,j]!=index)
         {
-            if(tiles[index].GetComponent<Image>().color ==tiles[index-1].GetComponent<Image>().color)
+            j++;
+        }  
+        TextGameMas[index].gameObject.SetActive(false);   
+        for(int i=0; i<2; i++)
+        {
+            TextGameMas[MiddleTile(i)].gameObject.SetActive(true);
+            if(i==0)
             {
-                if(tiles[index].GetComponent<Image>().color==colors[0])
-                {
-                    BlueYellowText[1].gameObject.SetActive(true);
-                    BlueYellowText[1].transform.SetParent(MiddleTile(palette.selectedIndex).transform);
-                    BlueYellowText[1].GetComponent<Text>().text =""+BlueYellowText[1].GetComponent<Text>().text + TextGameMas[index].GetComponent<Text>().text;
-                }
+                BlueTextSum = BlueTextSum + TextMas[0,j];
+                TextGameMas[MiddleTile(i)].GetComponent<Text>().text ="" + BlueTextSum;
+
             }
-        }
-        if(index+1<=(rows-1)*cols+(cols-1))
-        {
-            if(tiles[index].GetComponent<Image>().color ==tiles[index+1].GetComponent<Image>().color)
+            else
             {
-                TextGameMas[index].gameObject.SetActive(false);  
+                YellowTextSum = YellowTextSum + TextMas[0,j];
+                TextGameMas[MiddleTile(i)].GetComponent<Text>().text ="" + YellowTextSum;
             }
         }
     }
