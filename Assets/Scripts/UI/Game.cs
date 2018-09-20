@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,9 +42,18 @@ public class Game : MonoBehaviour
 
     private bool solved = false; // used to clear everything after a click if solved
 
+    public Font font;
+    private int[] TextMas ={10,15,5,12,13,7,17,18,4,2,16,14,19,8};
+    private int TextCounter = 0; 
+    public int fontsize;
+    public GameObject[] TextGameMas;
+    public GameObject[] BlueYellowText = new GameObject[2];
+    public Transform TextTransform;
+    public int CounterFirst;
+    public int CounterLast;
 
     public void Start()
-    {
+    {   
         eraseMode = false;
         down = false;
         tiles = new List<GameObject>();
@@ -57,6 +66,7 @@ public class Game : MonoBehaviour
         palette = GameObject.FindObjectOfType<Palette>();
 
         palette.ColorCount = 2; // It must be taken from Puzzle
+
 
         int toolbarScenario = 0;
         if(toolbarMode)
@@ -81,7 +91,8 @@ public class Game : MonoBehaviour
 
         int centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
         int centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
-
+        TextGameMas = new GameObject[(rows-1)*cols+(cols-1)];
+        BlueYellowTextCreator();
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -114,7 +125,108 @@ public class Game : MonoBehaviour
                 entry.callback.AddListener(delegate { TileHover(index); });
                 trigger.triggers.Add(entry);
 
+                if(tiles[index].GetComponent<Image>().color == Color.white)
+                {
+                    TextCreator(index);
+                }
+            }
+        }
+        
+    }
 
+    void TextCreator (int index)
+    {   
+        if(TextCounter >13) return;    
+        GameObject newText = new GameObject("ButtonText"+index, typeof(Text));
+        newText.transform.SetParent(tiles[index].transform);
+        newText.GetComponent<Text>().text ="" + TextMas[TextCounter];
+        newText.GetComponent<Text>().font = font;
+        newText.GetComponent<Text>().fontSize=40;
+        fontsize=newText.GetComponent<Text>().fontSize;
+        RectTransform rt = newText.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0, 0);
+        rt.anchorMax = new Vector2(1, 1);
+        rt.anchoredPosition = new Vector2(0, 0);
+        rt.sizeDelta = new Vector2(0, 0);
+        newText.GetComponent<Text>().color = Color.black;
+        newText.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+        TextGameMas[index] = newText;
+        TextCounter++;
+        
+    }
+
+    void BlueYellowTextCreator()
+    {
+        for(int i=0; i<2;i++)
+        {
+            GameObject newText = new GameObject("BlueYellowText"+i, typeof(Text));
+            newText.transform.SetParent(TextTransform);
+            newText.GetComponent<Text>().text ="" + TextMas[TextCounter];
+            newText.GetComponent<Text>().font = font;
+            newText.GetComponent<Text>().fontSize=40;
+            fontsize=newText.GetComponent<Text>().fontSize;
+            RectTransform rt = newText.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0, 0);
+            rt.anchorMax = new Vector2(1, 1);
+            rt.anchoredPosition = new Vector2(0, 0);
+            rt.sizeDelta = new Vector2(0, 0);
+            newText.GetComponent<Text>().color = Color.black;
+            newText.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+            BlueYellowText[i] = newText;
+            BlueYellowText[i].gameObject.SetActive(false);
+        }
+    }
+
+    GameObject MiddleTile(int ColorIndex)
+    {   
+        CounterFirst = 0;
+        while(tiles[CounterFirst].GetComponent<Image>().color != colors[ColorIndex])
+        {
+            CounterFirst++;
+        }
+        CounterLast = CounterFirst;
+        while(tiles[CounterLast].GetComponent<Image>().color != Color.white)
+        {
+            CounterLast++;
+        }
+        if(tiles[CounterLast].GetComponent<Image>().color != colors[0])
+        {
+            while(tiles[CounterLast].GetComponent<Image>().color != colors[0])
+            {
+                CounterLast--;
+            }
+        }
+        for(int i=CounterFirst; i<=CounterLast; i++)
+        {   
+            if(tiles[i].GetComponent<Image>().color != Color.black)
+            {
+                TextGameMas[i].gameObject.SetActive(false);
+            }
+        }
+        int MiddleCounter = (CounterFirst+CounterLast)/2;
+        return tiles[MiddleCounter];
+
+    }
+
+    void TilesSum (int index)
+    {      
+        if(index-1>=0)
+        {
+            if(tiles[index].GetComponent<Image>().color ==tiles[index-1].GetComponent<Image>().color)
+            {
+                if(tiles[index].GetComponent<Image>().color==colors[0])
+                {
+                    BlueYellowText[1].gameObject.SetActive(true);
+                    BlueYellowText[1].transform.SetParent(MiddleTile(palette.selectedIndex).transform);
+                    BlueYellowText[1].GetComponent<Text>().text =""+BlueYellowText[1].GetComponent<Text>().text + TextGameMas[index].GetComponent<Text>().text;
+                }
+            }
+        }
+        if(index+1<=(rows-1)*cols+(cols-1))
+        {
+            if(tiles[index].GetComponent<Image>().color ==tiles[index+1].GetComponent<Image>().color)
+            {
+                TextGameMas[index].gameObject.SetActive(false);  
             }
         }
     }
@@ -186,6 +298,7 @@ public class Game : MonoBehaviour
             Debug.Log("Solved!");
             RemovePartitions();
         }
+        TilesSum(index);
     }
 
     void ClearColors()
@@ -226,7 +339,7 @@ public class Game : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        }
+        }  
     }
 
     void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
