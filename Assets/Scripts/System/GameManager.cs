@@ -15,14 +15,14 @@ public class GameManager : MonoBehaviour
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
         dataManager = GameObject.FindObjectOfType<DataManager>();
 
-        Puzzle puzzle = dataManager.GetCurrentPuzzle();
+        Puzzle puzzle = dataManager.currentPuzzle;
         puzzleGrid.RenderPuzzle(puzzle);
         palette.Create(puzzle.parts);
+        SceneManager.LoadScene("SelectPack", LoadSceneMode.Additive);
     }
 
     public void ShowPackSelectScreen()
     {
-        SceneManager.LoadScene("PackSelection", LoadSceneMode.Additive);
     }
 
     public void OnMailIntent()

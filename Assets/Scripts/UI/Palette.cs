@@ -38,9 +38,9 @@ public class Palette : MonoBehaviour
             button.SetParent(gameObject.transform, false);
             button.Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];
 
-            var copy = i; // Outer variable trap
+            var iCopy = i; // Outer variable trap
             button.gameObject.GetComponent<Button>()
-                .onClick.AddListener(delegate { ChangePencilPosition(copy); });
+                .onClick.AddListener(delegate { ChangePencilPosition(iCopy); });
 
             paletteButtons.Add(button);
         }

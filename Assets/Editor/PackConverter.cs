@@ -11,8 +11,6 @@ public class PackConverter : EditorWindow
     private const string packsExtension = "*.eqld";
     private const string saveDirectoryPath = "Packs Data";
 
-    private List<PackData> packsForConvert;
-
     [MenuItem("Window/Pack Converter")]
     static void Init() => EditorWindow.GetWindow(typeof(PackConverter)).Show();
 
@@ -20,8 +18,7 @@ public class PackConverter : EditorWindow
     {
         if (GUILayout.Button("Convert packs"))
         {
-            packsForConvert = ReadPacks();
-            ConvertPacks(packsForConvert);
+            ConvertPacks(ReadPacks());
         }
     }
 
@@ -32,7 +29,7 @@ public class PackConverter : EditorWindow
         if (Directory.Exists(sourceDirectoryPath))
         {
             // Force sorting because the order of the returned file names
-            // is not guaranteed in Directory.GetFiles
+            // is not guaranteed in Directory.GetFiles() method
             var packPathes = Directory
                 .GetFiles(sourceDirectoryPath, packsExtension)
                 .OrderBy(f => f).ToArray();
@@ -46,12 +43,12 @@ public class PackConverter : EditorWindow
             }
             else
             {
-                Debug.Log("Missing packs for convert!");
+                Debug.LogWarning("Missing packs for convert!");
             }
         }
         else
         {
-            Debug.Log("Missing packs source directory!");
+            Debug.LogError("Missing packs source directory!");
         }
 
         return readPacks;
@@ -66,12 +63,12 @@ public class PackConverter : EditorWindow
             var filePath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
             Directory.CreateDirectory(filePath);
 
-            for (var i = 1; i <= packsForConvert.Count; i++)
+            for (var i = 0; i < packsForConvert.Count; i++)
             {
-                var fileName = $"pack-{i.ToString().PadLeft(2, '0')}";
+                var fileName = $"pack-{(i + 1).ToString().PadLeft(2, '0')}";
                 FileStream file = File.Open($"{filePath}/{fileName}", FileMode.Create);
 
-                bf.Serialize(file, packsForConvert[i - 1]);
+                bf.Serialize(file, packsForConvert[i]);
   				file.Close();
             }
 
@@ -79,7 +76,7 @@ public class PackConverter : EditorWindow
         }
         else
         {
-            Debug.Log("Nothing to convert!");
+            Debug.LogWarning("Nothing to convert!");
         }
     }
 }

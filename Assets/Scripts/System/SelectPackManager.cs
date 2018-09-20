@@ -35,7 +35,7 @@ public class SelectPackManager : MonoBehaviour
         }
     }
 
-    // Change icon of pack button to lock open or star icon
+    // Changes icon of pack button to lock open or star icon
     public void UpdatePackIcon(int packIndex, bool toStar = false)
     {
         packsList.transform.GetChild(packIndex).Find("PackButtonIcon").gameObject
@@ -44,6 +44,6 @@ public class SelectPackManager : MonoBehaviour
 
     void OnPackButtonClick(int index)
     {
-        
+
     }
 }

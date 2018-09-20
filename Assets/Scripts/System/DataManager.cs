@@ -10,10 +10,34 @@ public class DataManager : MonoBehaviour
     private const string saveDirectoryPath = "Packs Data";
     private const string gameProgressFileName = "save";
 
-    public int currentPack { get; private set; }
-    public int currentPuzzle { get; private set; }
-
     private List<Pack> packs;
+
+    public int currentPackIndex { get; private set; }
+    public int currentPuzzleIndex { get; private set; }
+
+    public Pack currentPack
+    {
+        get
+        {
+            return packs[currentPackIndex];
+        }
+    }
+    public Puzzle currentPuzzle
+    {
+        get
+        {
+            return packs[currentPackIndex][currentPuzzleIndex];
+        }
+    }
+
+    public void SaveGameProgress(ProgressData progressData)
+    {
+        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
+
+        FileStream file = File.Open(filePath, FileMode.Create);
+        new BinaryFormatter().Serialize(file, progressData);
+        file.Close();
+    }
 
     private void Start()
     {
@@ -23,17 +47,13 @@ public class DataManager : MonoBehaviour
             LoadGameProgress() : InitGameProgress(packsData);
         packs = AssemblePacks(packsData, progressData);
 
-        currentPack = progressData.currentPack;
-        currentPuzzle = progressData.currentPuzzle;
-        packs[currentPack][currentPuzzle].partition = progressData.savedPartition;
+        currentPackIndex = progressData.currentPackIndex;
+        currentPuzzleIndex = progressData.currentPuzzleIndex;
+        packs[currentPackIndex][currentPuzzleIndex].partition = progressData.savedPartition;
     }
-
-    public Puzzle GetCurrentPuzzle() => packs[currentPack][currentPuzzle];
 
     private List<PackData> LoadPacksData()
     {
-        var packsData = new List<PackData>();
-
         var directoryPath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
 
         if (Directory.Exists(directoryPath))
@@ -46,6 +66,7 @@ public class DataManager : MonoBehaviour
 
             if (packPathes.Length > 0)
             {
+                var packsData = new List<PackData>();
                 BinaryFormatter bf = new BinaryFormatter();
 
                 foreach (var packPath in packPathes)
@@ -54,49 +75,52 @@ public class DataManager : MonoBehaviour
 
                     PackData packData = (PackData)bf.Deserialize(file);
                     file.Close();
-                    
+
                     packsData.Add(packData);
                 }
+
+                return packsData;
             }
             else
             {
-                Debug.Log("Missing packs data!");
+                Debug.LogError("Missing packs data!");
             }
         }
         else
         {
-            Debug.Log("Missing packs data directory!");
+            Debug.LogError("Missing packs data directory!");
         }
 
-        return packsData;
+        return new List<PackData>();
     }
 
     private ProgressData LoadGameProgress()
     {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open($"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
-
-        ProgressData progressData = (ProgressData)bf.Deserialize(file);
+        FileStream file = File.Open(
+            $"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
+        ProgressData progressData = (ProgressData)new BinaryFormatter().Deserialize(file);
         file.Close();
 
         return progressData;
     }
 
+    // Initializes new game progress state and saves it to file
     private ProgressData InitGameProgress(List<PackData> packsData)
     {
-        currentPack = 0;
-        currentPuzzle = 0;
+        currentPackIndex = 0;
+        currentPuzzleIndex = 0;
 
-        var packProgress = 'o' + new String('c', packsData.Count - 1);
-        var puzzleProgress = new string[packsData.Count];
+        var packsProgress = 'o' + new String('c', packsData.Count - 1);
+        var puzzlesProgress = new string[packsData.Count];
 
-        puzzleProgress[0] = 'o' + new String('c', packsData[0].puzzles.Length - 1);
-        for (int i = 1; i < packsData.Count; i++)
+        puzzlesProgress[0] = 'o' + new String('c', packsData[0].puzzles.Length - 1);
+        for (var i = 1; i < packsData.Count; i++)
         {
-            puzzleProgress[i] += '\n' + new String('c', packsData[i].puzzles.Length);
+            puzzlesProgress[i] += '\n' + new String('c', packsData[i].puzzles.Length);
         }
 
-        var progressData = new ProgressData(currentPack, currentPuzzle, String.Empty, packProgress, puzzleProgress);
+        var progressData = new ProgressData(currentPackIndex, currentPuzzleIndex,
+            String.Empty, packsProgress, puzzlesProgress);
         SaveGameProgress(progressData);
 
         return progressData;
@@ -120,13 +144,13 @@ public class DataManager : MonoBehaviour
                 puzzles[j] = new Puzzle(
                     packsData[i].puzzles[j], packsData[i].puzzlesParts[j],
                     packsData[i].puzzlesWidth[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidth[j],
-                    progressData.puzzleProgress[i][j] == 'o' || progressData.puzzleProgress[i][j] == 's',
-                    progressData.puzzleProgress[i][j] == 's');
+                    progressData.puzzlesProgress[i][j] == 'o' || progressData.puzzlesProgress[i][j] == 's',
+                    progressData.puzzlesProgress[i][j] == 's');
             }
 
             packs.Add(new Pack(puzzles,
-                progressData.packProgress[i] == 'o' || progressData.packProgress[i] == 's',
-                progressData.packProgress[i] == 's'));
+                progressData.packsProgress[i] == 'o' || progressData.packsProgress[i] == 's',
+                progressData.packsProgress[i] == 's'));
         }
 
         return packs;
@@ -135,14 +159,14 @@ public class DataManager : MonoBehaviour
     // Checks if progress data is valid corresponding to packs data 
     private bool CheckProgressDataIntegrity(List<PackData> packsData, ProgressData progressData)
     {
-        if (packsData.Count != progressData.packProgress.Length)
+        if (packsData.Count != progressData.packsProgress.Length)
         {
             return false;
         }
 
         var validCharacters = new char[] { 's', 'o', 'c' };
 
-        foreach (var c in progressData.packProgress)
+        foreach (var c in progressData.packsProgress)
         {
             if (!validCharacters.Contains(c))
             {
@@ -152,12 +176,12 @@ public class DataManager : MonoBehaviour
 
         for (var i = 0; i < packsData.Count; i++)
         {
-            if (packsData[i].puzzles.Length != progressData.puzzleProgress[i].Length)
+            if (packsData[i].puzzles.Length != progressData.puzzlesProgress[i].Length)
             {
                 return false;
             }
 
-            foreach (var c in progressData.puzzleProgress[i])
+            foreach (var c in progressData.puzzlesProgress[i])
             {
                 if (!validCharacters.Contains(c))
                 {
@@ -170,41 +194,29 @@ public class DataManager : MonoBehaviour
     }
 
     // TODO
-    private ProgressData RepairProgressData(
-        List<PackData> packsData, ProgressData progressData)
+    private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
     {
         return InitGameProgress(packsData);
     }
 
     private ProgressData GetProgressData()
     {
-        var packProgress = String.Empty;
-        var puzzleProgress = new string[packs.Count];
+        var packsProgress = String.Empty;
+        var puzzlesProgress = new string[packs.Count];
 
         for (var i = 0; i < packs.Count; i++)
         {
-            packProgress += packs[i].solved ? 's' : packs[i].opened ? 'o' : 'c';
+            packsProgress += packs[i].solved ? 's' : packs[i].opened ? 'o' : 'c';
 
             foreach (var puzzle in packs[i])
             {
-                puzzleProgress[i] += puzzle.solved ? 's' : puzzle.opened ? 'o' : 'c';
+                puzzlesProgress[i] += puzzle.solved ? 's' : puzzle.opened ? 'o' : 'c';
             }
         }
 
         return new ProgressData(
-            currentPack, currentPuzzle,
-            packs[currentPack][currentPuzzle].partition,
-            packProgress, puzzleProgress);
-    }
-
-    private void SaveGameProgress(ProgressData progressData)
-    {
-        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
-
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open(filePath, FileMode.Create);
-
-        bf.Serialize(file, progressData);
-        file.Close();
+            currentPackIndex, currentPuzzleIndex,
+            packs[currentPackIndex][currentPuzzleIndex].partition,
+            packsProgress, puzzlesProgress);
     }
 }

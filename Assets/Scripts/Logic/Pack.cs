@@ -7,7 +7,7 @@ public class Pack : IEnumerable<Puzzle>
     public readonly int size;
     public readonly Puzzle[] puzzles;
 
-    // Status for game progress
+    // State for game progress
     public bool opened { get; private set; }
     public bool solved { get; private set; }
 
@@ -40,9 +40,11 @@ public class Pack : IEnumerable<Puzzle>
         this.solved = solved;
     }
 
-    // Receives pack with solutions in simple text format.
+    // Receives pack with solutions in simple text format:
     // '\n\n' between two puzzles
     // '\n' between lines in puzzle (no '\n' for last line)
+    // '0-9' - colored cell
+    // 'b' - blank cell, can't be colored
     //
     // Example of input text:
     // "b10\n10b\n\nb10\n10b"

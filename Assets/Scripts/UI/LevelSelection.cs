@@ -19,12 +19,8 @@ public class LevelSelection : MonoBehaviour
     int width;
     int height;
 
-    TransitionController transitionHandler;
-
-
     void Start()
     {
-        transitionHandler = GameObject.FindObjectOfType<TransitionController>();
         buttons = new List<GameObject>();
         Fill();
     }

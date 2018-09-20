@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class FloatingActionButton : MonoBehaviour {
-
-    public float fadeInterval;
-	// Use this for initialization
+public class FloatingActionButton : MonoBehaviour
+{
+    public const float fadeInterval = 0.3f;
 
     IEnumerator Disappear()
     {
@@ -28,7 +27,6 @@ public class FloatingActionButton : MonoBehaviour {
         float currentScale = 0;
         float delta = Time.deltaTime / fadeInterval;
 
-        
         while (currentScale < 1)
         {
             gameObject.transform.localScale = new Vector3(currentScale, currentScale, 1);

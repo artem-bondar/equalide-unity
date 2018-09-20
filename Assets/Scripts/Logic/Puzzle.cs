@@ -23,6 +23,17 @@ public class Puzzle : IEnumerable<char>
         }
     }
 
+    // Amount of elements in puzzle
+    public readonly int parts;
+
+    // Dimensions in cells
+    public readonly int width;
+    public readonly int height;
+
+    // States for game progress
+    public bool opened = false;
+    public bool solved { get; private set; } = false;
+
     // Indexer interface to get/set char using [,] operator
     public char this[int i, int j]
     {
@@ -51,17 +62,6 @@ public class Puzzle : IEnumerable<char>
     public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
 
-    // Amount of elements in puzzle
-    public readonly int parts;
-
-    // Dimensions in cells
-    public readonly int width;
-    public readonly int height;
-
-    // Status for game progress
-    public bool opened = false;
-    public bool solved { get; private set; } = false;
-
     public Puzzle(string partition, int parts,
                   int width, int height,
                   bool opened, bool solved)
@@ -74,8 +74,10 @@ public class Puzzle : IEnumerable<char>
         this.solved = solved;
     }
 
-    // Receives puzzle with solution in simple text format.
+    // Receives puzzle with solution in simple text format:
     // '\n' between lines (no '\n' for last line)
+    // '0-9' - colored cell
+    // 'b' - blank cell, can't be colored
     //
     // Example of input text:
     // "b10\n10b"
@@ -98,7 +100,7 @@ public class Puzzle : IEnumerable<char>
         this.height = lines.Length;
     }
 
-    // Clears puzzle partition to initial state
+    // Return puzzle partition to initial unsolved state
     public void Refresh()
     {
         Partition = Regex.Replace(Partition, "[^be]", "e");
@@ -125,7 +127,7 @@ public class Puzzle : IEnumerable<char>
             return false;
         }
 
-        // Checks if elements are equal
+        // Checks if all elements are equal
         for (var i = 1; i < elements.Count; i++)
         {
             if (elements[0] != elements[i])
@@ -168,7 +170,8 @@ public class Puzzle : IEnumerable<char>
         return result;
     }
 
-    // Checks if partition for loading has the same shape and contains only valid cells
+    // Checks if partition for loading has the same shape
+    // and contains only valid cells
     private bool CheckIfValidPartition(string partition)
     {
         if (Partition.Length != partition.Length)

@@ -6,17 +6,11 @@ using UnityEngine.EventSystems;
 public class PuzzleGrid : MonoBehaviour
 {
     public GameObject primitive;
-    private const int primitiveMargin = 3; // 1 dp
+    private const int primitiveMargin = 3; // px = 1 dp for full hd screen
     private readonly List<Image> primitives = new List<Image>();
 
     private Palette palette;
     private Puzzle puzzle;
-
-    // public AudioClip drawSoundDown;
-    // public AudioClip eraseSoundDown;
-
-    // public AudioClip drawSoundHover;
-    // public AudioClip eraseSoundHover;
 
     private bool eraseMode;
     private bool duringSwipe;
@@ -97,24 +91,20 @@ public class PuzzleGrid : MonoBehaviour
 
         duringSwipe = true;
 
-        if (puzzle[i, j] == palette.paintColorChar)
+        if (eraseMode = puzzle[i, j] == palette.paintColorChar)
         {
             puzzle[i, j] = 'e';
             primitives[i * puzzle.width + j].color = Color.white;
-            eraseMode = true;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
         {
             puzzle[i, j] = palette.paintColorChar;
             primitives[i * puzzle.width + j].color = palette.paintColor;
-            eraseMode = false;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
         if (puzzle.CheckForSolution())
         {
-            // RemovePartitions();
+
         }
     }
 
@@ -129,88 +119,25 @@ public class PuzzleGrid : MonoBehaviour
         {
             puzzle[i, j] = 'e';
             primitives[i * puzzle.width + j].color = Color.white;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
-            return;
         }
         else
         {
             puzzle[i, j] = palette.paintColorChar;
             primitives[i * puzzle.width + j].color = palette.paintColor;
-            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
         }
 
         if (puzzle.CheckForSolution())
         {
-            // RemovePartitions();
+            
         }
     }
 
     private void Update()
     {
+        // Rewrite for touches
         if (Input.GetMouseButtonUp(0))
         {
             duringSwipe = false;
         }
     }
-
-    /* void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
-    {
-        for (int i = 0; i < rows; ++i)
-        {
-            for (int j = 0; j < cols; ++j)
-            {
-                RemovePartitionsForSingleTile(i, j);
-            }
-        }
-    }
-
-    void RemovePartitionsForSingleTile(int tileRow, int tileColumn)
-    {
-        int longSide = tileSize;
-        int shortSide = 2 * primitiveMargin;
-
-        int tileIndex = tileRow * cols + tileColumn;
-        var tileColor = primitives[tileIndex].GetComponent<Image>().color;
-
-        int X = (int)primitives[tileIndex].transform.position.x;
-        int Y = (int)primitives[tileIndex].transform.position.y;
-
-        if (tileColumn != cols - 1)
-        { // has right neighbor
-            int rightTileIndex = tileRow * cols + (tileColumn + 1);
-            var rightTileColor = primitives[rightTileIndex].GetComponent<Image>().color;
-
-            if (tileColor == rightTileColor)
-            {
-                var verticalPartition = Instantiate(primitive, new Vector3(X + tileSize, Y, 0), Quaternion.identity) as GameObject;
-                verticalPartition.transform.SetParent(gameObject.transform, true);
-
-                verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, shortSide);
-                verticalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, longSide);
-
-                verticalPartition.GetComponent<Image>().color = tileColor;
-
-                primitives.Add(verticalPartition);
-            }
-        }
-
-        if (tileRow != rows - 1)
-        { // has down neighbor
-            int downTileIndex = (tileRow + 1) * cols + tileColumn;
-            var downTileColor = primitives[downTileIndex].GetComponent<Image>().color;
-
-            if (tileColor == downTileColor)
-            {
-                var horizontalPartition = Instantiate(primitive, new Vector3(X, Y - tileSize, 0), Quaternion.identity) as GameObject;
-                horizontalPartition.transform.SetParent(gameObject.transform, true);
-
-                horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, longSide);
-                horizontalPartition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, shortSide);
-
-                horizontalPartition.GetComponent<Image>().color = tileColor;
-
-                primitives.Add(horizontalPartition);
-            }
-        }
-    } */
 }

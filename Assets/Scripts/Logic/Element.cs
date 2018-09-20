@@ -14,6 +14,7 @@ public class Element
     private int height;
     private int width;
 
+    // Receives string without any \n
     public Element(string body, int width)
     {
         this.body = body;
@@ -114,7 +115,7 @@ public class Element
         // Perform cutting if possible
         if ((start != 0) || (end != width - 1))
         {
-            var cutBody = "";
+            var cutBody = string.Empty;
 
             for (var i = 0; i < height; i++)
             {
@@ -129,6 +130,7 @@ public class Element
         }
     }
 
+    // Return element rotated by 90° clockwise
     private Element GetElementRotatedClockWise()
     {
         var rotatedBody = string.Empty;
@@ -144,6 +146,7 @@ public class Element
         return new Element(rotatedBody, height, width);
     }
 
+    // Return element mirrored by vertical axis
     private string GetBodyMirroredByHeight()
     {
         var mirroredBody = string.Empty;
@@ -195,17 +198,9 @@ public class Element
                 }
             }
 
-            foreach (var index in pendingIndexes)
-            {
-                checkedIndexes.Add(index);
-            }
-
+            checkedIndexes.UnionWith(pendingIndexes);
             pendingIndexes.Clear();
-
-            foreach (var index in findedIndexes)
-            {
-                pendingIndexes.Add(index);
-            }
+            pendingIndexes.UnionWith(findedIndexes);
         }
 
         // Checks if element has any non-traversed cells
