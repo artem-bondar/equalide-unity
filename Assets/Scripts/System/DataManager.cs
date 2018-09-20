@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,6 +10,20 @@ public class DataManager : MonoBehaviour
     private const string gameProgressFileName = "save";
 
     private List<Pack> packs;
+    public string packsProgress
+    {
+        get
+        {
+            var packsProgress = string.Empty;
+
+            foreach (var pack in packs)
+            {
+                packsProgress += pack.solved ? 's' : pack.opened ? 'o' : 'c';
+            }
+
+            return packsProgress;
+        }
+    }
 
     public int currentPackIndex { get; private set; }
     public int currentPuzzleIndex { get; private set; }
@@ -27,6 +40,24 @@ public class DataManager : MonoBehaviour
         get
         {
             return packs[currentPackIndex][currentPuzzleIndex];
+        }
+    }
+
+    public ProgressData gameProgress
+    {
+        get
+        {
+            var puzzlesProgress = new string[packs.Count];
+
+            for (var i = 0; i < packs.Count; i++)
+            {
+                puzzlesProgress[i] = packs[i].puzzlesProgress;
+            }
+
+            return new ProgressData(
+                currentPackIndex, currentPuzzleIndex,
+                packs[currentPackIndex][currentPuzzleIndex].partition,
+                packsProgress, puzzlesProgress);
         }
     }
 
@@ -110,17 +141,17 @@ public class DataManager : MonoBehaviour
         currentPackIndex = 0;
         currentPuzzleIndex = 0;
 
-        var packsProgress = 'o' + new String('c', packsData.Count - 1);
+        var packsProgress = 'o' + new string('c', packsData.Count - 1);
         var puzzlesProgress = new string[packsData.Count];
 
-        puzzlesProgress[0] = 'o' + new String('c', packsData[0].puzzles.Length - 1);
+        puzzlesProgress[0] = 'o' + new string('c', packsData[0].puzzles.Length - 1);
         for (var i = 1; i < packsData.Count; i++)
         {
-            puzzlesProgress[i] += '\n' + new String('c', packsData[i].puzzles.Length);
+            puzzlesProgress[i] += '\n' + new string('c', packsData[i].puzzles.Length);
         }
 
         var progressData = new ProgressData(currentPackIndex, currentPuzzleIndex,
-            String.Empty, packsProgress, puzzlesProgress);
+            string.Empty, packsProgress, puzzlesProgress);
         SaveGameProgress(progressData);
 
         return progressData;
@@ -197,26 +228,5 @@ public class DataManager : MonoBehaviour
     private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
     {
         return InitGameProgress(packsData);
-    }
-
-    private ProgressData GetProgressData()
-    {
-        var packsProgress = String.Empty;
-        var puzzlesProgress = new string[packs.Count];
-
-        for (var i = 0; i < packs.Count; i++)
-        {
-            packsProgress += packs[i].solved ? 's' : packs[i].opened ? 'o' : 'c';
-
-            foreach (var puzzle in packs[i])
-            {
-                puzzlesProgress[i] += puzzle.solved ? 's' : puzzle.opened ? 'o' : 'c';
-            }
-        }
-
-        return new ProgressData(
-            currentPackIndex, currentPuzzleIndex,
-            packs[currentPackIndex][currentPuzzleIndex].partition,
-            packsProgress, puzzlesProgress);
     }
 }

@@ -11,6 +11,21 @@ public class Pack : IEnumerable<Puzzle>
     public bool opened { get; private set; }
     public bool solved { get; private set; }
 
+    public string puzzlesProgress
+    {
+        get
+        {
+            var puzzlesProgress = string.Empty;
+
+            foreach (var puzzle in this)
+            {
+                puzzlesProgress += puzzle.solved ? 's' : puzzle.opened ? 'o' : 'c';
+            }
+
+            return puzzlesProgress;
+        }
+    }
+
     // Indexer interface to get puzzle using [] operator
     public Puzzle this[int i]
     {
