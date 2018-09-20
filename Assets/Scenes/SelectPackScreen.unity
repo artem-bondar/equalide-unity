@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 252720485}
   - component: {fileID: 252720486}
   m_Layer: 5
-  m_Name: Body
+  m_Name: PackList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
