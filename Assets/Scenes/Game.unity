@@ -1717,7 +1717,7 @@ GameObject:
   - component: {fileID: 959671912}
   - component: {fileID: 959671915}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Undo Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1739,7 +1739,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 112, y: 112}
+  m_AnchoredPosition: {x: 108, y: 108}
   m_SizeDelta: {x: 216, y: 216}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &959671912
@@ -1780,7 +1780,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 959671913}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1388967467}
+        m_MethodName: OnUndoClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &959671913
@@ -2431,6 +2442,8 @@ MonoBehaviour:
   eraseSoundDown: {fileID: 8300000, guid: f3fc2fc034d03a74b95aa87922f288aa, type: 3}
   drawSoundHover: {fileID: 8300000, guid: 7d4bbba2bd502104d88f61a2ca568f5b, type: 3}
   eraseSoundHover: {fileID: 8300000, guid: f3fc2fc034d03a74b95aa87922f288aa, type: 3}
+  undo: {fileID: 959671910}
+  redo: {fileID: 1675800029}
 --- !u!82 &1388967468
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2811,7 +2824,7 @@ GameObject:
   - component: {fileID: 1675800031}
   - component: {fileID: 1675800034}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Redo Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2833,7 +2846,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -112, y: 112}
+  m_AnchoredPosition: {x: -108, y: 108}
   m_SizeDelta: {x: 216, y: 216}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1675800031
@@ -2874,7 +2887,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1675800032}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1388967467}
+        m_MethodName: OnRedoClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1675800032

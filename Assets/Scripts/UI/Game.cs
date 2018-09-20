@@ -28,6 +28,8 @@ public class Game : MonoBehaviour
     public GameObject tile;
     public Palette palette;
 
+
+
     public AudioClip drawSoundDown;
     public AudioClip eraseSoundDown;
 
@@ -42,9 +44,14 @@ public class Game : MonoBehaviour
 
     private bool solved = false; // used to clear everything after a click if solved
 
+    public GameObject undo;
+    public GameObject redo;
+
+    private List<char[]> history;
 
     public void Start()
     {
+        history = new List<char[]>();
         eraseMode = false;
         down = false;
         tiles = new List<GameObject>();
@@ -117,6 +124,16 @@ public class Game : MonoBehaviour
 
             }
         }
+    }
+
+    public void OnUndoClick()
+    {
+
+    }
+
+    public void OnRedoClick()
+    {
+
     }
 
     void TileHover(int index)
