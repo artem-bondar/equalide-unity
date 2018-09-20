@@ -230,7 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 072cb1708db88f34cb6ce56a1182fb06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packsList: {fileID: 0}
+  packsList: {fileID: 431910857}
   packButton: {fileID: 1632848272717608, guid: 02d70738f96dc7142b579857dc36fa32, type: 2}
   lockOpenSprite: {fileID: 21300000, guid: 990a7eb3cea92d14f870c6b4957b66d5, type: 3}
   starSprite: {fileID: 21300000, guid: 1f012079934b70e49a2fa9046af539d8, type: 3}
@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 431910858}
   - component: {fileID: 431910859}
   m_Layer: 5
-  m_Name: Body
+  m_Name: PackList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -339,6 +339,7 @@ GameObject:
   m_Component:
   - component: {fileID: 479468451}
   - component: {fileID: 479468452}
+  - component: {fileID: 479468453}
   m_Layer: 5
   m_Name: GameScreen
   m_TagString: Untagged
@@ -375,6 +376,24 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 479468450}
   m_CullTransparentMesh: 0
+--- !u!95 &479468453
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 479468450}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 12674c03c53526b4193c896e8768e662, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 2
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &507436497
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,6 +767,7 @@ GameObject:
   m_Component:
   - component: {fileID: 645327882}
   - component: {fileID: 645327883}
+  - component: {fileID: 645327884}
   m_Layer: 5
   m_Name: SelectPackScreen
   m_TagString: Untagged
@@ -783,6 +803,24 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 645327881}
   m_CullTransparentMesh: 0
+--- !u!95 &645327884
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 645327881}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 12674c03c53526b4193c896e8768e662, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 2
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &664005633
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,8 +1039,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1119643966}
-        m_MethodName: ShowPackSelectScreen
+      - m_Target: {fileID: 1442735603}
+        m_MethodName: DoGameToPackScreenTransition
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1104,6 +1142,7 @@ Transform:
   - {fileID: 1119643965}
   - {fileID: 602924941}
   - {fileID: 86887716}
+  - {fileID: 1442735602}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1315,9 +1354,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: DoTransitionString
-        m_Mode: 5
+      - m_Target: {fileID: 1442735603}
+        m_MethodName: DoPackToGameScreenTransition
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1674,6 +1713,46 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1303977757}
   m_CullTransparentMesh: 0
+--- !u!1 &1442735601
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1442735602}
+  - component: {fileID: 1442735603}
+  m_Layer: 0
+  m_Name: TransitionsController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1442735602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1442735601}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1056047870}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1442735603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1442735601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f3112a7ace7854da953a4300f42a84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1476061490
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,11 +12,9 @@ public class PuzzleGrid : MonoBehaviour
     private Palette palette;
     private Puzzle puzzle;
 
+    public bool paintLock = true;
     private bool eraseMode;
     private bool duringSwipe;
-
-    public bool paintLock = true;
-
 
     private void Start()
     {
@@ -128,7 +126,7 @@ public class PuzzleGrid : MonoBehaviour
 
         if (puzzle.CheckForSolution())
         {
-            
+
         }
     }
 

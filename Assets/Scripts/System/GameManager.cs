@@ -8,21 +8,20 @@ public class GameManager : MonoBehaviour
     private Palette palette;
     private PuzzleGrid puzzleGrid;
     private DataManager dataManager;
+    private SelectPackManager selectPackManager;
 
     private void Start()
     {
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
         dataManager = GameObject.FindObjectOfType<DataManager>();
+        selectPackManager = GameObject.FindObjectOfType<SelectPackManager>();
 
         Puzzle puzzle = dataManager.currentPuzzle;
         puzzleGrid.RenderPuzzle(puzzle);
         palette.Create(puzzle.parts);
-        SceneManager.LoadScene("SelectPack", LoadSceneMode.Additive);
-    }
 
-    public void ShowPackSelectScreen()
-    {
+        selectPackManager.CreatePackList(dataManager.packsProgress);
     }
 
     public void OnMailIntent()
