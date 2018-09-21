@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,12 +9,19 @@ public class GameManager : MonoBehaviour
     private DataManager dataManager;
     private SelectPackManager selectPackManager;
 
+    private Text topAppBarText;
+
     private void Start()
     {
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
         dataManager = GameObject.FindObjectOfType<DataManager>();
         selectPackManager = GameObject.FindObjectOfType<SelectPackManager>();
+
+        topAppBarText = GameObject.Find("TopAppBarTitle").GetComponent<Text>();
+        topAppBarText.text = "Equalide   " + 
+            $"{dataManager.currentPackIndex + 1}-" +
+            $"{dataManager.currentPuzzleIndex + 1}".PadLeft(2, '0');
 
         Puzzle puzzle = dataManager.currentPuzzle;
         puzzleGrid.RenderPuzzle(puzzle);

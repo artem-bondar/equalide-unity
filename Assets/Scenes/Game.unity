@@ -1765,7 +1765,7 @@ GameObject:
   - component: {fileID: 1476061493}
   - component: {fileID: 1476061492}
   m_Layer: 5
-  m_Name: Title
+  m_Name: TopAppBarTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
