@@ -23,8 +23,7 @@ public class Puzzle : IEnumerable<char>
         }
     }
 
-    // Amount of elements in puzzle
-    public readonly int parts;
+    public readonly int elementsCount;
 
     // Dimensions in cells
     public readonly int width;
@@ -62,12 +61,12 @@ public class Puzzle : IEnumerable<char>
     public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
 
-    public Puzzle(string partition, int parts,
+    public Puzzle(string partition, int elementsCount,
                   int width, int height,
                   bool opened, bool solved)
     {
         this.Partition = partition;
-        this.parts = parts;
+        this.elementsCount = elementsCount;
         this.width = width;
         this.height = height;
         this.opened = opened;
@@ -95,7 +94,7 @@ public class Puzzle : IEnumerable<char>
         this.Partition = string.Join("", lines);
         Refresh();
 
-        this.parts = unicalCells.Count;
+        this.elementsCount = unicalCells.Count;
         this.width = lines[0].Length;
         this.height = lines.Length;
     }
@@ -117,7 +116,7 @@ public class Puzzle : IEnumerable<char>
 
         List<Element> elements = SeparateInElements();
 
-        if (elements.Count != parts)
+        if (elements.Count != elementsCount)
         {
             return false;
         }
@@ -184,7 +183,7 @@ public class Puzzle : IEnumerable<char>
             if ((Partition[i] == 'b' && partition[i] != 'b') ||
                 (Partition[i] != 'b' && partition[i] == 'b') ||
                 (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
-                partition[i] - '0' >= this.parts)
+                partition[i] - '0' >= this.elementsCount)
             {
                 return false;
             }

@@ -91,23 +91,20 @@ public class DataManager : MonoBehaviour
         {
             // Force sorting because the order of the returned file names
             // is not guaranteed in Directory.GetFiles
-            var packPathes = Directory
+            string[] packPathes = Directory
                 .GetFiles(directoryPath)
                 .OrderBy(f => f).ToArray();
 
             if (packPathes.Length > 0)
             {
                 var packsData = new List<PackData>();
-                BinaryFormatter bf = new BinaryFormatter();
+                var bf = new BinaryFormatter();
 
                 foreach (var packPath in packPathes)
                 {
                     FileStream file = File.Open(packPath, FileMode.Open);
-
-                    PackData packData = (PackData)bf.Deserialize(file);
+                    packsData.Add((PackData)bf.Deserialize(file));
                     file.Close();
-
-                    packsData.Add(packData);
                 }
 
                 return packsData;
@@ -129,7 +126,7 @@ public class DataManager : MonoBehaviour
     {
         FileStream file = File.Open(
             $"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
-        ProgressData progressData = (ProgressData)new BinaryFormatter().Deserialize(file);
+        var progressData = (ProgressData)new BinaryFormatter().Deserialize(file);
         file.Close();
 
         return progressData;
@@ -173,8 +170,8 @@ public class DataManager : MonoBehaviour
             for (var j = 0; j < packsData[i].puzzles.Length; j++)
             {
                 puzzles[j] = new Puzzle(
-                    packsData[i].puzzles[j], packsData[i].puzzlesParts[j],
-                    packsData[i].puzzlesWidth[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidth[j],
+                    packsData[i].puzzles[j], packsData[i].puzzlesElementsCounts[j],
+                    packsData[i].puzzlesWidths[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidths[j],
                     progressData.puzzlesProgress[i][j] == 'o' || progressData.puzzlesProgress[i][j] == 's',
                     progressData.puzzlesProgress[i][j] == 's');
             }

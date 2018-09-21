@@ -58,7 +58,7 @@ public class PackConverter : EditorWindow
     {
         if (packsForConvert.Count > 0)
         {
-			BinaryFormatter bf = new BinaryFormatter();
+			var bf = new BinaryFormatter();
 
             var filePath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
             Directory.CreateDirectory(filePath);

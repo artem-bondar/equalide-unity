@@ -8,27 +8,27 @@ using System.Linq;
 public class Element
 {
     // Holds string representation of 2D-array
-    private string body;
+    private string shape;
 
     // Dimensions in cells
     private int height;
     private int width;
 
     // Receives string without any \n
-    public Element(string body, int width)
+    public Element(string shape, int width)
     {
-        this.body = body;
+        this.shape = shape;
 
         this.width = width;
-        height = body.Length / width;
+        height = shape.Length / width;
 
-        CutBodyByWidth();
+        CutShapeByWidth();
     }
 
     // Assumed to be already cut by width
-    private Element(string body, int width, int height)
+    private Element(string shape, int width, int height)
     {
-        this.body = body;
+        this.shape = shape;
         this.width = width;
         this.height = height;
     }
@@ -47,7 +47,7 @@ public class Element
         }
     }
 
-    public override int GetHashCode() => body.GetHashCode();
+    public override int GetHashCode() => shape.GetHashCode();
 
     // Checks equality to another element with accuracy to rotations and reflections
     public static bool operator !=(Element first, Element second) => !(first == second);    
@@ -59,7 +59,7 @@ public class Element
             return false;
         }
 
-        var equal = first.body == second.body || first.GetBodyMirroredByHeight() == second.body;
+        var equal = first.shape == second.shape || first.GetBodyMirroredByHeight() == second.shape;
 
         if (!equal)
         {
@@ -70,7 +70,7 @@ public class Element
                 Element rotatedElement = elementForRotate.GetElementRotatedClockWise();
 
                 if (equal =
-                    rotatedElement.body == second.body || rotatedElement.GetBodyMirroredByHeight() == second.body)
+                    rotatedElement.shape == second.shape || rotatedElement.GetBodyMirroredByHeight() == second.shape)
                 {
                     return true;
                 }
@@ -81,7 +81,7 @@ public class Element
     }
 
     // Cut element to it's bounding rectangle of the same height
-    private void CutBodyByWidth()
+    private void CutShapeByWidth()
     {
         var startIndexes = new List<int>();
         var endIndexes = new List<int>();
@@ -91,7 +91,7 @@ public class Element
         {
             for (var j = 0; j < width; j++)
             {
-                if (body[i * width + j] != 'e')
+                if (shape[i * width + j] != 'e')
                 {
                     startIndexes.Add(j);
                     break;
@@ -100,7 +100,7 @@ public class Element
 
             for (var j = width - 1; j >= 0; j--)
             {
-                if (body[i * width + j] != 'e')
+                if (shape[i * width + j] != 'e')
                 {
                     endIndexes.Add(j);
                     break;
@@ -115,17 +115,17 @@ public class Element
         // Perform cutting if possible
         if ((start != 0) || (end != width - 1))
         {
-            var cutBody = string.Empty;
+            var cutShape = string.Empty;
 
             for (var i = 0; i < height; i++)
             {
                 for (var j = start; j <= end; j++)
                 {
-                    cutBody += body[i * width + j];
+                    cutShape += shape[i * width + j];
                 }
             }
 
-            body = cutBody;
+            shape = cutShape;
             width = end - start + 1;
         }
     }
@@ -133,33 +133,33 @@ public class Element
     // Return element rotated by 90° clockwise
     private Element GetElementRotatedClockWise()
     {
-        var rotatedBody = string.Empty;
+        var rotatedShape = string.Empty;
 
         for (var i = 0; i < width; i++)
         {
             for (var j = height - 1; j >= 0; j--)
             {
-                rotatedBody += body[j * width + i];
+                rotatedShape += shape[j * width + i];
             }
         }
 
-        return new Element(rotatedBody, height, width);
+        return new Element(rotatedShape, height, width);
     }
 
     // Return element mirrored by vertical axis
     private string GetBodyMirroredByHeight()
     {
-        var mirroredBody = string.Empty;
+        var mirroredShape = string.Empty;
 
         for (var i = 0; i < height; i++)
         {
             for (var j = width - 1; j >= 0; j--)
             {
-                mirroredBody += body[i * width + j];
+                mirroredShape += shape[i * width + j];
             }
         }
 
-        return mirroredBody;
+        return mirroredShape;
     }
 
     // Checks if element has only one component
@@ -169,7 +169,7 @@ public class Element
         var checkedIndexes = new HashSet<int>();
 
         // Stores pending cell indexes to traverse on next step
-        var pendingIndexes = new HashSet<int> { body.IndexOf("c") };
+        var pendingIndexes = new HashSet<int> { shape.IndexOf("c") };
 
         // Stores cell indexes that could be traversed after pending cells
         var findedIndexes = new HashSet<int>();
@@ -183,7 +183,7 @@ public class Element
             {
                 // Indexes of all neighbour cells
                 int? up = (index - width >= 0) ? index - width : (int?)null;
-                int? down = (index + width < body.Length) ? index + width : (int?)null;
+                int? down = (index + width < shape.Length) ? index + width : (int?)null;
                 int? left = (index % width != 0) ? index - 1 : (int?)null;
                 int? right = (index % width != width - 1) ? index + 1 : (int?)null;
 
@@ -191,7 +191,7 @@ public class Element
 
                 foreach (var i in indexesForCheck)
                 {
-                    if (((i != null) && (body[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
+                    if (((i != null) && (shape[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
                     {
                         findedIndexes.Add((int)i);
                     }
@@ -204,9 +204,9 @@ public class Element
         }
 
         // Checks if element has any non-traversed cells
-        for (var i = 0; i < body.Length; i++)
+        for (var i = 0; i < shape.Length; i++)
         {
-            if ((body[i] == 'c') && !(checkedIndexes.Contains(i)))
+            if ((shape[i] == 'c') && !(checkedIndexes.Contains(i)))
             {
                 return false;
             }

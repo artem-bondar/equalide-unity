@@ -4,20 +4,20 @@
 public class PackData
 {
 	public readonly string[] puzzles;
-	public readonly int[] puzzlesParts;
-	public readonly int[] puzzlesWidth;
+	public readonly int[] puzzlesWidths;
+	public readonly int[] puzzlesElementsCounts;
 
 	public PackData(Pack pack)
 	{
 		puzzles = new string[pack.size];
-		puzzlesParts = new int[pack.size];
-		puzzlesWidth = new int[pack.size];
+		puzzlesWidths = new int[pack.size];
+		puzzlesElementsCounts = new int[pack.size];
 
 		for (var i = 0; i < pack.size; i++)
 		{
 			puzzles[i] = pack[i].partition;
-			puzzlesParts[i] = pack[i].parts;
-			puzzlesWidth[i] = pack[i].width;
+			puzzlesWidths[i] = pack[i].width;
+			puzzlesElementsCounts[i] = pack[i].elementsCount;
 		}
 	}
 
