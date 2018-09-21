@@ -179,29 +179,43 @@ public class Game : MonoBehaviour
         return (CounterFirst+CounterLast)/2;
     }
 
-    void TilesSum (int index)
+    void TextOff(int ColorIndex)
     {
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                int index = i * cols + j;
+                if(tiles[index].GetComponent<Image>().color == colors[ColorIndex])
+                {
+                    TextGameMas[index].gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    void TilesSum (int index, int currentColor)
+    {   
+        int MiddleIndex;
         int j =0;  
         while(TextMas[1,j]!=index)
         {
             j++;
-        }  
-        TextGameMas[index].gameObject.SetActive(false);   
-        for(int i=0; i<2; i++)
+        }    
+        MiddleIndex = MiddleTile(currentColor);
+        TextOff(currentColor);
+        TextGameMas[MiddleIndex].gameObject.SetActive(true);
+        if(currentColor == 0)
         {
-            TextGameMas[MiddleTile(i)].gameObject.SetActive(true);
-            if(i==0)
-            {
-                BlueTextSum = BlueTextSum + TextMas[0,j];
-                TextGameMas[MiddleTile(i)].GetComponent<Text>().text ="" + BlueTextSum;
-
-            }
-            else
-            {
-                YellowTextSum = YellowTextSum + TextMas[0,j];
-                TextGameMas[MiddleTile(i)].GetComponent<Text>().text ="" + YellowTextSum;
-            }
+            BlueTextSum = BlueTextSum + TextMas[0,j];
+            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + BlueTextSum;
         }
+        else
+        {
+            YellowTextSum = YellowTextSum + TextMas[0,j];
+            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + YellowTextSum;
+        }
+
     }
 
     void TileHover(int index)
@@ -271,7 +285,7 @@ public class Game : MonoBehaviour
             Debug.Log("Solved!");
             RemovePartitions();
         }
-        TilesSum(index);
+        TilesSum(index,currentColor);
     }
 
     void ClearColors()
