@@ -36,15 +36,8 @@ public class Element
     public override bool Equals(object obj)
     {
         var element = obj as Element;
-
-        if (element == null)
-        {
-            return false;
-        }
-        else
-        {
-            return this == element;
-        }
+        
+        return element == null ? false : this == element;
     }
 
     public override int GetHashCode() => shape.GetHashCode();

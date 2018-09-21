@@ -31,14 +31,7 @@ public class Pack : IEnumerable<Puzzle>
     {
         get
         {
-            if (i >= 0 && i < size)
-            {
-                return puzzles[i];
-            }
-            else
-            {
-                return null;
-            }
+            return i >= 0 && i < size ? puzzles[i] : null;
         }
     }
 

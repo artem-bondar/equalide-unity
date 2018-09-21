@@ -38,22 +38,15 @@ public class Puzzle : IEnumerable<char>
     {
         get
         {
-            if (CheckIfValidIndexes(i, j))
-            {
-                return Partition[i * width + j];
-            }
-            else
-            {
-                return 'b';
-            }
+            return CheckIfValidIndexes(i, j) ? Partition[i * width + j] : 'b';
         }
         set
         {
             if (CheckIfValidIndexes(i, j))
             {
-                var copy = Partition.ToCharArray();
-                copy[i * width + j] = value;
-                Partition = new string(copy);
+                var charArray = Partition.ToCharArray();
+                charArray[i * width + j] = value;
+                Partition = new string(charArray);
             }
         }
     }
@@ -193,5 +186,5 @@ public class Puzzle : IEnumerable<char>
     }
 
     private bool CheckIfValidIndexes(int i, int j) =>
-        i * width + j >= 0 && i * width + j <= Partition.Length;
+        i * width + j >= 0 && i * width + j < Partition.Length;
 }
