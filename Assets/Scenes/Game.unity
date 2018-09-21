@@ -1215,6 +1215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba7ef5bfb395a1f4fac15a76615b9a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  topAppBarTitle: {fileID: 1279030386}
 --- !u!1 &1163338751
 GameObject:
   m_ObjectHideFlags: 0
@@ -1701,7 +1702,7 @@ GameObject:
   - component: {fileID: 1476061493}
   - component: {fileID: 1476061492}
   m_Layer: 5
-  m_Name: TopAppBarTitle
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
