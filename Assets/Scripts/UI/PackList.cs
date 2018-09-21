@@ -2,9 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectPackManager : MonoBehaviour
+public class PackList : MonoBehaviour
 {
-    public GameObject packsList;
     public GameObject packButton;
 
     public Sprite lockOpenSprite;
@@ -20,7 +19,7 @@ public class SelectPackManager : MonoBehaviour
         for (var i = 0; i < packsStates.Length; i++)
         {
             var newButton = Instantiate(packButton).transform;
-            newButton.SetParent(packsList.transform, false);
+            newButton.SetParent(gameObject.transform, false);
 
             if (packsStates[i] != 'c')
             {
@@ -38,7 +37,7 @@ public class SelectPackManager : MonoBehaviour
     // Changes icon of pack button to lock open or star icon
     public void UpdatePackIcon(int packIndex, bool toStar = false)
     {
-        packsList.transform.GetChild(packIndex).Find("PackButtonIcon").gameObject
+        gameObject.transform.GetChild(packIndex).Find("PackButtonIcon").gameObject
             .GetComponent<Image>().sprite = toStar ? starSprite : lockOpenSprite;
     }
 
