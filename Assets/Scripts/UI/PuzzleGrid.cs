@@ -114,7 +114,7 @@ public class PuzzleGrid : MonoBehaviour
 
         if (puzzle.CheckForSolution())
         {
-
+            gameManager.OnSolvedLevel();
         }
     }
 
@@ -138,7 +138,7 @@ public class PuzzleGrid : MonoBehaviour
 
         if (puzzle.CheckForSolution())
         {
-
+            gameManager.OnSolvedLevel();            
         }
     }
 

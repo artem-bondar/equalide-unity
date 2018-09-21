@@ -16,6 +16,11 @@ public class GameManager : MonoBehaviour
     [Tooltip("Game screen top app bar title")]
     public Text topAppBarTitle;
 
+    [Tooltip("Floating action button")]
+    public GameObject fab;
+
+    private bool levelSolvedState;
+
     private void Start()
     {
         dataManager = GameObject.FindObjectOfType<DataManager>();
@@ -62,6 +67,32 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void OnRefreshButton()
+    {
+        puzzleGrid.paintLock = false;
+        palette.gameObject.SetActive(true);
+    }
+
+    public void OnSolvedLevel()
+    {
+        puzzleGrid.paintLock = true;
+        palette.gameObject.SetActive(false);
+
+        if (!dataManager.IsOnLastLevel())
+        {
+            fab.SetActive(true);
+            fab.GetComponent<Animator>().Play("FadeIn");
+        }
+
+        levelSolvedState = true;
+    }
+
+    public void OnFabClick()
+    {
+        fab.GetComponent<Animator>().Play("FadeOut");
+        fab.SetActive(false);
+    }
+
     private void LoadCurrentPuzzle()
     {
         topAppBarTitle.text = "Equalide   " +
@@ -70,6 +101,7 @@ public class GameManager : MonoBehaviour
 
         puzzleGrid.Create(dataManager.currentPuzzle);
         palette.Create(dataManager.currentPuzzle.elementsCount);
+        levelSolvedState = false;
     }
 
     private void DestroyCurrentPuzzle()

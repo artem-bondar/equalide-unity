@@ -79,6 +79,9 @@ public class DataManager : MonoBehaviour
         file.Close();
     }
 
+    public bool IsOnLastLevel() => currentPackIndex == packs.Count - 1 &&
+                                   currentPuzzleIndex == packs[currentPackIndex].size - 1; 
+
     private void Start()
     {
         List<PackData> packsData = LoadPacksData();

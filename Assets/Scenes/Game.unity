@@ -1561,6 +1561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topAppBarTitle: {fileID: 1476061492}
+  fab: {fileID: 1824359537}
 --- !u!1 &1163338751
 GameObject:
   m_ObjectHideFlags: 0
@@ -2398,6 +2399,20 @@ Prefab:
       value: 
       objectReference: {fileID: 21300000, guid: eba543fe96b1e1f4e91d596cd36a034f,
         type: 3}
+    - target: {fileID: 1839554785133788, guid: b906d6e07a554ac40aa0a23944b7f5dd, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114299989481918364, guid: b906d6e07a554ac40aa0a23944b7f5dd,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1119643966}
+    - target: {fileID: 114299989481918364, guid: b906d6e07a554ac40aa0a23944b7f5dd,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnFabClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b906d6e07a554ac40aa0a23944b7f5dd, type: 2}
   m_IsPrefabAsset: 0
@@ -2476,6 +2491,11 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &1824359537 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1839554785133788, guid: b906d6e07a554ac40aa0a23944b7f5dd,
+    type: 2}
+  m_PrefabInternal: {fileID: 1622006000}
 --- !u!224 &1824359538 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224167525386947676, guid: b906d6e07a554ac40aa0a23944b7f5dd,
