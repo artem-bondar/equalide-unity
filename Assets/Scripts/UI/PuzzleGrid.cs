@@ -26,18 +26,18 @@ public class PuzzleGrid : MonoBehaviour
         this.puzzle = puzzle;
 
         var grid = gameObject.GetComponent<GridLayoutGroup>();
-        var gridRectTransorm = grid.GetComponent<RectTransform>().rect;
+        var gridrt = grid.GetComponent<RectTransform>().rect;
 
         var primitiveSize = Mathf.Min(
-            (gridRectTransorm.width - (puzzle.width - 1) * primitiveMargin) / puzzle.width,
-            (gridRectTransorm.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
+            (gridrt.width - (puzzle.width - 1) * primitiveMargin) / puzzle.width,
+            (gridrt.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
 
         grid.cellSize = new Vector2(primitiveSize, primitiveSize);
 
         foreach (var cell in puzzle)
         {
             var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-            newPrimitive.transform.SetParent(grid.transform);
+            newPrimitive.transform.SetParent(grid.transform, false);
 
             if (cell != 'e')
             {
