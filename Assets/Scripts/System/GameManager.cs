@@ -35,8 +35,26 @@ public class GameManager : MonoBehaviour
 
     public void OnPackSelect(int packIndex)
     {
-        levelGrid.Create(packIndex, dataManager.GetPack(packIndex).puzzlesProgress);
-        transitionsController.SelectPackToSelectLevelScreenTransition();
+        if (dataManager.GetPack(packIndex).opened)
+        {
+            levelGrid.Destroy();
+            levelGrid.Create(packIndex, dataManager.GetPack(packIndex).puzzlesProgress);
+            transitionsController.SelectPackToSelectLevelScreenTransition();
+        }
+    }
+
+    public void OnLevelSelect(int packIndex, int puzzleIndex)
+    {
+        if (dataManager.GetPack(packIndex)[puzzleIndex].opened)
+        {
+            dataManager.SetCurrentLevel(packIndex, puzzleIndex);
+            dataManager.SaveGameProgress(dataManager.gameProgress);
+
+            DestroyCurrentPuzzle();
+            LoadCurrentPuzzle();
+
+            transitionsController.SelectLevelToGameScreenTransition();
+        }
     }
 
     public void OnMailIntent()

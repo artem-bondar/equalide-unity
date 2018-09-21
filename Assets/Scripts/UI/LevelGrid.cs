@@ -51,7 +51,8 @@ public class LevelGrid : MonoBehaviour
                 (i + 1).ToString() : string.Empty;
 
             var iCopy = i;
-            newTile.GetComponent<Button>().onClick.AddListener(delegate { OnLevelTileClick(iCopy); });
+            newTile.GetComponent<Button>().onClick.AddListener(
+                delegate { gameManager.OnLevelSelect(packIndex, iCopy); });
         }
     }
 
@@ -61,9 +62,5 @@ public class LevelGrid : MonoBehaviour
         {
             Destroy(levelTile.gameObject);
         }
-    }
-
-    private void OnLevelTileClick(int puzzleIndex)
-    {
     }
 }

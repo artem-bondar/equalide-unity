@@ -64,6 +64,12 @@ public class DataManager : MonoBehaviour
     public Pack GetPack(int packIndex) =>
         packIndex >= 0 && packIndex < packs.Count ? packs[packIndex] : null;
 
+    public void SetCurrentLevel(int currentPackIndex, int currentPuzzleIndex)
+    {
+        this.currentPackIndex = currentPackIndex;
+        this.currentPuzzleIndex = currentPuzzleIndex;
+    }
+
     public void SaveGameProgress(ProgressData progressData)
     {
         var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
