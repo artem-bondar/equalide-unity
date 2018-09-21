@@ -14,7 +14,7 @@ public class PackList : MonoBehaviour
 	// 'c' - closed
 	// 'o' - opened
 	// 's' - solved
-    public void CreatePackList(string packsStates)
+    public void Create(string packsStates)
     {
         for (var i = 0; i < packsStates.Length; i++)
         {

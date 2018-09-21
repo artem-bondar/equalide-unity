@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     private PuzzleGrid puzzleGrid;
 
     [Tooltip("Game screen top app bar title")]
-    public readonly Text topAppBarTitle;
+    public Text topAppBarTitle;
 
     private void Start()
     {
