@@ -10,11 +10,6 @@ public class LevelGrid : MonoBehaviour
     [Tooltip("Level select screen top app bar title")]
     public Text topAppBarTitle;
 
-    private void Start()
-    {
-        Create(4, "sssssooooooooocccccc");
-    }
-
     public void Create(int packIndex, string puzzlesStates)
     {
         topAppBarTitle.text = $"Pack {packIndex}";
@@ -25,24 +20,21 @@ public class LevelGrid : MonoBehaviour
         var tileSize = (0.2f * gridrt.width);
         var tileSizeByHeight = (0.14f * gridrt.height);
         
-        float tileMargin, horizontalMargin, verticalMargin;
+        float tileMargin;
 
         if (tileSizeByHeight < tileSize)
         {
             // Tiles can't fit to screen by height
             tileSize = tileSizeByHeight;
-            tileMargin = (0.01f * gridrt.height);
+            tileMargin = (0.02f * gridrt.height);
         }
         else
         {
-            tileMargin = ((0.2f / 14) * gridrt.width);
+            tileMargin = ((0.4f / 14) * gridrt.width);
         }
 
-        horizontalMargin = (gridrt.width - 4 * tileSize - 8 * tileMargin) / 2;
-        verticalMargin = (gridrt.height - 6 * tileSize - 12 * tileMargin) / 2;
-
         grid.cellSize = new Vector2(tileSize, tileSize);
-        grid.spacing = new Vector2(horizontalMargin, verticalMargin);
+        grid.spacing = new Vector2(tileMargin, tileMargin);
 
         for (var i = 0; i < puzzlesStates.Length; i++)
         {
