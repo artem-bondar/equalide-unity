@@ -9,8 +9,9 @@ public class PuzzleGrid : MonoBehaviour
     private const int primitiveMargin = 3; // px = 1 dp for full hd screen
     private readonly List<Image> primitives = new List<Image>();
 
-    private Palette palette;
     private Puzzle puzzle;
+    private Palette palette;
+    private GameManager gameManager;
 
     public bool paintLock = true;
     private bool eraseMode;
@@ -19,9 +20,10 @@ public class PuzzleGrid : MonoBehaviour
     private void Start()
     {
         palette = GameObject.FindObjectOfType<Palette>();
+        gameManager = GameObject.FindObjectOfType<GameManager>();
     }
 
-    public void RenderPuzzle(Puzzle puzzle)
+    public void Create(Puzzle puzzle)
     {
         this.puzzle = puzzle;
 
@@ -78,6 +80,16 @@ public class PuzzleGrid : MonoBehaviour
                 primitive.color = Color.white;
             }
         }
+    }
+
+    public void Destroy()
+    {
+        foreach (var primitive in primitives)
+        {
+            Destroy(primitive.gameObject);
+        }
+
+        primitives.Clear();
     }
 
     private void PointerDown(int i, int j)

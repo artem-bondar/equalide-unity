@@ -8,22 +8,34 @@ public class TransitionsController : MonoBehaviour
     private Animator selectPackScreenAnimator;
     private Animator selectLevelScreenAnimator;
 
-	public void DoGameToPackScreenTransition()
+	public void GameToSelectPackScreenTransition()
     {
         gameScreenAnimator.Play("SlideOutToRight");
         selectPackScreenAnimator.Play("SlideInFromLeft");
     }
 
-	public void DoPackToGameScreenTransition()
+	public void SelectPackToGameScreenTransition()
     {
         gameScreenAnimator.Play("SlideInFromRight");
         selectPackScreenAnimator.Play("SlideOutToLeft");
+    }
+
+	public void SelectPackToSelectLevelScreenTransition()
+    {
+        selectPackScreenAnimator.Play("SlideOutToLeft");
+        selectLevelScreenAnimator.Play("SlideInFromRight");
+    }
+
+	public void SelectLevelToSelectPackScreenTransition()
+    {
+        selectPackScreenAnimator.Play("SlideInFromLeft");
+        selectLevelScreenAnimator.Play("SlideOutToRight");
     }
 
 	private void Start ()
 	{
 		gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
         selectPackScreenAnimator = GameObject.Find("SelectPackScreen").GetComponent<Animator>();
-       // selectLevelScreenAnimator = GameObject.Find("SelectLevelScreen").GetComponent<Animator>();
+        selectLevelScreenAnimator = GameObject.Find("SelectLevelScreen").GetComponent<Animator>();
 	}
 }

@@ -61,6 +61,9 @@ public class DataManager : MonoBehaviour
         }
     }
 
+    public Pack GetPack(int packIndex) =>
+        packIndex >= 0 && packIndex < packs.Count ? packs[packIndex] : null;
+
     public void SaveGameProgress(ProgressData progressData)
     {
         var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";

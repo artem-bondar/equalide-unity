@@ -7,8 +7,12 @@ public class LevelGrid : MonoBehaviour
     public GameObject levelTile;
     private List<GameObject> levelTiles;
 
+    private GameManager gameManager;
+
     [Tooltip("Level select screen top app bar title")]
     public Text topAppBarTitle;
+
+    private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
     public void Create(int packIndex, string puzzlesStates)
     {

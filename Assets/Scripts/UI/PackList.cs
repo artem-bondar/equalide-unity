@@ -5,9 +5,12 @@ using UnityEngine.UI;
 public class PackList : MonoBehaviour
 {
     public GameObject packButton;
+    private GameManager gameManager;
 
     public Sprite lockOpenSprite;
     public Sprite starSprite;
+
+    private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
 	// Receives string that represent packs's states,
 	// one char for one entity with next alphabet:
@@ -30,7 +33,8 @@ public class PackList : MonoBehaviour
             newButton.Find("PackButtonText").gameObject.GetComponent<Text>().text = $"Pack {i + 1}";
 
             var iCopy = i; // Outer variable trap
-            newButton.GetComponent<Button>().onClick.AddListener(delegate { OnPackButtonClick(iCopy); });
+            newButton.GetComponent<Button>().onClick.AddListener(
+                delegate { gameManager.OnPackSelect(iCopy); });
         }
     }
 
@@ -39,10 +43,5 @@ public class PackList : MonoBehaviour
     {
         gameObject.transform.GetChild(packIndex).Find("PackButtonIcon").gameObject
             .GetComponent<Image>().sprite = toStar ? starSprite : lockOpenSprite;
-    }
-
-    void OnPackButtonClick(int index)
-    {
-
     }
 }
