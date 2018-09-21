@@ -896,6 +896,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1749662898}
   - component: {fileID: 1749662900}
+  - component: {fileID: 1749662901}
   - component: {fileID: 1749662899}
   m_Layer: 5
   m_Name: GameScreen
@@ -951,6 +952,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1749662897}
   m_CullTransparentMesh: 0
+--- !u!225 &1749662901
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1749662897}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1799648086
 GameObject:
   m_ObjectHideFlags: 0

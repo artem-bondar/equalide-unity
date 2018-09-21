@@ -452,6 +452,7 @@ GameObject:
   m_Component:
   - component: {fileID: 479468451}
   - component: {fileID: 479468452}
+  - component: {fileID: 479468454}
   - component: {fileID: 479468453}
   m_Layer: 5
   m_Name: GameScreen
@@ -507,6 +508,17 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &479468454
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 479468450}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &507436497
 GameObject:
   m_ObjectHideFlags: 0
@@ -2291,6 +2303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1693698817}
   - component: {fileID: 1693698819}
+  - component: {fileID: 1693698820}
   - component: {fileID: 1693698818}
   m_Layer: 5
   m_Name: SelectLevelScreen
@@ -2345,6 +2358,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1693698816}
   m_CullTransparentMesh: 0
+--- !u!225 &1693698820
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1693698816}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1876159595
 GameObject:
   m_ObjectHideFlags: 0

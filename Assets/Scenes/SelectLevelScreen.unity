@@ -211,6 +211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 258585044}
   - component: {fileID: 258585046}
+  - component: {fileID: 258585047}
   - component: {fileID: 258585045}
   m_Layer: 5
   m_Name: SelectLevelScreen
@@ -265,6 +266,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 258585043}
   m_CullTransparentMesh: 0
+--- !u!225 &258585047
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 258585043}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &287976117
 GameObject:
   m_ObjectHideFlags: 0

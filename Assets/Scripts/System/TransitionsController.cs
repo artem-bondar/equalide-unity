@@ -34,8 +34,8 @@ public class TransitionsController : MonoBehaviour
 
     public void SelectLevelToGameScreenTransition()
     {
-        // selectPackScreenAnimator.Play("SlideInFromLeft");
-        // selectLevelScreenAnimator.Play("SlideOutToRight");
+        selectPackScreenAnimator.Play("FadeOut");
+        gameScreenAnimator.Play("FadeIn");
     }
 
 	private void Start ()
