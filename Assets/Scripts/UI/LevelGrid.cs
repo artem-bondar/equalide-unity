@@ -16,7 +16,7 @@ public class LevelGrid : MonoBehaviour
 
     public void Create(int packIndex, string puzzlesStates)
     {
-        topAppBarTitle.text = $"Pack {packIndex}";
+        topAppBarTitle.text = $"Pack {packIndex + 1}";
 
         var grid = gameObject.GetComponent<GridLayoutGroup>();
         var gridrt = grid.GetComponent<RectTransform>().rect;
