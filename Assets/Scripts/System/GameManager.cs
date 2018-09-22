@@ -65,7 +65,13 @@ public class GameManager : MonoBehaviour
 
     public void OnMailIntent()
     {
-
+        string subject = System.Uri.EscapeUriString("Equalide feedback");
+        string body = System.Uri.EscapeUriString(
+            "Hi!\nI\'m on level " +
+            $"{dataManager.currentPackIndex + 1}-" +
+            $"{dataManager.currentPuzzleIndex + 1}".PadLeft(2, '0') + ".\n" +
+            "Here are my thoughts about the game:\n\n");
+        Application.OpenURL($"mailto:equalide@gmail.com?subject={subject}&body={body}");
     }
 
     public void OnRefreshButton()
