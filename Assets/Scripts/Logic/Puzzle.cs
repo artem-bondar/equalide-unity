@@ -148,11 +148,7 @@ public class Puzzle : IEnumerable<char>
             // Get partition that represent element cut by height bounds
             string substr = Partition.Substring(
                 firstOccurance - firstOccurance % width,
-                (length / width +
-                    (firstOccurance % width == 0 ? 0 : 1) +
-                    (lastOccurance % width == width - 1 ? 0 : 1) -
-                    (length < width ? 1 : 0)
-                ) * width);
+                (lastOccurance / width - firstOccurance / width + 1) * width);
 
             result.Add(new Element(
                 Regex.Replace(substr, string.Format("[^{0}]", cell), "e")
