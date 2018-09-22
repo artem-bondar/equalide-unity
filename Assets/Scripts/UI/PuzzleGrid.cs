@@ -35,6 +35,7 @@ public class PuzzleGrid : MonoBehaviour
             (gridrt.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
 
         grid.cellSize = new Vector2(primitiveSize, primitiveSize);
+        grid.constraintCount = puzzle.width;
 
         foreach (var cell in puzzle)
         {
