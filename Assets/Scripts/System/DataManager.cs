@@ -93,7 +93,7 @@ public class DataManager : MonoBehaviour
         {
             packs[currentPackIndex + 1].opened = true;
             packList.UpdatePackIcon(currentPackIndex + 1);
-            
+
             packs[currentPackIndex + 1][0].opened = true;
         }
     }
@@ -108,7 +108,7 @@ public class DataManager : MonoBehaviour
         {
             packs[currentPackIndex].solved = true;
             packList.UpdatePackIcon(currentPackIndex, true);
-            
+
             currentPackIndex++;
             currentPuzzleIndex = 0;
         }
@@ -161,14 +161,39 @@ public class DataManager : MonoBehaviour
             else
             {
                 Debug.LogError("Missing packs data!");
+
+                CopyPacksData();
+                return LoadPacksData();
             }
         }
         else
         {
             Debug.LogError("Missing packs data directory!");
-        }
 
-        return new List<PackData>();
+            CopyPacksData();
+            return LoadPacksData();
+        }
+    }
+
+    private void CopyPacksData()
+    {
+        var fromPath = Application.platform != RuntimePlatform.Android ?
+            $"{Application.streamingAssetsPath}/{saveDirectoryPath}" :
+            $"jar:file://{Application.dataPath}!/assets/{saveDirectoryPath}/";
+
+        var toPath = $"{Application.persistentDataPath}/{saveDirectoryPath}/";
+
+        Directory.CreateDirectory(toPath);
+
+        for (var i = 0; i < 9; i++)
+        {
+            var packFileName = $"pack-0{i + 1}";
+            var file = new WWW(fromPath + packFileName);
+
+            while (!file.isDone) ;
+
+            File.WriteAllBytes(toPath + packFileName, file.bytes);
+        }
     }
 
     private ProgressData LoadGameProgress()
