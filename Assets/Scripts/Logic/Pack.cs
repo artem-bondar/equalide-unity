@@ -8,8 +8,8 @@ public class Pack : IEnumerable<Puzzle>
     public readonly Puzzle[] puzzles;
 
     // State for game progress
-    public bool opened { get; private set; }
-    public bool solved { get; private set; }
+    public bool opened;
+    public bool solved;
 
     public string puzzlesProgress
     {

@@ -81,7 +81,7 @@ public class DataManager : MonoBehaviour
     }
 
     public bool IsOnLastLevel() => currentPackIndex == packs.Count - 1 &&
-                                   currentPuzzleIndex == packs[currentPackIndex].size - 1; 
+                                   currentPuzzleIndex == packs[currentPackIndex].size - 1;
 
     public void OpenNextLevel()
     {
@@ -91,6 +91,9 @@ public class DataManager : MonoBehaviour
         }
         else if (currentPackIndex != packs.Count - 1)
         {
+            packs[currentPackIndex + 1].opened = true;
+            packList.UpdatePackIcon(currentPackIndex + 1);
+            
             packs[currentPackIndex + 1][0].opened = true;
         }
     }
@@ -103,6 +106,9 @@ public class DataManager : MonoBehaviour
         }
         else if (currentPackIndex != packs.Count - 1)
         {
+            packs[currentPackIndex].solved = true;
+            packList.UpdatePackIcon(currentPackIndex, true);
+            
             currentPackIndex++;
             currentPuzzleIndex = 0;
         }
