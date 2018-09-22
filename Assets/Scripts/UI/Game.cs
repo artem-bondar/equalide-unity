@@ -48,10 +48,15 @@ public class Game : MonoBehaviour
     public GameObject redo;
 
     private List<char[]> history;
+    public int historyPtr = 0;
+
+    private bool changed = false;
 
     public void Start()
     {
-        history = new List<char[]>();
+
+        
+
         eraseMode = false;
         down = false;
         tiles = new List<GameObject>();
@@ -77,7 +82,13 @@ public class Game : MonoBehaviour
         cols = currentPuzzle.width;
         rows = currentPuzzle.height;
 
-        
+        history = new List<char[]>();
+
+        undo.GetComponent<Button>().interactable = false;
+        redo.GetComponent<Button>().interactable = false;
+
+        RecordHistory();
+
         tileMargin = (int) Mathf.Ceil( Screen.width / 720.0f);
 
         verticalFieldMargin = tileMargin; //Screen.width * 5 / 180; 
@@ -126,14 +137,49 @@ public class Game : MonoBehaviour
         }
     }
 
+    void RecordHistory()
+    {
+        
+        char[] record = new char[cols * rows];
+        for (int i = 0; i < cols*rows; i++)
+        {
+            record[i] = currentPuzzle[i / cols, i % cols];
+        }
+        if (historyPtr != history.Count)
+            history.RemoveRange(historyPtr, history.Count - historyPtr);
+        history.Add(record);
+        historyPtr++;
+    }
+
+    void  GetHistory(int ptr)
+    {
+        for (int i = 0; i < cols * rows; i++)
+        {
+            currentPuzzle[i / cols, i % cols] = history[ptr][i];
+            tiles[i].GetComponent<Image>().color = GetTileColor(history[ptr][i]);
+        }       
+    }
+    Color GetTileColor(char c)
+    {
+        if (c == 'e')
+            return Color.white;
+
+        if (c == 'b')
+            return Color.clear;
+
+        return colors[c - '0'];
+    }
+
     public void OnUndoClick()
     {
-
+        historyPtr--;
+        GetHistory(historyPtr - 1);
     }
 
     public void OnRedoClick()
     {
-
+        GetHistory(historyPtr);
+        historyPtr++;
     }
 
     void TileHover(int index)
@@ -154,7 +200,8 @@ public class Game : MonoBehaviour
         {
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
-           // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
+            // gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundHover, 1f);
+            changed = true;
             return;
         }
 
@@ -163,6 +210,7 @@ public class Game : MonoBehaviour
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundHover, 1f);
+            changed = true;
         }
 
         if (currentPuzzle.CheckForSolution()) {
@@ -188,6 +236,7 @@ public class Game : MonoBehaviour
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
             tiles[index].GetComponent<Image>().color = Color.white;
             eraseMode = true;
+            changed = true;
             //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(eraseSoundDown, 1f);
         }
         else
@@ -195,6 +244,7 @@ public class Game : MonoBehaviour
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = (char)('0' + currentColor);
             tiles[index].GetComponent<Image>().color = colors[currentColor];
             eraseMode = false;
+            changed = true;
             //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
@@ -237,7 +287,23 @@ public class Game : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
+            
+
+            if(changed)
+            {
+                RecordHistory();
+            }
             down = false;
+            changed = false;
+
+            if (historyPtr == 1)
+                undo.GetComponent<Button>().interactable = false;
+            else
+                undo.GetComponent<Button>().interactable = true;
+            if (historyPtr == history.Count)
+                redo.GetComponent<Button>().interactable = false;
+            else
+                redo.GetComponent<Button>().interactable = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))

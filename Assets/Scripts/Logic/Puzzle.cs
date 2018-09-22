@@ -42,6 +42,7 @@ public class Puzzle
         }
     }
 
+
     // Amount of elements in puzzle
     public int parts { get; private set; }
 
