@@ -8,40 +8,76 @@ public class TransitionsController : MonoBehaviour
     private Animator selectPackScreenAnimator;
     private Animator selectLevelScreenAnimator;
 
-	public void GameToSelectPackScreenTransition()
+    private enum Screen
+    {
+        GameScreen,
+        SelectPackScreen,
+        SelectLevelScreen
+    }
+
+    private Screen currentScreen = Screen.GameScreen;
+
+    public void GameToSelectPackScreenTransition()
     {
         gameScreenAnimator.Play("SlideOutToRight");
         selectPackScreenAnimator.Play("SlideInFromLeft");
+        currentScreen = Screen.SelectPackScreen;
     }
 
-	public void SelectPackToGameScreenTransition()
+    public void SelectPackToGameScreenTransition()
     {
         gameScreenAnimator.Play("SlideInFromRight");
         selectPackScreenAnimator.Play("SlideOutToLeft");
+        currentScreen = Screen.GameScreen;
     }
 
-	public void SelectPackToSelectLevelScreenTransition()
+    public void SelectPackToSelectLevelScreenTransition()
     {
         selectPackScreenAnimator.Play("SlideOutToLeft");
         selectLevelScreenAnimator.Play("SlideInFromRight");
+        currentScreen = Screen.SelectLevelScreen;
     }
 
-	public void SelectLevelToSelectPackScreenTransition()
+    public void SelectLevelToSelectPackScreenTransition()
     {
         selectPackScreenAnimator.Play("SlideInFromLeft");
         selectLevelScreenAnimator.Play("SlideOutToRight");
+        currentScreen = Screen.SelectPackScreen;
     }
 
     public void SelectLevelToGameScreenTransition()
     {
         selectLevelScreenAnimator.Play("FadeOut");
         gameScreenAnimator.Play("FadeIn");
+        currentScreen = Screen.GameScreen;
     }
 
-	private void Start ()
-	{
-		gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
+    private void Start()
+    {
+        gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
         selectPackScreenAnimator = GameObject.Find("SelectPackScreen").GetComponent<Animator>();
         selectLevelScreenAnimator = GameObject.Find("SelectLevelScreen").GetComponent<Animator>();
-	}
+    }
+
+    private void Update()
+    {
+        // Android back button
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            switch (currentScreen)
+            {
+                case Screen.GameScreen:
+                    Application.Quit();
+                    break;
+                
+                case Screen.SelectPackScreen:
+                    SelectPackToGameScreenTransition();
+                    break;
+
+                case Screen.SelectLevelScreen:
+                    SelectLevelToSelectPackScreenTransition();
+                    break;
+            }
+        }
+    }
 }
