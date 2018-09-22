@@ -43,6 +43,7 @@ public class Game : MonoBehaviour
     private bool down;
 
     private bool solved = false; // used to clear everything after a click if solved
+    private bool presolved = false; // used to clear everything after a click if solved
 
     public GameObject undo;
     public GameObject redo;
@@ -216,6 +217,7 @@ public class Game : MonoBehaviour
         if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
+            presolved = true;
             RemovePartitions();
         }
     }
@@ -251,12 +253,13 @@ public class Game : MonoBehaviour
         if (currentPuzzle.CheckForSolution()) {
 
             Debug.Log("Solved!");
+            presolved = true;
             RemovePartitions();
         }
     }
 
     void ClearColors()
-    {
+    {  
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -283,13 +286,14 @@ public class Game : MonoBehaviour
         {
             ClearColors();
             solved = false;
+            presolved = false;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             
 
-            if(changed)
+            if(changed && !presolved)
             {
                 RecordHistory();
             }
@@ -320,6 +324,8 @@ public class Game : MonoBehaviour
                     RemovePartitionsForSingleTile(i, j);
             }
         }
+        history.RemoveRange(1, history.Count - 1);
+        historyPtr = 1;
         StartCoroutine(SetSolved());
     }    
 
