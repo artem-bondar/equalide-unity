@@ -52,9 +52,7 @@ public class Element
             return false;
         }
 
-        var equal = first.shape == second.shape || first.GetBodyMirroredByHeight() == second.shape;
-
-        if (!equal)
+        if (first.shape != second.shape && first.GetBodyMirroredByHeight() != second.shape)
         {
             Element elementForRotate = first;
 
@@ -62,15 +60,18 @@ public class Element
             {
                 Element rotatedElement = elementForRotate.GetElementRotatedClockWise();
 
-                if (equal =
-                    rotatedElement.shape == second.shape || rotatedElement.GetBodyMirroredByHeight() == second.shape)
+                if (rotatedElement.shape == second.shape || rotatedElement.GetBodyMirroredByHeight() == second.shape)
                 {
                     return true;
                 }
-            }
-        }
 
-        return equal;
+                elementForRotate = rotatedElement;
+            }
+
+            return false;
+        }
+        
+        return true;
     }
 
     // Cut element to it's bounding rectangle of the same height
@@ -99,6 +100,11 @@ public class Element
                     break;
                 }
             }
+        }
+
+        if (startIndexes.Count == 0 && endIndexes.Count == 0)
+        {
+            return;
         }
 
         // Calculate bounds by width
