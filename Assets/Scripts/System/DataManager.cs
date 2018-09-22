@@ -10,6 +10,7 @@ public class DataManager : MonoBehaviour
     private const string gameProgressFileName = "save";
 
     private List<Pack> packs;
+    private PackList packList;
     public string packsProgress
     {
         get
@@ -82,6 +83,31 @@ public class DataManager : MonoBehaviour
     public bool IsOnLastLevel() => currentPackIndex == packs.Count - 1 &&
                                    currentPuzzleIndex == packs[currentPackIndex].size - 1; 
 
+    public void OpenNextLevel()
+    {
+        if (currentPuzzleIndex != packs[currentPackIndex].size - 1)
+        {
+            packs[currentPackIndex][currentPuzzleIndex + 1].opened = true;
+        }
+        else if (currentPackIndex != packs.Count - 1)
+        {
+            packs[currentPackIndex + 1][0].opened = true;
+        }
+    }
+
+    public void SelectNextLevel()
+    {
+        if (currentPuzzleIndex != packs[currentPackIndex].size - 1)
+        {
+            currentPuzzleIndex++;
+        }
+        else if (currentPackIndex != packs.Count - 1)
+        {
+            currentPackIndex++;
+            currentPuzzleIndex = 0;
+        }
+    }
+
     private void Start()
     {
         List<PackData> packsData = LoadPacksData();
@@ -93,7 +119,12 @@ public class DataManager : MonoBehaviour
         currentPackIndex = progressData.currentPackIndex;
         currentPuzzleIndex = progressData.currentPuzzleIndex;
         packs[currentPackIndex][currentPuzzleIndex].partition = progressData.savedPartition;
+
+        packList = GameObject.FindObjectOfType<PackList>();
+        packList.Create(packsProgress);
     }
+
+    private void OnApplicationQuit() => SaveGameProgress(gameProgress);
 
     private List<PackData> LoadPacksData()
     {

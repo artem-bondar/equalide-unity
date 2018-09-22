@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     private Palette palette;
     private PuzzleGrid puzzleGrid;
 
-    private PackList packList;
     private LevelGrid levelGrid;
 
     [Tooltip("Game screen top app bar title")]
@@ -29,11 +28,12 @@ public class GameManager : MonoBehaviour
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
 
         LoadCurrentPuzzle();
+        if (dataManager.currentPuzzle.CheckForSolution())
+        {
+            OnSolvedLevel();
+        }
 
         transitionsController = GameObject.FindObjectOfType<TransitionsController>();
-
-        packList = GameObject.FindObjectOfType<PackList>();
-        packList.Create(dataManager.packsProgress);
 
         levelGrid = GameObject.FindObjectOfType<LevelGrid>();
     }
@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
         if (dataManager.GetPack(packIndex)[puzzleIndex].opened)
         {
             dataManager.SetCurrentLevel(packIndex, puzzleIndex);
+            dataManager.currentPuzzle.Refresh();
             dataManager.SaveGameProgress(dataManager.gameProgress);
 
             DestroyCurrentPuzzle();
@@ -69,28 +70,48 @@ public class GameManager : MonoBehaviour
 
     public void OnRefreshButton()
     {
-        puzzleGrid.paintLock = false;
-        palette.gameObject.SetActive(true);
+        if (levelSolvedState)
+        {
+            puzzleGrid.Refresh();
+            puzzleGrid.paintLock = false;
+
+            palette.gameObject.SetActive(true);
+
+            fab.GetComponent<Animator>().Play("FadeOut");
+            fab.SetActive(false);
+        }
     }
 
     public void OnSolvedLevel()
     {
         puzzleGrid.paintLock = true;
         palette.gameObject.SetActive(false);
+        levelSolvedState = true;
 
         if (!dataManager.IsOnLastLevel())
         {
             fab.SetActive(true);
             fab.GetComponent<Animator>().Play("FadeIn");
-        }
 
-        levelSolvedState = true;
+            dataManager.OpenNextLevel();
+            dataManager.SaveGameProgress(dataManager.gameProgress);
+        }
     }
 
     public void OnFabClick()
     {
         fab.GetComponent<Animator>().Play("FadeOut");
         fab.SetActive(false);
+
+        if (!dataManager.IsOnLastLevel())
+        {
+            dataManager.SelectNextLevel();
+            dataManager.currentPuzzle.Refresh();
+            dataManager.SaveGameProgress(dataManager.gameProgress);
+
+            DestroyCurrentPuzzle();
+            LoadCurrentPuzzle();
+        }
     }
 
     private void LoadCurrentPuzzle()
@@ -100,7 +121,10 @@ public class GameManager : MonoBehaviour
             $"{dataManager.currentPuzzleIndex + 1}".PadLeft(2, '0');
 
         puzzleGrid.Create(dataManager.currentPuzzle);
+
         palette.Create(dataManager.currentPuzzle.elementsCount);
+        palette.gameObject.SetActive(true);
+
         levelSolvedState = false;
     }
 
