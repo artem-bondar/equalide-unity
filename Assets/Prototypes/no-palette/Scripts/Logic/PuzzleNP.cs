@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 // 'e' - empty cell, can be colored
 // 'b' - blank cell, can't be colored
 
-public class Puzzle
+public class PuzzleNP
 {
 
     // Holds string representation of 2D-array
@@ -51,7 +51,7 @@ public class Puzzle
     public bool opened { get; private set; }
     public bool solved { get; private set; }
      
-    public Puzzle(string partition, int parts,
+    public PuzzleNP(string partition, int parts,
                   int width, int height,
                   bool opened, bool solved)
     {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class Game : MonoBehaviour
+public class GameNP : MonoBehaviour
 {
     public GameObject gameField;
     public string puzzleString;
@@ -13,7 +13,7 @@ public class Game : MonoBehaviour
 
     public string sceneName;
 
-    private Puzzle currentPuzzle;
+    private PuzzleNP currentPuzzle;
 
     private int fieldHeight;
 
@@ -66,7 +66,7 @@ public class Game : MonoBehaviour
 
         puzzleString = puzzleString.Replace(' ', '\n');
 
-        currentPuzzle = new Puzzle("bb0bb00b0001b011b111bb1b", 2, 4,6, false, false);
+        currentPuzzle = new PuzzleNP("bb0bb00b0001b011b111bb1b", 2, 4,6, false, false);
         currentPuzzle.Clear();
 
         cols = currentPuzzle.width;
