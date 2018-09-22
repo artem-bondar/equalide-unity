@@ -143,7 +143,6 @@ public class Puzzle : IEnumerable<char>
         {
             var firstOccurance = Partition.IndexOf(cell);
             var lastOccurance = Partition.LastIndexOf(cell);
-            var length = lastOccurance - firstOccurance + 1;
 
             // Get partition that represent element cut by height bounds
             string substr = Partition.Substring(
