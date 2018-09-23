@@ -11,7 +11,6 @@ public class GameUR : MonoBehaviour
     public string puzzleString;
     public bool toolbarMode;
 
-    public string sceneName;
 
     private PuzzleBT currentPuzzle;
 
@@ -29,13 +28,6 @@ public class GameUR : MonoBehaviour
     public PaletteBT palette;
 
 
-
-    public AudioClip drawSoundDown;
-    public AudioClip eraseSoundDown;
-
-    public AudioClip drawSoundHover;
-    public AudioClip eraseSoundHover;
-
     private List<GameObject> tiles;
     private List<GameObject> contour;
 
@@ -43,7 +35,7 @@ public class GameUR : MonoBehaviour
     private bool down;
 
     private bool solved = false; // used to clear everything after a click if solved
-    private bool presolved = false; // used to clear everything after a click if solved
+    
 
     public GameObject undo;
     public GameObject redo;
@@ -53,6 +45,7 @@ public class GameUR : MonoBehaviour
 
     private bool changed = false;
 
+    public string curr;
     public void Start()
     {
 
@@ -173,14 +166,18 @@ public class GameUR : MonoBehaviour
 
     public void OnUndoClick()
     {
+        ClearContour();
         historyPtr--;
         GetHistory(historyPtr - 1);
+        IfSolved();
     }
 
     public void OnRedoClick()
     {
+        ClearContour();
         GetHistory(historyPtr);
         historyPtr++;
+        IfSolved();
     }
 
     void TileHover(int index)
@@ -214,12 +211,7 @@ public class GameUR : MonoBehaviour
             changed = true;
         }
 
-        if (currentPuzzle.CheckForSolution()) {
-
-            Debug.Log("Solved!");
-            presolved = true;
-            RemovePartitions();
-        }
+        IfSolved();
     }
 
     void TileDown(int index)
@@ -230,9 +222,16 @@ public class GameUR : MonoBehaviour
         if (palette.selectedIndex == -1)
             return;
 
+        if (solved)
+        {
+            ClearColors();
+            solved = false;
+            return;
+        }
+
         down = true;
         int currentColor = palette.selectedIndex;
-    
+        
         if (currentColor == (currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] - '0'))
         {
             currentPuzzle[index / currentPuzzle.width, index % currentPuzzle.width] = 'e';
@@ -250,12 +249,18 @@ public class GameUR : MonoBehaviour
             //gameObject.GetComponents<AudioSource>()[1].PlayOneShot(drawSoundDown, 1f);
         }
 
-        if (currentPuzzle.CheckForSolution()) {
-
+        IfSolved();
+    }
+    void IfSolved()
+    {
+        if (currentPuzzle.CheckForSolution())
+        {
             Debug.Log("Solved!");
-            presolved = true;
             RemovePartitions();
+            StartCoroutine(SetSolved());
         }
+        else
+            solved = false;
     }
 
     void ClearColors()
@@ -272,7 +277,13 @@ public class GameUR : MonoBehaviour
                 currentPuzzle[i, j] = 'e';
             }
         }
+        ClearContour();
+        RecordHistory();
 
+    }
+
+    void ClearContour()
+    {
         foreach (var obj in contour)
         {
             Destroy(obj);
@@ -282,20 +293,15 @@ public class GameUR : MonoBehaviour
 
     void Update()
     {
-        if(solved && Input.GetMouseButtonDown(0))
-        {
-            ClearColors();
-            solved = false;
-            presolved = false;
-        }
 
         if (Input.GetMouseButtonUp(0))
         {
-            
 
-            if(changed && !presolved)
+            curr = currentPuzzle.Partition;
+            if (changed)
             {
                 RecordHistory();
+                
             }
             down = false;
             changed = false;
@@ -309,11 +315,6 @@ public class GameUR : MonoBehaviour
             else
                 redo.GetComponent<Button>().interactable = true;
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        }
     }
 
     void RemovePartitions() // removes black partitions between tiles with same color (when puzzle is solved)
@@ -324,9 +325,6 @@ public class GameUR : MonoBehaviour
                     RemovePartitionsForSingleTile(i, j);
             }
         }
-        history.RemoveRange(1, history.Count - 1);
-        historyPtr = 1;
-        StartCoroutine(SetSolved());
     }    
 
     IEnumerator SetSolved()
