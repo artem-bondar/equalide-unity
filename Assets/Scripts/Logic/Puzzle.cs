@@ -29,20 +29,13 @@ public class Puzzle : IEnumerable<char>
     public readonly int width;
     public readonly int height;
 
-    // States for game progress
-    public bool opened = false;
-    public bool solved { get; private set; } = false;
-
     public Puzzle(string partition, int elementsCount,
-                  int width, int height,
-                  bool opened, bool solved)
+                  int width, int height)
     {
         this.Partition = partition;
         this.elementsCount = elementsCount;
         this.width = width;
         this.height = height;
-        this.opened = opened;
-        this.solved = solved;
     }
 
     // Receives puzzle with solution in simple text format:
@@ -98,7 +91,7 @@ public class Puzzle : IEnumerable<char>
         Partition = Regex.Replace(Partition, "[^be]", "e");
     }
 
-    // Checks if puzzle partition is a solution and mark puzzle as solved if true 
+    // Checks if current puzzle partition is a valid solution
     public bool CheckForSolution()
     {
         // Checks if puzzle contains any unpainted primitive
@@ -128,7 +121,7 @@ public class Puzzle : IEnumerable<char>
             }
         }
 
-        return solved = true;
+        return true;
     }
 
     private bool CheckIfValidIndexes(int i, int j) =>

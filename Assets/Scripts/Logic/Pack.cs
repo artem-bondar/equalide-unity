@@ -7,31 +7,10 @@ public class Pack : IEnumerable<Puzzle>
     public readonly int size;
     public readonly Puzzle[] puzzles;
 
-    // State for game progress
-    public bool opened;
-    public bool solved;
-
-    public string puzzlesProgress
-    {
-        get
-        {
-            var puzzlesProgress = string.Empty;
-
-            foreach (var puzzle in this)
-            {
-                puzzlesProgress += puzzle.solved ? 's' : puzzle.opened ? 'o' : 'c';
-            }
-
-            return puzzlesProgress;
-        }
-    }
-
-    public Pack(Puzzle[] puzzles, bool opened, bool solved)
+    public Pack(Puzzle[] puzzles)
     {
         this.size = puzzles.Length;
         this.puzzles = puzzles;
-        this.opened = opened;
-        this.solved = solved;
     }
 
     // Receives pack with solutions in simple text format:
