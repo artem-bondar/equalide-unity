@@ -3,13 +3,18 @@ using System.Collections.Generic;
 
 public class Pack : IEnumerable<Puzzle>
 {
-    // Pack content
-    public readonly int size;
     public readonly Puzzle[] puzzles;
+
+    public int size
+    {
+        get
+        {
+            return puzzles.Length;
+        }
+    }
 
     public Pack(Puzzle[] puzzles)
     {
-        this.size = puzzles.Length;
         this.puzzles = puzzles;
     }
 
@@ -32,10 +37,9 @@ public class Pack : IEnumerable<Puzzle>
     {
         string[] puzzles = rawPackText.Split(new[] { "\n\n" }, 0);
 
-        size = puzzles.Length;
-        this.puzzles = new Puzzle[size];
-
-        for (var i = 0; i < size; i++)
+        this.puzzles = new Puzzle[puzzles.Length];
+        
+        for (var i = 0; i < puzzles.Length; i++)
         {
             this.puzzles[i] = new Puzzle(puzzles[i]);
         }
@@ -54,4 +58,18 @@ public class Pack : IEnumerable<Puzzle>
         ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => puzzles.GetEnumerator();
+
+    public static explicit operator Pack(PackData packData)
+    {
+        var puzzles = new Puzzle[packData.size];
+
+        for (var i = 0; i < packData.size; i++)
+        {
+            puzzles[i] = new Puzzle(
+                packData.Puzzle(i), packData.PuzzleElementCount(i),
+                packData.PuzzleWidth(i), packData.Puzzle(i).Length / packData.PuzzleWidth(i));
+        }
+
+        return new Pack(puzzles);
+    }
 }
