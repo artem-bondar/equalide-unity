@@ -10,7 +10,7 @@ public class DataManager : MonoBehaviour
 
     private List<Pack> packs;
 
-    private void Start() => packs = AssemblePacks(LoadPacksData());
+    private void Awake() => packs = LoadPacksData().ConvertAll(x => (Pack)x);
 
     public Pack Pack(int packIndex) =>
         packIndex >= 0 && packIndex < packs.Count ? packs[packIndex] : null;
@@ -22,6 +22,7 @@ public class DataManager : MonoBehaviour
         var puzzlesProgress = new string[packs.Count];
 
         puzzlesProgress[0] = 'o' + new string('c', packs[0].puzzles.Length - 1);
+        
         for (var i = 1; i < packs.Count; i++)
         {
             puzzlesProgress[i] += '\n' + new string('c', packs[i].puzzles.Length);
@@ -129,26 +130,5 @@ public class DataManager : MonoBehaviour
 
             File.WriteAllBytes(toPath + packFileName, file.bytes);
         }
-    }
-
-    private List<Pack> AssemblePacks(List<PackData> packsData)
-    {
-        var packs = new List<Pack>();
-
-        for (var i = 0; i < packsData.Count; i++)
-        {
-            var puzzles = new Puzzle[packsData[i].puzzles.Length];
-
-            for (var j = 0; j < packsData[i].puzzles.Length; j++)
-            {
-                puzzles[j] = new Puzzle(
-                    packsData[i].puzzles[j], packsData[i].puzzlesElementsCounts[j],
-                    packsData[i].puzzlesWidths[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidths[j]);
-            }
-
-            packs.Add(new Pack(puzzles));
-        }
-
-        return packs;
     }
 }

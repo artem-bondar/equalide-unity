@@ -1,54 +1,91 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+
+enum ProgressState
+{
+    Closed,
+    Opened,
+    Solved
+}
 
 public class ProgressManager : MonoBehaviour
 {
+    // Current level related data
+    public int currentPackIndex { get; private set; }
+    public int currentPuzzleIndex { get; private set; }
+
+    private readonly ProgressState[] packsStates;
+    private readonly ProgressState[][] puzzlesStates;
+
     private const string gameProgressFileName = "save";
 
     private PackList packList;
-	
+
+    private DataManager dataManager;
+
     public string packsProgress
     {
         get
         {
             var packsProgress = string.Empty;
 
-            foreach (var pack in packs)
+            foreach (var packState in packsStates)
             {
-                packsProgress += pack.solved ? 's' : pack.opened ? 'o' : 'c';
+                packsProgress += packState == ProgressState.Closed ? 'c' :
+                    packState == ProgressState.Opened ? 'o' : 's';
             }
 
             return packsProgress;
         }
     }
 
-    public int currentPackIndex { get; private set; }
-    public int currentPuzzleIndex { get; private set; }
-
-    public ProgressData gameProgress
+    public string[] puzzlesProgress
     {
         get
         {
-            var puzzlesProgress = new string[packs.Count];
+            var puzzlesProgress = new string[puzzlesStates.Length];
 
-            for (var i = 0; i < packs.Count; i++)
+            for (var i = 0; i < puzzlesStates.Length; i++)
             {
-                puzzlesProgress[i] = packs[i].puzzlesProgress;
+                foreach (var puzzleState in puzzlesStates[i])
+                {
+                    puzzlesProgress[i] += puzzleState == ProgressState.Closed ? 'c' :
+                        puzzleState == ProgressState.Opened ? 'o' : 's';
+                }
             }
 
-            return new ProgressData(
-                currentPackIndex, currentPuzzleIndex,
-                packs[currentPackIndex][currentPuzzleIndex].partition,
-                packsProgress, puzzlesProgress);
+            return puzzlesProgress;
         }
     }
 
+    // public ProgressData gameProgress
+    // {
+    //     get
+    //     {
+    //         var puzzlesProgress = new string[packs.Count];
+
+    //         for (var i = 0; i < packs.Count; i++)
+    //         {
+    //             puzzlesProgress[i] = packs[i].puzzlesProgress;
+    //         }
+
+    //         return new ProgressData(
+    //             currentPackIndex, currentPuzzleIndex,
+    //             packs[currentPackIndex][currentPuzzleIndex].partition,
+    //             packsProgress, puzzlesProgress);
+    //     }
+    // }
+
     private void Start()
     {
+        dataManager = GameObject.FindObjectOfType<DataManager>();
+
         ProgressData progressData =
             (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
-            LoadGameProgress() : InitGameProgress(packsData);
+            LoadGameProgress() : dataManager.GetInitialProgressData();
 
         currentPackIndex = progressData.currentPackIndex;
         currentPuzzleIndex = progressData.currentPuzzleIndex;
@@ -69,8 +106,8 @@ public class ProgressManager : MonoBehaviour
     public void SaveGameProgress(ProgressData progressData)
     {
         var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
-
         FileStream file = File.Open(filePath, FileMode.Create);
+
         new BinaryFormatter().Serialize(file, progressData);
         file.Close();
     }
@@ -119,25 +156,9 @@ public class ProgressManager : MonoBehaviour
         return progressData;
     }
 
-    // Initializes new game progress state and saves it to file
-    private ProgressData InitGameProgress(List<PackData> packsData)
+    // TODO
+    private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
     {
-        currentPackIndex = 0;
-        currentPuzzleIndex = 0;
-
-        var packsProgress = 'o' + new string('c', packsData.Count - 1);
-        var puzzlesProgress = new string[packsData.Count];
-
-        puzzlesProgress[0] = 'o' + new string('c', packsData[0].puzzles.Length - 1);
-        for (var i = 1; i < packsData.Count; i++)
-        {
-            puzzlesProgress[i] += '\n' + new string('c', packsData[i].puzzles.Length);
-        }
-
-        var progressData = new ProgressData(currentPackIndex, currentPuzzleIndex,
-            string.Empty, packsProgress, puzzlesProgress);
-        SaveGameProgress(progressData);
-
-        return progressData;
+        return InitGameProgress(packsData);
     }
 }
