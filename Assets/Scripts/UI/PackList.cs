@@ -5,10 +5,11 @@ using UnityEngine.UI;
 public class PackList : MonoBehaviour
 {
     public GameObject packButton;
-    private GameManager gameManager;
-
+    
     public Sprite lockOpenSprite;
     public Sprite starSprite;
+
+    private GameManager gameManager;
 
     private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
 

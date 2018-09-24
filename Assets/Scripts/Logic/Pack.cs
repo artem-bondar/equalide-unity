@@ -26,20 +26,6 @@ public class Pack : IEnumerable<Puzzle>
         }
     }
 
-    // Indexer interface to get puzzle using [] operator
-    public Puzzle this[int i]
-    {
-        get
-        {
-            return i >= 0 && i < size ? puzzles[i] : null;
-        }
-    }
-
-    public IEnumerator<Puzzle> GetEnumerator() =>
-        ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => puzzles.GetEnumerator();
-
     public Pack(Puzzle[] puzzles, bool opened, bool solved)
     {
         this.size = puzzles.Length;
@@ -75,4 +61,18 @@ public class Pack : IEnumerable<Puzzle>
             this.puzzles[i] = new Puzzle(puzzles[i]);
         }
     }
+
+    // Indexer interface to get puzzle using [] operator
+    public Puzzle this[int i]
+    {
+        get
+        {
+            return i >= 0 && i < size ? puzzles[i] : null;
+        }
+    }
+
+    public IEnumerator<Puzzle> GetEnumerator() =>
+        ((IEnumerable<Puzzle>)puzzles).GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => puzzles.GetEnumerator();
 }

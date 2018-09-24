@@ -62,6 +62,24 @@ public class DataManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        List<PackData> packsData = LoadPacksData();
+        ProgressData progressData =
+            (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
+            LoadGameProgress() : InitGameProgress(packsData);
+        packs = AssemblePacks(packsData, progressData);
+
+        currentPackIndex = progressData.currentPackIndex;
+        currentPuzzleIndex = progressData.currentPuzzleIndex;
+        packs[currentPackIndex][currentPuzzleIndex].partition = progressData.savedPartition;
+
+        packList = GameObject.FindObjectOfType<PackList>();
+        packList.Create(packsProgress);
+    }
+
+    private void OnApplicationQuit() => SaveGameProgress(gameProgress);
+
     public Pack GetPack(int packIndex) =>
         packIndex >= 0 && packIndex < packs.Count ? packs[packIndex] : null;
 
@@ -113,24 +131,6 @@ public class DataManager : MonoBehaviour
             currentPuzzleIndex = 0;
         }
     }
-
-    private void Start()
-    {
-        List<PackData> packsData = LoadPacksData();
-        ProgressData progressData =
-            (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
-            LoadGameProgress() : InitGameProgress(packsData);
-        packs = AssemblePacks(packsData, progressData);
-
-        currentPackIndex = progressData.currentPackIndex;
-        currentPuzzleIndex = progressData.currentPuzzleIndex;
-        packs[currentPackIndex][currentPuzzleIndex].partition = progressData.savedPartition;
-
-        packList = GameObject.FindObjectOfType<PackList>();
-        packList.Create(packsProgress);
-    }
-
-    private void OnApplicationQuit() => SaveGameProgress(gameProgress);
 
     private List<PackData> LoadPacksData()
     {

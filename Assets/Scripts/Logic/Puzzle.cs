@@ -33,27 +33,6 @@ public class Puzzle : IEnumerable<char>
     public bool opened = false;
     public bool solved { get; private set; } = false;
 
-    // Indexer interface to get/set char using [,] operator
-    public char this[int i, int j]
-    {
-        get
-        {
-            return CheckIfValidIndexes(i, j) ? Partition[i * width + j] : 'b';
-        }
-        set
-        {
-            if (CheckIfValidIndexes(i, j))
-            {
-                var charArray = Partition.ToCharArray();
-                charArray[i * width + j] = value;
-                Partition = new string(charArray);
-            }
-        }
-    }
-
-    public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
-
     public Puzzle(string partition, int elementsCount,
                   int width, int height,
                   bool opened, bool solved)
@@ -91,6 +70,27 @@ public class Puzzle : IEnumerable<char>
         this.width = lines[0].Length;
         this.height = lines.Length;
     }
+
+    // Indexer interface to get/set char using [,] operator
+    public char this[int i, int j]
+    {
+        get
+        {
+            return CheckIfValidIndexes(i, j) ? Partition[i * width + j] : 'b';
+        }
+        set
+        {
+            if (CheckIfValidIndexes(i, j))
+            {
+                var charArray = Partition.ToCharArray();
+                charArray[i * width + j] = value;
+                Partition = new string(charArray);
+            }
+        }
+    }
+
+    public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
 
     // Return puzzle partition to initial unsolved state
     public void Refresh()
@@ -131,6 +131,33 @@ public class Puzzle : IEnumerable<char>
         return solved = true;
     }
 
+    private bool CheckIfValidIndexes(int i, int j) =>
+        i * width + j >= 0 && i * width + j < Partition.Length;
+
+
+    // Checks if partition for loading has the same shape
+    // and contains only valid cells
+    private bool CheckIfValidPartition(string partition)
+    {
+        if (Partition.Length != partition.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < partition.Length; i++)
+        {
+            if ((Partition[i] == 'b' && partition[i] != 'b') ||
+                (Partition[i] != 'b' && partition[i] == 'b') ||
+                (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
+                (char.IsDigit(partition[i]) && (int)(partition[i] - '0') >= this.elementsCount))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Separates current partition in elements of same color
     private List<Element> SeparateInElements()
     {
@@ -157,30 +184,4 @@ public class Puzzle : IEnumerable<char>
 
         return result;
     }
-
-    // Checks if partition for loading has the same shape
-    // and contains only valid cells
-    private bool CheckIfValidPartition(string partition)
-    {
-        if (Partition.Length != partition.Length)
-        {
-            return false;
-        }
-
-        for (var i = 0; i < partition.Length; i++)
-        {
-            if ((Partition[i] == 'b' && partition[i] != 'b') ||
-                (Partition[i] != 'b' && partition[i] == 'b') ||
-                (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
-                (char.IsDigit(partition[i]) && (int)(partition[i] - '0') >= this.elementsCount))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool CheckIfValidIndexes(int i, int j) =>
-        i * width + j >= 0 && i * width + j < Partition.Length;
 }

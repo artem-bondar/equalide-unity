@@ -74,6 +74,59 @@ public class Element
         return true;
     }
 
+    // Checks if element has only one component
+    public bool CheckConnectivity()
+    {
+        // Stores already traversed cell indexes
+        var checkedIndexes = new HashSet<int>();
+
+        // Stores pending cell indexes to traverse on next step
+        var pendingIndexes = new HashSet<int> { shape.IndexOf("c") };
+
+        // Stores cell indexes that could be traversed after pending cells
+        var findedIndexes = new HashSet<int>();
+
+        // Traversing figure starting from selected index (first upper left non-empty cell)
+        while (pendingIndexes.Count != 0)
+        {
+            findedIndexes.Clear();
+
+            foreach (var index in pendingIndexes)
+            {
+                // Indexes of all neighbour cells
+                int? up = (index - width >= 0) ? index - width : (int?)null;
+                int? down = (index + width < shape.Length) ? index + width : (int?)null;
+                int? left = (index % width != 0) ? index - 1 : (int?)null;
+                int? right = (index % width != width - 1) ? index + 1 : (int?)null;
+
+                var indexesForCheck = new List<int?> { up, down, left, right };
+
+                foreach (var i in indexesForCheck)
+                {
+                    if (((i != null) && (shape[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
+                    {
+                        findedIndexes.Add((int)i);
+                    }
+                }
+            }
+
+            checkedIndexes.UnionWith(pendingIndexes);
+            pendingIndexes.Clear();
+            pendingIndexes.UnionWith(findedIndexes);
+        }
+
+        // Checks if element has any non-traversed cells
+        for (var i = 0; i < shape.Length; i++)
+        {
+            if ((shape[i] == 'c') && !(checkedIndexes.Contains(i)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Cut element to it's bounding rectangle of the same height
     private void CutShapeByWidth()
     {
@@ -159,58 +212,5 @@ public class Element
         }
 
         return mirroredShape;
-    }
-
-    // Checks if element has only one component
-    public bool CheckConnectivity()
-    {
-        // Stores already traversed cell indexes
-        var checkedIndexes = new HashSet<int>();
-
-        // Stores pending cell indexes to traverse on next step
-        var pendingIndexes = new HashSet<int> { shape.IndexOf("c") };
-
-        // Stores cell indexes that could be traversed after pending cells
-        var findedIndexes = new HashSet<int>();
-
-        // Traversing figure starting from selected index (first upper left non-empty cell)
-        while (pendingIndexes.Count != 0)
-        {
-            findedIndexes.Clear();
-
-            foreach (var index in pendingIndexes)
-            {
-                // Indexes of all neighbour cells
-                int? up = (index - width >= 0) ? index - width : (int?)null;
-                int? down = (index + width < shape.Length) ? index + width : (int?)null;
-                int? left = (index % width != 0) ? index - 1 : (int?)null;
-                int? right = (index % width != width - 1) ? index + 1 : (int?)null;
-
-                var indexesForCheck = new List<int?> { up, down, left, right };
-
-                foreach (var i in indexesForCheck)
-                {
-                    if (((i != null) && (shape[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
-                    {
-                        findedIndexes.Add((int)i);
-                    }
-                }
-            }
-
-            checkedIndexes.UnionWith(pendingIndexes);
-            pendingIndexes.Clear();
-            pendingIndexes.UnionWith(findedIndexes);
-        }
-
-        // Checks if element has any non-traversed cells
-        for (var i = 0; i < shape.Length; i++)
-        {
-            if ((shape[i] == 'c') && !(checkedIndexes.Contains(i)))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

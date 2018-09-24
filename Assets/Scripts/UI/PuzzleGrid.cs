@@ -9,10 +9,11 @@ public class PuzzleGrid : MonoBehaviour
     private const int primitiveMargin = 3; // px = 1 dp for full hd screen
     private readonly List<Image> primitives = new List<Image>();
 
-    private Puzzle puzzle;
     private Palette palette;
+
     private GameManager gameManager;
 
+    private Puzzle puzzle;
     public bool paintLock = true;
     private bool eraseMode;
     private bool duringSwipe;

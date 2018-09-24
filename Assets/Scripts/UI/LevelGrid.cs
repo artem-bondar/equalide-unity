@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class LevelGrid : MonoBehaviour
 {
+    [Tooltip("Level select screen top app bar title")]
+    public Text topAppBarTitle;
+
     public GameObject levelTile;
     private List<GameObject> levelTiles;
 
     private GameManager gameManager;
-
-    [Tooltip("Level select screen top app bar title")]
-    public Text topAppBarTitle;
 
     private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
@@ -23,7 +23,7 @@ public class LevelGrid : MonoBehaviour
 
         var tileSize = (0.2f * gridrt.width);
         var tileSizeByHeight = (0.14f * gridrt.height);
-        
+
         float tileMargin;
 
         if (tileSizeByHeight < tileSize)

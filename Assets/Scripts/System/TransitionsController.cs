@@ -17,6 +17,35 @@ public class TransitionsController : MonoBehaviour
 
     private Screen currentScreen = Screen.GameScreen;
 
+    private void Start()
+    {
+        gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
+        selectPackScreenAnimator = GameObject.Find("SelectPackScreen").GetComponent<Animator>();
+        selectLevelScreenAnimator = GameObject.Find("SelectLevelScreen").GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        // Android back button
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            switch (currentScreen)
+            {
+                case Screen.GameScreen:
+                    Application.Quit();
+                    break;
+
+                case Screen.SelectPackScreen:
+                    SelectPackToGameScreenTransition();
+                    break;
+
+                case Screen.SelectLevelScreen:
+                    SelectLevelToSelectPackScreenTransition();
+                    break;
+            }
+        }
+    }
+
     public void GameToSelectPackScreenTransition()
     {
         gameScreenAnimator.Play("SlideOutToRight");
@@ -50,34 +79,5 @@ public class TransitionsController : MonoBehaviour
         selectLevelScreenAnimator.Play("FadeOut");
         gameScreenAnimator.Play("FadeIn");
         currentScreen = Screen.GameScreen;
-    }
-
-    private void Start()
-    {
-        gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
-        selectPackScreenAnimator = GameObject.Find("SelectPackScreen").GetComponent<Animator>();
-        selectLevelScreenAnimator = GameObject.Find("SelectLevelScreen").GetComponent<Animator>();
-    }
-
-    private void Update()
-    {
-        // Android back button
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            switch (currentScreen)
-            {
-                case Screen.GameScreen:
-                    Application.Quit();
-                    break;
-                
-                case Screen.SelectPackScreen:
-                    SelectPackToGameScreenTransition();
-                    break;
-
-                case Screen.SelectLevelScreen:
-                    SelectLevelToSelectPackScreenTransition();
-                    break;
-            }
-        }
     }
 }

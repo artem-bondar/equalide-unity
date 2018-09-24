@@ -4,6 +4,12 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [Tooltip("Game screen top app bar title")]
+    public Text topAppBarTitle;
+
+    [Tooltip("Floating action button")]
+    public GameObject fab;
+
     private DataManager dataManager;
     private TransitionsController transitionsController;
 
@@ -11,12 +17,6 @@ public class GameManager : MonoBehaviour
     private PuzzleGrid puzzleGrid;
 
     private LevelGrid levelGrid;
-
-    [Tooltip("Game screen top app bar title")]
-    public Text topAppBarTitle;
-
-    [Tooltip("Floating action button")]
-    public GameObject fab;
 
     private bool levelSolvedState;
 
