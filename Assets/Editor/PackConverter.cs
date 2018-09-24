@@ -30,7 +30,7 @@ public class PackConverter : EditorWindow
         {
             // Force sorting because the order of the returned file names
             // is not guaranteed in Directory.GetFiles() method
-            var packPathes = Directory
+            string[] packPathes = Directory
                 .GetFiles(sourceDirectoryPath, packsExtension)
                 .OrderBy(f => f).ToArray();
 

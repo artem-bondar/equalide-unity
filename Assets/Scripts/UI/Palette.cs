@@ -33,7 +33,7 @@ public class Palette : MonoBehaviour
 
         for (var i = 0; i < size; i++)
         {
-            Transform button = Instantiate(paletteButton).transform;
+            var button = Instantiate(paletteButton).transform;
 
             button.SetParent(gameObject.transform, false);
             button.Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];

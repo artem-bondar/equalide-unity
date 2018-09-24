@@ -161,8 +161,8 @@ public class Element
         }
 
         // Calculate bounds by width
-        var start = startIndexes.Min();
-        var end = endIndexes.Max();
+        int start = startIndexes.Min();
+        int end = endIndexes.Max();
 
         // Perform cutting if possible
         if ((start != 0) || (end != width - 1))

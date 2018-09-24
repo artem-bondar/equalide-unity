@@ -61,7 +61,7 @@ public class Puzzle : IEnumerable<char>
         var unicalCells = new HashSet<char>(rawPuzzleText.ToCharArray());
         unicalCells.RemoveWhere(c => c == 'b' || c == 'e' || c == '\n');
 
-        var lines = rawPuzzleText.Split('\n');
+        string[] lines = rawPuzzleText.Split('\n');
 
         this.Partition = string.Join("", lines);
         Refresh();
@@ -82,7 +82,7 @@ public class Puzzle : IEnumerable<char>
         {
             if (CheckIfValidIndexes(i, j))
             {
-                var charArray = Partition.ToCharArray();
+                char[] charArray = Partition.ToCharArray();
                 charArray[i * width + j] = value;
                 Partition = new string(charArray);
             }
@@ -168,8 +168,8 @@ public class Puzzle : IEnumerable<char>
 
         foreach (var cell in unicalCells)
         {
-            var firstOccurance = Partition.IndexOf(cell);
-            var lastOccurance = Partition.LastIndexOf(cell);
+            int firstOccurance = Partition.IndexOf(cell);
+            int lastOccurance = Partition.LastIndexOf(cell);
 
             // Get partition that represent element cut by height bounds
             string substr = Partition.Substring(

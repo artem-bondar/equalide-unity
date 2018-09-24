@@ -42,7 +42,7 @@ public class LevelGrid : MonoBehaviour
 
         for (var i = 0; i < puzzlesStates.Length; i++)
         {
-            var newTile = Instantiate(levelTile);
+            GameObject newTile = Instantiate(levelTile);
             newTile.transform.SetParent(gameObject.transform, false);
 
             newTile.GetComponent<Image>().color = puzzlesStates[i] == 's' ?
