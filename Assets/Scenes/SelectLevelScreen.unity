@@ -739,8 +739,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2846fc5444d9742bf44ec9c4b0ab6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelTile: {fileID: 1358797280633310, guid: 2c6d533cf71d40b4a990e8a300986d05, type: 2}
   topAppBarTitle: {fileID: 1504342629}
+  levelTile: {fileID: 1358797280633310, guid: 2c6d533cf71d40b4a990e8a300986d05, type: 2}
 --- !u!114 &1991162527
 MonoBehaviour:
   m_ObjectHideFlags: 0

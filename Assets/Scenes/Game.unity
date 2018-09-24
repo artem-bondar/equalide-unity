@@ -759,7 +759,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1056047870}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &602924942
 MonoBehaviour:
@@ -1422,6 +1422,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1119643965}
+  - {fileID: 1750730963}
   - {fileID: 602924941}
   - {fileID: 1442735602}
   m_Father: {fileID: 0}
@@ -2114,7 +2115,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1056047870}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1442735603
 MonoBehaviour:
@@ -2491,6 +2492,46 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &1750730962
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1750730963}
+  - component: {fileID: 1750730964}
+  m_Layer: 0
+  m_Name: ProgressManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1750730963
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1750730962}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1056047870}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1750730964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1750730962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560dcaf59aadbdd42815087147facba4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1824359537 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1839554785133788, guid: b906d6e07a554ac40aa0a23944b7f5dd,
@@ -2547,8 +2588,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2846fc5444d9742bf44ec9c4b0ab6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelTile: {fileID: 1358797280633310, guid: 2c6d533cf71d40b4a990e8a300986d05, type: 2}
   topAppBarTitle: {fileID: 764815324}
+  levelTile: {fileID: 1358797280633310, guid: 2c6d533cf71d40b4a990e8a300986d05, type: 2}
 --- !u!114 &1876159598
 MonoBehaviour:
   m_ObjectHideFlags: 0
