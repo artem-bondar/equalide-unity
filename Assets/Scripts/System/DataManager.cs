@@ -6,38 +6,70 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    private const string saveDirectoryPath = "Packs Data";
+    private const string packsDataDirectoryPath = "Packs Data";
 
     private List<Pack> packs;
 
-    public Pack currentPack
-    {
-        get
-        {
-            return packs[currentPackIndex];
-        }
-    }
-    public Puzzle currentPuzzle
-    {
-        get
-        {
-            return packs[currentPackIndex][currentPuzzleIndex];
-        }
-    }
+    private void Start() => packs = AssemblePacks(LoadPacksData());
 
-    private void Start()
-    {
-        List<PackData> packsData = LoadPacksData();
-
-        packs = AssemblePacks(packsData, progressData);
-    }
-
-    public Pack GetPack(int packIndex) =>
+    public Pack Pack(int packIndex) =>
         packIndex >= 0 && packIndex < packs.Count ? packs[packIndex] : null;
+
+    // Returns progress data for new game based on loaded packs
+    public ProgressData GetInitialProgressData()
+    {
+        var packsProgress = 'o' + new string('c', packs.Count - 1);
+        var puzzlesProgress = new string[packs.Count];
+
+        puzzlesProgress[0] = 'o' + new string('c', packs[0].puzzles.Length - 1);
+        for (var i = 1; i < packs.Count; i++)
+        {
+            puzzlesProgress[i] += '\n' + new string('c', packs[i].puzzles.Length);
+        }
+
+        return new ProgressData(0, 0, string.Empty, packsProgress, puzzlesProgress);
+    }
+
+    // Checks if progress data is valid corresponding to packs data 
+    public bool CheckProgressDataIntegrity(ProgressData progressData)
+    {
+        if (packs.Count != progressData.packsProgress.Length)
+        {
+            return false;
+        }
+
+        var validCharacters = new char[] { 's', 'o', 'c' };
+
+        foreach (var c in progressData.packsProgress)
+        {
+            if (!validCharacters.Contains(c))
+            {
+                return false;
+            }
+        }
+
+        for (var i = 0; i < packs.Count; i++)
+        {
+            if (packs[i].puzzles.Length != progressData.puzzlesProgress[i].Length)
+            {
+                return false;
+            }
+
+            foreach (var c in progressData.puzzlesProgress[i])
+            {
+                if (!validCharacters.Contains(c))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
     private List<PackData> LoadPacksData()
     {
-        var directoryPath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
+        var directoryPath = $"{Application.persistentDataPath}/{packsDataDirectoryPath}";
 
         if (Directory.Exists(directoryPath))
         {
@@ -81,10 +113,10 @@ public class DataManager : MonoBehaviour
     private void CopyPacksData()
     {
         var fromPath = Application.platform != RuntimePlatform.Android ?
-            $"{Application.streamingAssetsPath}/{saveDirectoryPath}" :
-            $"jar:file://{Application.dataPath}!/assets/{saveDirectoryPath}/";
+            $"{Application.streamingAssetsPath}/{packsDataDirectoryPath}" :
+            $"jar:file://{Application.dataPath}!/assets/{packsDataDirectoryPath}/";
 
-        var toPath = $"{Application.persistentDataPath}/{saveDirectoryPath}/";
+        var toPath = $"{Application.persistentDataPath}/{packsDataDirectoryPath}/";
 
         Directory.CreateDirectory(toPath);
 
@@ -99,14 +131,9 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    private List<Pack> AssemblePacks(List<PackData> packsData, ProgressData progressData)
+    private List<Pack> AssemblePacks(List<PackData> packsData)
     {
         var packs = new List<Pack>();
-
-        // if (!CheckProgressDataIntegrity(packsData, progressData))
-        // {
-        //     progressData = RepairProgressData(packsData, progressData);
-        // }
 
         for (var i = 0; i < packsData.Count; i++)
         {
@@ -116,59 +143,12 @@ public class DataManager : MonoBehaviour
             {
                 puzzles[j] = new Puzzle(
                     packsData[i].puzzles[j], packsData[i].puzzlesElementsCounts[j],
-                    packsData[i].puzzlesWidths[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidths[j],
-                    progressData.puzzlesProgress[i][j] == 'o' || progressData.puzzlesProgress[i][j] == 's',
-                    progressData.puzzlesProgress[i][j] == 's');
+                    packsData[i].puzzlesWidths[j], packsData[i].puzzles[j].Length / packsData[i].puzzlesWidths[j]);
             }
 
-            packs.Add(new Pack(puzzles,
-                progressData.packsProgress[i] == 'o' || progressData.packsProgress[i] == 's',
-                progressData.packsProgress[i] == 's'));
+            packs.Add(new Pack(puzzles));
         }
 
         return packs;
     }
-
-    // Checks if progress data is valid corresponding to packs data 
-    private bool CheckProgressDataIntegrity(List<PackData> packsData, ProgressData progressData)
-    {
-        if (packsData.Count != progressData.packsProgress.Length)
-        {
-            return false;
-        }
-
-        var validCharacters = new char[] { 's', 'o', 'c' };
-
-        foreach (var c in progressData.packsProgress)
-        {
-            if (!validCharacters.Contains(c))
-            {
-                return false;
-            }
-        }
-
-        for (var i = 0; i < packsData.Count; i++)
-        {
-            if (packsData[i].puzzles.Length != progressData.puzzlesProgress[i].Length)
-            {
-                return false;
-            }
-
-            foreach (var c in progressData.puzzlesProgress[i])
-            {
-                if (!validCharacters.Contains(c))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    // // TODO
-    // private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
-    // {
-    //     return InitGameProgress(packsData);
-    // }
 }
