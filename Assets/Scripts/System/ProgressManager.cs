@@ -13,6 +13,12 @@ enum ProgressState
 
 public class ProgressManager : MonoBehaviour
 {
+    private const string gameProgressFileName = "save";
+
+    private PackList packList;
+
+    private DataManager dataManager;
+
     // Current level related data
     public int currentPackIndex { get; private set; }
     public int currentPuzzleIndex { get; private set; }
@@ -20,13 +26,7 @@ public class ProgressManager : MonoBehaviour
     private readonly ProgressState[] packsStates;
     private readonly ProgressState[][] puzzlesStates;
 
-    private const string gameProgressFileName = "save";
-
-    private PackList packList;
-
-    private DataManager dataManager;
-
-    public string packsProgress
+    private string packsProgress
     {
         get
         {
@@ -42,7 +42,7 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
-    public string[] puzzlesProgress
+    private string[] puzzlesProgress
     {
         get
         {
@@ -61,24 +61,6 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
-    // public ProgressData gameProgress
-    // {
-    //     get
-    //     {
-    //         var puzzlesProgress = new string[packs.Count];
-
-    //         for (var i = 0; i < packs.Count; i++)
-    //         {
-    //             puzzlesProgress[i] = packs[i].puzzlesProgress;
-    //         }
-
-    //         return new ProgressData(
-    //             currentPackIndex, currentPuzzleIndex,
-    //             packs[currentPackIndex][currentPuzzleIndex].partition,
-    //             packsProgress, puzzlesProgress);
-    //     }
-    // }
-
     private void Start()
     {
         dataManager = GameObject.FindObjectOfType<DataManager>();
@@ -89,56 +71,49 @@ public class ProgressManager : MonoBehaviour
 
         currentPackIndex = progressData.currentPackIndex;
         currentPuzzleIndex = progressData.currentPuzzleIndex;
-        packs[currentPackIndex][currentPuzzleIndex].partition = progressData.savedPartition;
+        dataManager.Pack(currentPackIndex)
+            [currentPuzzleIndex].partition = progressData.savedPartition;
 
         packList = GameObject.FindObjectOfType<PackList>();
         packList.Create(packsProgress);
     }
 
-    private void OnApplicationQuit() => SaveGameProgress(gameProgress);
+    private void OnApplicationQuit() => SaveGameProgress(GetProgressData());
 
-    public void SetCurrentLevel(int currentPackIndex, int currentPuzzleIndex)
+    public void SetCurrentLevel(int packIndex, int puzzleIndex)
     {
-        this.currentPackIndex = currentPackIndex;
-        this.currentPuzzleIndex = currentPuzzleIndex;
+        this.currentPackIndex = packIndex;
+        this.currentPuzzleIndex = puzzleIndex;
     }
 
-    public void SaveGameProgress(ProgressData progressData)
-    {
-        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
-        FileStream file = File.Open(filePath, FileMode.Create);
-
-        new BinaryFormatter().Serialize(file, progressData);
-        file.Close();
-    }
-
-    public bool IsOnLastLevel() => currentPackIndex == packs.Count - 1 &&
-                                   currentPuzzleIndex == packs[currentPackIndex].size - 1;
+    public bool IsOnLastLevel() =>
+        currentPackIndex == packsStates.Length - 1 &&
+        currentPuzzleIndex == puzzlesStates[currentPackIndex].Length - 1;
 
     public void OpenNextLevel()
     {
-        if (currentPuzzleIndex != packs[currentPackIndex].size - 1)
+        if (currentPuzzleIndex != puzzlesStates[currentPackIndex].Length - 1)
         {
-            packs[currentPackIndex][currentPuzzleIndex + 1].opened = true;
+            puzzlesStates[currentPackIndex][currentPuzzleIndex + 1] = ProgressState.Opened;
         }
-        else if (currentPackIndex != packs.Count - 1)
+        else if (currentPackIndex != packsStates.Length - 1)
         {
-            packs[currentPackIndex + 1].opened = true;
+            packsStates[currentPackIndex + 1] = ProgressState.Opened;
             packList.UpdatePackIcon(currentPackIndex + 1);
 
-            packs[currentPackIndex + 1][0].opened = true;
+            puzzlesStates[currentPackIndex + 1][0] = ProgressState.Opened;
         }
     }
 
     public void SelectNextLevel()
     {
-        if (currentPuzzleIndex != packs[currentPackIndex].size - 1)
+        if (currentPuzzleIndex != puzzlesStates[currentPackIndex].Length - 1)
         {
             currentPuzzleIndex++;
         }
-        else if (currentPackIndex != packs.Count - 1)
+        else if (currentPackIndex != packsStates.Length - 1)
         {
-            packs[currentPackIndex].solved = true;
+            packsStates[currentPackIndex] = ProgressState.Solved;
             packList.UpdatePackIcon(currentPackIndex, true);
 
             currentPackIndex++;
@@ -157,8 +132,23 @@ public class ProgressManager : MonoBehaviour
     }
 
     // TODO
-    private ProgressData RepairProgressData(List<PackData> packsData, ProgressData progressData)
+    private ProgressData RepairProgressData(
+        ProgressData brokenProgressData, ProgressData initialProgressData)
     {
-        return InitGameProgress(packsData);
+        return dataManager.GetInitialProgressData();
+    }
+
+    private ProgressData GetProgressData() => new ProgressData(
+            currentPackIndex, currentPuzzleIndex,
+            dataManager.Pack(currentPackIndex)[currentPuzzleIndex].partition,
+            packsProgress, puzzlesProgress);
+
+    private void SaveGameProgress(ProgressData progressData)
+    {
+        var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
+        FileStream file = File.Open(filePath, FileMode.Create);
+
+        new BinaryFormatter().Serialize(file, progressData);
+        file.Close();
     }
 }
