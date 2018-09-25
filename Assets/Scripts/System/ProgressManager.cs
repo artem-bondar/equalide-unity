@@ -66,10 +66,16 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
+        packList = GameObject.FindObjectOfType<PackList>();
         dataManager = GameObject.FindObjectOfType<DataManager>();
+    }
 
+    private void OnApplicationQuit() => SaveGame();
+
+    public void LoadGame()
+    {
         ProgressData progressData =
             (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
             LoadGameProgress() : dataManager.GetInitialProgressData();
@@ -79,11 +85,10 @@ public class ProgressManager : MonoBehaviour
         dataManager.Pack(currentPackIndex)
             [currentPuzzleIndex].partition = progressData.savedPartition;
 
-        packList = GameObject.FindObjectOfType<PackList>();
         packList.Create(packsProgress);
     }
 
-    private void OnApplicationQuit() => SaveGame();
+    public void SaveGame() => SaveGameProgress(GetProgressData());
 
     public ProgressState PackState(int packIndex) => packsStates[packIndex];
     public ProgressState[] PackProgress(int packIndex) => puzzlesStates[packIndex];
@@ -130,8 +135,6 @@ public class ProgressManager : MonoBehaviour
             currentPuzzleIndex = 0;
         }
     }
-
-    public void SaveGame() => SaveGameProgress(GetProgressData());
 
     private ProgressData LoadGameProgress()
     {
