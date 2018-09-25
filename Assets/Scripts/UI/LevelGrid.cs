@@ -14,7 +14,7 @@ public class LevelGrid : MonoBehaviour
 
     private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
-    public void Create(int packIndex, string puzzlesStates)
+    public void Create(int packIndex, ProgressState[] puzzlesStates)
     {
         topAppBarTitle.text = $"Pack {packIndex + 1}";
 
@@ -45,9 +45,12 @@ public class LevelGrid : MonoBehaviour
             GameObject newTile = Instantiate(levelTile);
             newTile.transform.SetParent(gameObject.transform, false);
 
-            newTile.GetComponent<Image>().color = puzzlesStates[i] == 's' ?
+            newTile.GetComponent<Image>().color =
+                puzzlesStates[i] == ProgressState.Solved ?
                 Colors.solvedTileColor : Colors.unsolvedTileColor;
-            newTile.GetComponentInChildren<Text>().text = puzzlesStates[i] != 'c' ?
+                
+            newTile.GetComponentInChildren<Text>().text =
+                puzzlesStates[i] != ProgressState.Closed ?
                 (i + 1).ToString() : string.Empty;
 
             var iCopy = i;

@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-enum ProgressState
+public enum ProgressState
 {
     Closed,
     Opened,
@@ -22,6 +20,13 @@ public class ProgressManager : MonoBehaviour
     // Current level related data
     public int currentPackIndex { get; private set; }
     public int currentPuzzleIndex { get; private set; }
+    public Puzzle currentPuzzle
+    {
+        get
+        {
+            return dataManager.Pack(currentPackIndex)[currentPuzzleIndex];
+        }
+    }
 
     private readonly ProgressState[] packsStates;
     private readonly ProgressState[][] puzzlesStates;
@@ -78,7 +83,12 @@ public class ProgressManager : MonoBehaviour
         packList.Create(packsProgress);
     }
 
-    private void OnApplicationQuit() => SaveGameProgress(GetProgressData());
+    private void OnApplicationQuit() => SaveGame();
+
+    public ProgressState PackState(int packIndex) => packsStates[packIndex];
+    public ProgressState[] PackProgress(int packIndex) => puzzlesStates[packIndex];
+    public ProgressState PuzzleState(int packIndex, int puzzleIndex) =>
+        puzzlesStates[packIndex][puzzleIndex];
 
     public void SetCurrentLevel(int packIndex, int puzzleIndex)
     {
@@ -120,6 +130,8 @@ public class ProgressManager : MonoBehaviour
             currentPuzzleIndex = 0;
         }
     }
+
+    public void SaveGame() => SaveGameProgress(GetProgressData());
 
     private ProgressData LoadGameProgress()
     {

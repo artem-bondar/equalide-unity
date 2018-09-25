@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -10,7 +9,7 @@ public class GameManager : MonoBehaviour
     [Tooltip("Floating action button")]
     public GameObject fab;
 
-    private DataManager dataManager;
+    private ProgressManager progressManager;
     private TransitionsController transitionsController;
 
     private Palette palette;
@@ -22,13 +21,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        dataManager = GameObject.FindObjectOfType<DataManager>();
+        progressManager = GameObject.FindObjectOfType<ProgressManager>();
 
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
 
         LoadCurrentPuzzle();
-        if (dataManager.currentPuzzle.CheckForSolution())
+        if (progressManager.currentPuzzle.CheckForSolution())
         {
             OnSolvedLevel();
         }
@@ -40,21 +39,21 @@ public class GameManager : MonoBehaviour
 
     public void OnPackSelect(int packIndex)
     {
-        if (dataManager.Pack(packIndex).opened)
+        if (progressManager.PackState(packIndex) == ProgressState.Opened)
         {
             levelGrid.Destroy();
-            levelGrid.Create(packIndex, dataManager.Pack(packIndex).puzzlesProgress);
+            levelGrid.Create(packIndex, progressManager.PackProgress(packIndex));
             transitionsController.SelectPackToSelectLevelScreenTransition();
         }
     }
 
     public void OnLevelSelect(int packIndex, int puzzleIndex)
     {
-        if (dataManager.Pack(packIndex)[puzzleIndex].opened)
+        if (progressManager.PuzzleState(packIndex, puzzleIndex) == ProgressState.Opened)
         {
-            dataManager.SetCurrentLevel(packIndex, puzzleIndex);
-            dataManager.currentPuzzle.Refresh();
-            dataManager.SaveGameProgress(dataManager.gameProgress);
+            progressManager.SetCurrentLevel(packIndex, puzzleIndex);
+            progressManager.currentPuzzle.Refresh();
+            progressManager.SaveGame();
 
             DestroyCurrentPuzzle();
             LoadCurrentPuzzle();
@@ -68,8 +67,8 @@ public class GameManager : MonoBehaviour
         string subject = System.Uri.EscapeUriString("Equalide feedback");
         string body = System.Uri.EscapeUriString(
             "Hi!\nI\'m on level " +
-            $"{dataManager.currentPackIndex + 1}-" +
-            $"{dataManager.currentPuzzleIndex + 1}".PadLeft(2, '0') + ".\n" +
+            $"{progressManager.currentPackIndex + 1}-" +
+            $"{progressManager.currentPuzzleIndex + 1}".PadLeft(2, '0') + ".\n" +
             "Here are my thoughts about the game:\n\n");
         Application.OpenURL($"mailto:equalide@gmail.com?subject={subject}&body={body}");
     }
@@ -94,13 +93,13 @@ public class GameManager : MonoBehaviour
         palette.gameObject.SetActive(false);
         levelSolvedState = true;
 
-        if (!dataManager.IsOnLastLevel())
+        if (!progressManager.IsOnLastLevel())
         {
             fab.SetActive(true);
             fab.GetComponent<Animator>().Play("FadeIn");
 
-            dataManager.OpenNextLevel();
-            dataManager.SaveGameProgress(dataManager.gameProgress);
+            progressManager.OpenNextLevel();
+            progressManager.SaveGame();
         }
     }
 
@@ -109,11 +108,11 @@ public class GameManager : MonoBehaviour
         fab.GetComponent<Animator>().Play("FadeOut");
         fab.SetActive(false);
 
-        if (!dataManager.IsOnLastLevel())
+        if (!progressManager.IsOnLastLevel())
         {
-            dataManager.SelectNextLevel();
-            dataManager.currentPuzzle.Refresh();
-            dataManager.SaveGameProgress(dataManager.gameProgress);
+            progressManager.SelectNextLevel();
+            progressManager.currentPuzzle.Refresh();
+            progressManager.SaveGame();
 
             DestroyCurrentPuzzle();
             LoadCurrentPuzzle();
@@ -123,12 +122,12 @@ public class GameManager : MonoBehaviour
     private void LoadCurrentPuzzle()
     {
         topAppBarTitle.text = "Equalide   " +
-            $"{dataManager.currentPackIndex + 1}-" +
-            $"{dataManager.currentPuzzleIndex + 1}".PadLeft(2, '0');
+            $"{progressManager.currentPackIndex + 1}-" +
+            $"{progressManager.currentPuzzleIndex + 1}".PadLeft(2, '0');
 
-        puzzleGrid.Create(dataManager.currentPuzzle);
+        puzzleGrid.Create(progressManager.currentPuzzle);
 
-        palette.Create(dataManager.currentPuzzle.elementsCount);
+        palette.Create(progressManager.currentPuzzle.elementsCount);
         palette.gameObject.SetActive(true);
 
         levelSolvedState = false;
