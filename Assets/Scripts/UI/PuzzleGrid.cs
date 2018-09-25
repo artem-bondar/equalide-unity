@@ -45,9 +45,8 @@ public class PuzzleGrid : MonoBehaviour
 
             if (cell != 'e')
             {
-                newPrimitive.GetComponent<Image>().color =
-                    (cell == 'b') ? Colors.backgroundColor :
-                        Colors.cellColors[cell - '0'];
+                newPrimitive.GetComponent<Image>().color = (cell == 'b') ?
+                    Colors.backgroundColor : Colors.cellColors[cell - '0'];
             }
 
             var i = primitives.Count / puzzle.width;

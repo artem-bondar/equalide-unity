@@ -26,7 +26,9 @@ public class GameManager : MonoBehaviour
         palette = GameObject.FindObjectOfType<Palette>();
         puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
 
+        progressManager.LoadGame();
         LoadCurrentPuzzle();
+
         if (progressManager.currentPuzzle.CheckForSolution())
         {
             OnSolvedLevel();

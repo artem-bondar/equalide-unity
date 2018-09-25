@@ -4,9 +4,9 @@ using UnityEngine;
 
 public enum ProgressState
 {
-    Closed,
-    Opened,
-    Solved
+    Closed = 'c',
+    Opened = 'o',
+    Solved = 's'
 }
 
 public class ProgressManager : MonoBehaviour
@@ -28,8 +28,8 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
-    private readonly ProgressState[] packsStates;
-    private readonly ProgressState[][] puzzlesStates;
+    private ProgressState[] packsStates;
+    private ProgressState[][] puzzlesStates;
 
     private string packsProgress
     {
@@ -78,8 +78,9 @@ public class ProgressManager : MonoBehaviour
     {
         ProgressData progressData =
             (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
-            LoadGameProgress() : dataManager.GetInitialProgressData();
+            LoadGameProgressData() : dataManager.GetInitialProgressData();
 
+        LoadGameProgress(progressData);
         currentPackIndex = progressData.currentPackIndex;
         currentPuzzleIndex = progressData.currentPuzzleIndex;
         dataManager.Pack(currentPackIndex)
@@ -92,8 +93,7 @@ public class ProgressManager : MonoBehaviour
 
     public ProgressState PackState(int packIndex) => packsStates[packIndex];
     public ProgressState[] PackProgress(int packIndex) => puzzlesStates[packIndex];
-    public ProgressState PuzzleState(int packIndex, int puzzleIndex) =>
-        puzzlesStates[packIndex][puzzleIndex];
+    public ProgressState PuzzleState(int packIndex, int puzzleIndex) => puzzlesStates[packIndex][puzzleIndex];
 
     public void SetCurrentLevel(int packIndex, int puzzleIndex)
     {
@@ -136,7 +136,7 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
-    private ProgressData LoadGameProgress()
+    private ProgressData LoadGameProgressData()
     {
         FileStream file = File.Open(
             $"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
@@ -144,6 +144,23 @@ public class ProgressManager : MonoBehaviour
         file.Close();
 
         return progressData;
+    }
+
+    private void LoadGameProgress(ProgressData progressData)
+    {
+        packsStates = new ProgressState[progressData.packsProgress.Length];
+        puzzlesStates = new ProgressState[progressData.packsProgress.Length][];
+
+        for (var i = 0; i < progressData.packsProgress.Length; i++)
+        {
+            packsStates[i] = (ProgressState)progressData.packsProgress[i];
+            puzzlesStates[i] = new ProgressState[progressData.puzzlesProgress[i].Length];
+
+            for (var j = 0; j < progressData.puzzlesProgress[i].Length; j++)
+            {
+                puzzlesStates[i][j] = (ProgressState)progressData.puzzlesProgress[i][j];
+            }
+        }
     }
 
     // TODO
