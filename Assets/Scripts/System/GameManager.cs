@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
 
             palette.gameObject.SetActive(true);
 
-            fab.GetComponent<Animator>().Play("FadeOut");
+            fab.GetComponent<Animator>().Play("ZoomOut");
             fab.SetActive(false);
         }
     }
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
             progressManager.OpenNextLevel();
 
             fab.SetActive(true);
-            fab.GetComponent<Animator>().Play("FadeIn");
+            fab.GetComponent<Animator>().Play("ZoomIn");
         }
     }
 
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
             progressManager.currentPuzzle.Refresh();
             progressManager.SaveGame();
 
-            fab.GetComponent<Animator>().Play("FadeOut");
+            fab.GetComponent<Animator>().Play("ZoomOut");
             fab.SetActive(false);
 
             DestroyCurrentPuzzle();
