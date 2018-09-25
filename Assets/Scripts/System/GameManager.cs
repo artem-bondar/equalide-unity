@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     public void OnPackSelect(int packIndex)
     {
-        if (progressManager.PackState(packIndex) == ProgressState.Opened)
+        if (progressManager.PackState(packIndex) != ProgressState.Closed)
         {
             levelGrid.Destroy();
             levelGrid.Create(packIndex, progressManager.PackProgress(packIndex));
@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
 
     public void OnLevelSelect(int packIndex, int puzzleIndex)
     {
-        if (progressManager.PuzzleState(packIndex, puzzleIndex) == ProgressState.Opened)
+        if (progressManager.PuzzleState(packIndex, puzzleIndex) != ProgressState.Closed)
         {
             progressManager.SetCurrentLevel(packIndex, puzzleIndex);
             progressManager.currentPuzzle.Refresh();
@@ -97,24 +97,25 @@ public class GameManager : MonoBehaviour
 
         if (!progressManager.IsOnLastLevel())
         {
+            progressManager.SolveCurrentLevel();
+            progressManager.SaveGame();
+            progressManager.OpenNextLevel();
+
             fab.SetActive(true);
             fab.GetComponent<Animator>().Play("FadeIn");
-
-            progressManager.OpenNextLevel();
-            progressManager.SaveGame();
         }
     }
 
     public void OnFabClick()
     {
-        fab.GetComponent<Animator>().Play("FadeOut");
-        fab.SetActive(false);
-
         if (!progressManager.IsOnLastLevel())
         {
             progressManager.SelectNextLevel();
             progressManager.currentPuzzle.Refresh();
             progressManager.SaveGame();
+
+            fab.GetComponent<Animator>().Play("FadeOut");
+            fab.SetActive(false);
 
             DestroyCurrentPuzzle();
             LoadCurrentPuzzle();

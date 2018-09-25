@@ -95,6 +95,18 @@ public class ProgressManager : MonoBehaviour
     public ProgressState[] PackProgress(int packIndex) => puzzlesStates[packIndex];
     public ProgressState PuzzleState(int packIndex, int puzzleIndex) => puzzlesStates[packIndex][puzzleIndex];
 
+    public void SolveCurrentLevel()
+    {
+        puzzlesStates[currentPackIndex][currentPuzzleIndex] = ProgressState.Solved;
+
+        if (currentPuzzleIndex == puzzlesStates[currentPackIndex].Length - 1 &&
+            packsStates[currentPackIndex] != ProgressState.Solved)
+        {
+            packsStates[currentPackIndex] = ProgressState.Solved;
+            packList.UpdatePackIcon(currentPackIndex, true);
+        }
+    }
+
     public void SetCurrentLevel(int packIndex, int puzzleIndex)
     {
         this.currentPackIndex = packIndex;
@@ -107,16 +119,23 @@ public class ProgressManager : MonoBehaviour
 
     public void OpenNextLevel()
     {
-        if (currentPuzzleIndex != puzzlesStates[currentPackIndex].Length - 1)
+        if (currentPuzzleIndex != puzzlesStates[currentPackIndex].Length - 1 &&
+            puzzlesStates[currentPackIndex][currentPuzzleIndex + 1] == ProgressState.Closed)
         {
             puzzlesStates[currentPackIndex][currentPuzzleIndex + 1] = ProgressState.Opened;
         }
         else if (currentPackIndex != packsStates.Length - 1)
         {
-            packsStates[currentPackIndex + 1] = ProgressState.Opened;
-            packList.UpdatePackIcon(currentPackIndex + 1);
+            if (packsStates[currentPackIndex + 1] == ProgressState.Closed)
+            {
+                packsStates[currentPackIndex + 1] = ProgressState.Opened;
+                packList.UpdatePackIcon(currentPackIndex + 1);
+            }
 
-            puzzlesStates[currentPackIndex + 1][0] = ProgressState.Opened;
+            if (puzzlesStates[currentPackIndex + 1][0] == ProgressState.Closed)
+            {
+                puzzlesStates[currentPackIndex + 1][0] = ProgressState.Opened;
+            }
         }
     }
 
@@ -128,9 +147,6 @@ public class ProgressManager : MonoBehaviour
         }
         else if (currentPackIndex != packsStates.Length - 1)
         {
-            packsStates[currentPackIndex] = ProgressState.Solved;
-            packList.UpdatePackIcon(currentPackIndex, true);
-
             currentPackIndex++;
             currentPuzzleIndex = 0;
         }
