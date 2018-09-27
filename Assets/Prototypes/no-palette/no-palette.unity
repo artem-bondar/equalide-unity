@@ -351,23 +351,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1388967465}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3820fcdf9b0e14b40b334a9be1a0b9bd, type: 3}
+  m_Script: {fileID: 11500000, guid: 29d78e32852acde4ab8e39b6a139ef21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gameField: {fileID: 1702068993}
   puzzleString: 
   toolbarMode: 0
   sceneName: 
-  tile: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
-  palette: {fileID: 0}
+  tile: {fileID: 1165818025608120, guid: 357fd45acdb21df42b9a7df0599301d1, type: 2}
   drawSoundDown: {fileID: 0}
   eraseSoundDown: {fileID: 0}
   drawSoundHover: {fileID: 0}
   eraseSoundHover: {fileID: 0}
-  font: {fileID: 0}
-  fontsize: 0
-  CounterFirst: 0
-  CounterLast: 0
 --- !u!82 &1388967468
 AudioSource:
   m_ObjectHideFlags: 0

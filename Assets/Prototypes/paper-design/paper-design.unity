@@ -663,7 +663,7 @@ MonoBehaviour:
   puzzleString: 
   toolbarMode: 0
   sceneName: 
-  tile: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
+  tile: {fileID: 1165818025608120, guid: 357fd45acdb21df42b9a7df0599301d1, type: 2}
   palette: {fileID: 0}
   drawSoundDown: {fileID: 0}
   eraseSoundDown: {fileID: 0}
