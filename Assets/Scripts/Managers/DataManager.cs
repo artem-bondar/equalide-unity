@@ -119,9 +119,9 @@ namespace Managers
 
         private void CopyPacksData()
         {
-            var fromPath = Application.platform != RuntimePlatform.Android ?
-                $"{Application.streamingAssetsPath}/{packsDataDirectoryPath}" :
-                $"jar:file://{Application.dataPath}!/assets/{packsDataDirectoryPath}/";
+            var fromPath = Application.platform == RuntimePlatform.Android ?
+                $"jar:file://{Application.dataPath}!/assets/{packsDataDirectoryPath}/" :
+                $"{Application.streamingAssetsPath}/{packsDataDirectoryPath}/";
 
             var toPath = $"{Application.persistentDataPath}/{packsDataDirectoryPath}/";
 
