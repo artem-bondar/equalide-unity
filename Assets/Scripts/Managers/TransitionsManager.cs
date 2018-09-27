@@ -17,7 +17,7 @@ namespace Managers
 
         private Screen currentScreen = Screen.GameScreen;
 
-        private void Start()
+        private void Awake()
         {
             gameScreenAnimator = GameObject.Find("GameScreen").GetComponent<Animator>();
             selectPackScreenAnimator = GameObject.Find("SelectPackScreen").GetComponent<Animator>();

@@ -16,7 +16,7 @@ namespace UI
 
         private GameManager gameManager;
 
-        private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
+        private void Awake() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
         // Receives string that represent packs's states,
         // one char for one entity with next alphabet:

@@ -18,7 +18,7 @@ namespace UI
 
         private GameManager gameManager;
 
-        private void Start() => gameManager = GameObject.FindObjectOfType<GameManager>();
+        private void Awake() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
         public void Create(int packIndex, ProgressState[] puzzlesStates)
         {

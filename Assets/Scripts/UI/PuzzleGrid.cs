@@ -25,7 +25,7 @@ namespace UI
         private bool eraseMode;
         private bool duringSwipe;
 
-        private void Start()
+        private void Awake()
         {
             palette = GameObject.FindObjectOfType<Palette>();
             gameManager = GameObject.FindObjectOfType<GameManager>();

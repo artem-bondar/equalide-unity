@@ -23,13 +23,19 @@ namespace Managers
 
         private bool levelSolvedState;
 
-        private void Start()
+        private void Awake()
         {
             progressManager = GameObject.FindObjectOfType<ProgressManager>();
+            transitionsController = GameObject.FindObjectOfType<TransitionsManager>();
 
             palette = GameObject.FindObjectOfType<Palette>();
             puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
 
+            levelGrid = GameObject.FindObjectOfType<LevelGrid>();
+        }
+
+        private void Start()
+        {
             progressManager.LoadGame();
             LoadCurrentPuzzle();
 
@@ -37,10 +43,6 @@ namespace Managers
             {
                 OnSolvedLevel();
             }
-
-            transitionsController = GameObject.FindObjectOfType<TransitionsManager>();
-
-            levelGrid = GameObject.FindObjectOfType<LevelGrid>();
         }
 
         public void OnPackSelect(int packIndex)
