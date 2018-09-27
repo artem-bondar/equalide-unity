@@ -48,10 +48,10 @@ public class GameSG : MonoBehaviour
     private int TextCounter = 0; 
     public int fontsize;
     private GameObject[] TextGameMas;
-    public int CounterFirst;
-    public int CounterLast;
-    int BlueTextSum=0;
-    int YellowTextSum=0;
+    public int BlueLast=0;
+    public int YellowLast=0;
+    public int BlueSum = 0;
+    public int YellowSum = 0;
 
     public void Start()
     {   
@@ -86,13 +86,13 @@ public class GameSG : MonoBehaviour
 
         verticalFieldMargin = tileMargin; //Screen.width * 5 / 180; 
 
-        fieldHeight = Screen.height - 2 * verticalFieldMargin- toolbarScenario - Screen.width / 5 - 8 * tileMargin;        
+        fieldHeight = Screen.height - 2 * verticalFieldMargin - Screen.width / 5- toolbarScenario;        
 
         tileSize = Mathf.Min((fieldHeight - 2 * tileMargin * rows) / rows, (Screen.width - 2 * tileMargin * cols) / cols);
 
         int centringTop = (fieldHeight - rows * (tileSize + 2 * tileMargin)) / 2;
         int centringLeft = (Screen.width - cols * (tileSize + 2 * tileMargin)) / 2;
-        TextGameMas = new GameObject[(rows-1)*cols+(cols-1)];
+        TextGameMas = new GameObject[(rows)*cols+(cols)-1];
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -156,35 +156,7 @@ public class GameSG : MonoBehaviour
         
     }
 
-    int MiddleTile(int ColorIndex)
-    {   
-        CounterFirst = 0;
-        while(tiles[CounterFirst].GetComponent<Image>().color != colors[ColorIndex])
-        {
-            CounterFirst++;
-        }
-        CounterLast = CounterFirst;
-        while(tiles[CounterLast].GetComponent<Image>().color != Color.white)
-        {
-            CounterLast++;
-        }
-        if(tiles[CounterLast].GetComponent<Image>().color != colors[ColorIndex])
-        {
-            while(tiles[CounterLast].GetComponent<Image>().color != colors[ColorIndex])
-            {
-                CounterLast--;
-            }
-        }
-        if(tiles[(CounterFirst+CounterLast)/2].GetComponent<Image>().color != colors[ColorIndex])
-        {   
-            if(tiles[(CounterFirst+CounterLast)/2 - 1].GetComponent<Image>().color != colors[ColorIndex])
-            return (CounterFirst+CounterLast)/2 + 1;
-            else return (CounterFirst+CounterLast)/2 - 1;
-        }
-        else return (CounterFirst+CounterLast)/2;
-    }
-
-    void TextOnOff(int ColorIndex)
+    void TextOnOff()
     {   
         int k = 0;
         for (int i = 0; i < rows; i++)
@@ -192,12 +164,24 @@ public class GameSG : MonoBehaviour
             for (int j = 0; j < cols; j++)
             {
                 int index = i * cols + j;
-                if(tiles[index].GetComponent<Image>().color == colors[ColorIndex])
+                
+                if(tiles[index].GetComponent<Image>().color == colors[0])
                 {   
-                    if(index<=CounterLast)
+                    TextGameMas[index].gameObject.SetActive(false);
+                    while(TextMas[1,k]!= index)
                     {
-                        TextGameMas[index].gameObject.SetActive(false);
-                    }
+                        k++;
+                    } 
+                    BlueSum = BlueSum + TextMas[0,k];
+                }
+                if(tiles[index].GetComponent<Image>().color == colors[1])
+                {   
+                    TextGameMas[index].gameObject.SetActive(false);
+                    while(TextMas[1,k]!= index)
+                    {
+                        k++;
+                    } 
+                    YellowSum = YellowSum + TextMas[0,k];
                 }
                 if(tiles[index].GetComponent<Image>().color == Color.white)
                 {
@@ -212,49 +196,60 @@ public class GameSG : MonoBehaviour
         }
     }
 
-    void TilesSum (int CurrentColor)
-    {  
-        int MiddleIndex;
-        int j = 0;  
-        
-        MiddleIndex = MiddleTile(CurrentColor);
-        TextOnOff(CurrentColor);
-        TextGameMas[MiddleIndex].gameObject.SetActive(true);
-        if(CurrentColor == 0)
-        {   
-            BlueTextSum = 0;
-            for(int k = 0; k <= CounterLast; k++)
+    int FindFirst (int CurrentColor)
+    {   
+        int num = 0;
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
             {
-                if(tiles[k].GetComponent<Image>().color == colors[CurrentColor])
+                int index = i * cols + j;
+                if(tiles[index].GetComponent<Image>().color == colors[CurrentColor])
                 {
-                    while(TextMas[1,j]!= k)
-                    {
-                        j++;
-                    }    
-                    BlueTextSum = BlueTextSum + TextMas[0,j];
+                    num = index;
+                    break;
                 }
             }
-            
-            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + BlueTextSum;
+        }
+        return num;
+    }
+
+    void SumGame (int CurrentColor, int index)
+    {  
+        int MiddleIndex;
+        BlueSum = 0;
+        YellowSum = 0;
+        if(tiles[index].GetComponent<Image>().color == Color.white)
+        {   
+            MiddleIndex = FindFirst(CurrentColor);
+        }
+        else 
+        {
+            MiddleIndex = index;
+            if(CurrentColor == 0)
+           {
+                BlueLast = index;
+           } 
+            else YellowLast = index;
+        }
+        TextOnOff();
+        if(CurrentColor == 0)
+        {   
+            if(YellowLast != 0)
+                TextGameMas[YellowLast].gameObject.SetActive(true);
+            TextGameMas[MiddleIndex].gameObject.SetActive(true);
+            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + BlueSum;
+            TextGameMas[YellowLast].GetComponent<Text>().text ="" + YellowSum;
         }
         else
-        {   
-            YellowTextSum = 0;
-            for(int k = 0; k <= CounterLast; k++)
-            {
-                if(tiles[k].GetComponent<Image>().color == colors[CurrentColor])
-                {
-                    while(TextMas[1,j ]!= k)
-                    {
-                        j++;
-                    }   
-                    YellowTextSum = YellowTextSum + TextMas[0,j];
-                }   
-                  
-            }
-            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + YellowTextSum;
+        {
+            if(BlueLast != 0)
+                TextGameMas[BlueLast].gameObject.SetActive(true);
+            TextGameMas[MiddleIndex].gameObject.SetActive(true);
+            TextGameMas[MiddleIndex].GetComponent<Text>().text ="" + YellowSum;
+            TextGameMas[BlueLast].GetComponent<Text>().text ="" + BlueSum;
         }
-
+        
     }
 
     void TileHover(int index)
@@ -291,7 +286,7 @@ public class GameSG : MonoBehaviour
             Debug.Log("Solved!");
             RemovePartitions();
         }
-        TilesSum(currentColor);
+        SumGame(currentColor,index);
     }
 
     void TileDown(int index)
@@ -325,7 +320,7 @@ public class GameSG : MonoBehaviour
             Debug.Log("Solved!");
             RemovePartitions();
         }
-        TilesSum(currentColor);
+        SumGame(currentColor,index);
     }
 
     void ClearColors()
