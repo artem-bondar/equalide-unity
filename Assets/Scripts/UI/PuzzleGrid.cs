@@ -16,19 +16,19 @@ namespace UI
         private const int primitiveMargin = 3; // px = 1 dp for full hd screen
         private readonly List<Image> primitives = new List<Image>();
 
-        private Palette palette;
-
         private GameManager gameManager;
 
+        private Palette palette;
+
         private Puzzle puzzle;
-        public bool paintLock = true;
         private bool eraseMode;
         private bool duringSwipe;
+        public bool paintLock = true;
 
         private void Awake()
         {
-            palette = GameObject.FindObjectOfType<Palette>();
             gameManager = GameObject.FindObjectOfType<GameManager>();
+            palette = GameObject.FindObjectOfType<Palette>();
         }
 
         public void Create(Puzzle puzzle)
@@ -71,7 +71,6 @@ namespace UI
                 trigger.triggers.Add(entry);
 
                 primitives.Add(newPrimitive);
-
             }
 
             paintLock = false;
@@ -152,7 +151,7 @@ namespace UI
 
         private void Update()
         {
-            // Rewrite for touches
+            // TODO: Rewrite for touches
             if (Input.GetMouseButtonUp(0))
             {
                 duringSwipe = false;

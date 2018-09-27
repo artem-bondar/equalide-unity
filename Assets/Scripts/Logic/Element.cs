@@ -12,10 +12,10 @@ namespace Logic
         private string shape;
 
         // Dimensions in cells
-        private int height;
         private int width;
+        private int height;
 
-        // Receives string without any \n
+        // Receives string without '\n'
         public Element(string shape, int width)
         {
             this.shape = shape;

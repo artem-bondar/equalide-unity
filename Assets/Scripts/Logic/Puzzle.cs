@@ -87,10 +87,7 @@ namespace Logic
         IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
 
         // Return puzzle partition to initial unsolved state
-        public void Refresh()
-        {
-            Partition = Regex.Replace(Partition, "[^be]", "e");
-        }
+        public void Refresh() => Partition = Regex.Replace(Partition, "[^be]", "e");
 
         // Checks if current puzzle partition is a valid solution
         public bool CheckForSolution()

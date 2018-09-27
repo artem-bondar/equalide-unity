@@ -13,8 +13,8 @@ namespace Editor
     public class PackConverter : EditorWindow
     {
         private const string sourceDirectoryPath = "Assets/Editor Default Resources/Packs Data";
+        private const string packsDirectoryName = "Packs Data";
         private const string packsExtension = "*.eqld";
-        private const string saveDirectoryPath = "Packs Data";
 
         [MenuItem("Window/Pack Converter")]
         static void Init() => EditorWindow.GetWindow(typeof(PackConverter)).Show();
@@ -65,7 +65,7 @@ namespace Editor
             {
                 var bf = new BinaryFormatter();
 
-                var filePath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
+                var filePath = $"{Application.persistentDataPath}/{packsDirectoryName}";
                 Directory.CreateDirectory(filePath);
 
                 for (var i = 0; i < packsForConvert.Count; i++)

@@ -14,7 +14,6 @@ namespace UI
         public Text topAppBarTitle;
 
         public GameObject levelTile;
-        private List<GameObject> levelTiles;
 
         private GameManager gameManager;
 

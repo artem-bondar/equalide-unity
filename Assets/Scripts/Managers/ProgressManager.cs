@@ -18,11 +18,11 @@ namespace Managers
 
     public class ProgressManager : MonoBehaviour
     {
-        private const string gameProgressFileName = "save";
-
-        private PackList packList;
+        private const string saveFileName = "save";
 
         private DataManager dataManager;
+
+        private PackList packList;
 
         // Current level related data
         public int currentPackIndex { get; private set; }
@@ -84,7 +84,7 @@ namespace Managers
         public void LoadGame()
         {
             ProgressData progressData =
-                (File.Exists($"{Application.persistentDataPath}/{gameProgressFileName}")) ?
+                (File.Exists($"{Application.persistentDataPath}/{saveFileName}")) ?
                 LoadGameProgressData() : dataManager.GetInitialProgressData();
 
             LoadGameProgress(progressData);
@@ -163,7 +163,7 @@ namespace Managers
         private ProgressData LoadGameProgressData()
         {
             FileStream file = File.Open(
-                $"{Application.persistentDataPath}/{gameProgressFileName}", FileMode.Open);
+                $"{Application.persistentDataPath}/{saveFileName}", FileMode.Open);
             var progressData = (ProgressData)new BinaryFormatter().Deserialize(file);
             file.Close();
 
@@ -201,7 +201,7 @@ namespace Managers
 
         private void SaveGameProgress(ProgressData progressData)
         {
-            var filePath = $"{Application.persistentDataPath}/{gameProgressFileName}";
+            var filePath = $"{Application.persistentDataPath}/{saveFileName}";
             FileStream file = File.Open(filePath, FileMode.Create);
 
             new BinaryFormatter().Serialize(file, progressData);

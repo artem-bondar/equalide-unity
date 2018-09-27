@@ -12,7 +12,7 @@ namespace Managers
 {
     public class DataManager : MonoBehaviour
     {
-        private const string packsDataDirectoryPath = "Packs Data";
+        private const string packsDirectoryName = "Packs Data";
 
         private List<Pack> packs;
 
@@ -76,7 +76,7 @@ namespace Managers
 
         private List<PackData> LoadPacksData()
         {
-            var directoryPath = $"{Application.persistentDataPath}/{packsDataDirectoryPath}";
+            var directoryPath = $"{Application.persistentDataPath}/{packsDirectoryName}";
 
             if (Directory.Exists(directoryPath))
             {
@@ -120,10 +120,10 @@ namespace Managers
         private void CopyPacksData()
         {
             var fromPath = Application.platform == RuntimePlatform.Android ?
-                $"jar:file://{Application.dataPath}!/assets/{packsDataDirectoryPath}/" :
-                $"{Application.streamingAssetsPath}/{packsDataDirectoryPath}/";
+                $"jar:file://{Application.dataPath}!/assets/{packsDirectoryName}/" :
+                $"{Application.streamingAssetsPath}/{packsDirectoryName}/";
 
-            var toPath = $"{Application.persistentDataPath}/{packsDataDirectoryPath}/";
+            var toPath = $"{Application.persistentDataPath}/{packsDirectoryName}/";
 
             Directory.CreateDirectory(toPath);
 

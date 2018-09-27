@@ -46,10 +46,8 @@ namespace UI
         }
 
         // Changes icon of pack button to lock open or star icon
-        public void UpdatePackIcon(int packIndex, bool toStar = false)
-        {
+        public void UpdatePackIcon(int packIndex, bool toStar = false) =>
             gameObject.transform.GetChild(packIndex).Find("PackButtonIcon").gameObject
                 .GetComponent<Image>().sprite = toStar ? starSprite : lockOpenSprite;
-        }
     }
 }
