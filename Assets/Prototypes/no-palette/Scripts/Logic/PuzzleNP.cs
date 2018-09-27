@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Logic;
+
 // Contains puzzle with next representation:
 // '0-9' - colored cell
 // 'e' - empty cell, can be colored

@@ -2,81 +2,87 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using UnityEngine;
 using UnityEditor;
 
-public class PackConverter : EditorWindow
+using Data;
+
+namespace Editor
 {
-    private const string sourceDirectoryPath = "Assets/Editor Default Resources/Packs Data";
-    private const string packsExtension = "*.eqld";
-    private const string saveDirectoryPath = "Packs Data";
-
-    [MenuItem("Window/Pack Converter")]
-    static void Init() => EditorWindow.GetWindow(typeof(PackConverter)).Show();
-
-    private void OnGUI()
+    public class PackConverter : EditorWindow
     {
-        if (GUILayout.Button("Convert packs"))
+        private const string sourceDirectoryPath = "Assets/Editor Default Resources/Packs Data";
+        private const string packsExtension = "*.eqld";
+        private const string saveDirectoryPath = "Packs Data";
+
+        [MenuItem("Window/Pack Converter")]
+        static void Init() => EditorWindow.GetWindow(typeof(PackConverter)).Show();
+
+        private void OnGUI()
         {
-            ConvertPacks(ReadPacks());
-        }
-    }
-
-    private List<PackData> ReadPacks()
-    {
-        var readPacks = new List<PackData>();
-
-        if (Directory.Exists(sourceDirectoryPath))
-        {
-            // Force sorting because the order of the returned file names
-            // is not guaranteed in Directory.GetFiles() method
-            string[] packPathes = Directory
-                .GetFiles(sourceDirectoryPath, packsExtension)
-                .OrderBy(f => f).ToArray();
-
-            if (packPathes.Length > 0)
+            if (GUILayout.Button("Convert packs"))
             {
-                foreach (var packPath in packPathes)
+                ConvertPacks(ReadPacks());
+            }
+        }
+
+        private List<PackData> ReadPacks()
+        {
+            var readPacks = new List<PackData>();
+
+            if (Directory.Exists(sourceDirectoryPath))
+            {
+                // Force sorting because the order of the returned file names
+                // is not guaranteed in Directory.GetFiles() method
+                string[] packPathes = Directory
+                    .GetFiles(sourceDirectoryPath, packsExtension)
+                    .OrderBy(f => f).ToArray();
+
+                if (packPathes.Length > 0)
                 {
-                    readPacks.Add((PackData)File.ReadAllText(packPath));
+                    foreach (var packPath in packPathes)
+                    {
+                        readPacks.Add((PackData)File.ReadAllText(packPath));
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Missing packs for convert!");
                 }
             }
             else
             {
-                Debug.LogWarning("Missing packs for convert!");
+                Debug.LogError("Missing packs source directory!");
             }
-        }
-        else
-        {
-            Debug.LogError("Missing packs source directory!");
+
+            return readPacks;
         }
 
-        return readPacks;
-    }
-
-    private void ConvertPacks(List<PackData> packsForConvert)
-    {
-        if (packsForConvert.Count > 0)
+        private void ConvertPacks(List<PackData> packsForConvert)
         {
-			var bf = new BinaryFormatter();
-
-            var filePath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
-            Directory.CreateDirectory(filePath);
-
-            for (var i = 0; i < packsForConvert.Count; i++)
+            if (packsForConvert.Count > 0)
             {
-                var fileName = $"pack-{(i + 1).ToString().PadLeft(2, '0')}";
-                FileStream file = File.Open($"{filePath}/{fileName}", FileMode.Create);
+                var bf = new BinaryFormatter();
 
-                bf.Serialize(file, packsForConvert[i]);
-  				file.Close();
+                var filePath = $"{Application.persistentDataPath}/{saveDirectoryPath}";
+                Directory.CreateDirectory(filePath);
+
+                for (var i = 0; i < packsForConvert.Count; i++)
+                {
+                    var fileName = $"pack-{(i + 1).ToString().PadLeft(2, '0')}";
+                    FileStream file = File.Open($"{filePath}/{fileName}", FileMode.Create);
+
+                    bf.Serialize(file, packsForConvert[i]);
+                    file.Close();
+                }
+
+                Debug.Log($"Successfully converted {packsForConvert.Count} packs!");
             }
-
-            Debug.Log($"Successfully converted {packsForConvert.Count} packs!");
-        }
-        else
-        {
-            Debug.LogWarning("Nothing to convert!");
+            else
+            {
+                Debug.LogWarning("Nothing to convert!");
+            }
         }
     }
 }

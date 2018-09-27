@@ -1,154 +1,162 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class PuzzleGrid : MonoBehaviour
+using Logic;
+using Managers;
+using Utilities;
+
+namespace UI
 {
-    public GameObject primitive;
-    private const int primitiveMargin = 3; // px = 1 dp for full hd screen
-    private readonly List<Image> primitives = new List<Image>();
-
-    private Palette palette;
-
-    private GameManager gameManager;
-
-    private Puzzle puzzle;
-    public bool paintLock = true;
-    private bool eraseMode;
-    private bool duringSwipe;
-
-    private void Start()
+    public class PuzzleGrid : MonoBehaviour
     {
-        palette = GameObject.FindObjectOfType<Palette>();
-        gameManager = GameObject.FindObjectOfType<GameManager>();
-    }
+        public GameObject primitive;
+        private const int primitiveMargin = 3; // px = 1 dp for full hd screen
+        private readonly List<Image> primitives = new List<Image>();
 
-    public void Create(Puzzle puzzle)
-    {
-        this.puzzle = puzzle;
+        private Palette palette;
 
-        var grid = gameObject.GetComponent<GridLayoutGroup>();
-        var gridrt = grid.GetComponent<RectTransform>().rect;
+        private GameManager gameManager;
 
-        var primitiveSize = Mathf.Min(
-            (gridrt.width - (puzzle.width - 1) * primitiveMargin) / puzzle.width,
-            (gridrt.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
+        private Puzzle puzzle;
+        public bool paintLock = true;
+        private bool eraseMode;
+        private bool duringSwipe;
 
-        grid.cellSize = new Vector2(primitiveSize, primitiveSize);
-        grid.constraintCount = puzzle.width;
-
-        foreach (var cell in puzzle)
+        private void Start()
         {
-            var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-            newPrimitive.transform.SetParent(grid.transform, false);
+            palette = GameObject.FindObjectOfType<Palette>();
+            gameManager = GameObject.FindObjectOfType<GameManager>();
+        }
 
-            if (cell != 'e')
+        public void Create(Puzzle puzzle)
+        {
+            this.puzzle = puzzle;
+
+            var grid = gameObject.GetComponent<GridLayoutGroup>();
+            var gridrt = grid.GetComponent<RectTransform>().rect;
+
+            var primitiveSize = Mathf.Min(
+                (gridrt.width - (puzzle.width - 1) * primitiveMargin) / puzzle.width,
+                (gridrt.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
+
+            grid.cellSize = new Vector2(primitiveSize, primitiveSize);
+            grid.constraintCount = puzzle.width;
+
+            foreach (var cell in puzzle)
             {
-                newPrimitive.GetComponent<Image>().color = (cell == 'b') ?
-                    Colors.backgroundColor : Colors.cellColors[cell - '0'];
+                var newPrimitive = Instantiate(primitive).GetComponent<Image>();
+                newPrimitive.transform.SetParent(grid.transform, false);
+
+                if (cell != 'e')
+                {
+                    newPrimitive.GetComponent<Image>().color = (cell == 'b') ?
+                        Colors.backgroundColor : Colors.cellColors[cell - '0'];
+                }
+
+                var i = primitives.Count / puzzle.width;
+                var j = primitives.Count % puzzle.width;
+                var trigger = newPrimitive.GetComponent<EventTrigger>();
+
+                var entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerDown;
+                entry.callback.AddListener(delegate { PointerDown(i, j); });
+                trigger.triggers.Add(entry);
+
+                entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerEnter;
+                entry.callback.AddListener(delegate { PointerEnter(i, j); });
+                trigger.triggers.Add(entry);
+
+                primitives.Add(newPrimitive);
+
             }
 
-            var i = primitives.Count / puzzle.width;
-            var j = primitives.Count % puzzle.width;
-            var trigger = newPrimitive.GetComponent<EventTrigger>();
-
-            var entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerDown;
-            entry.callback.AddListener(delegate { PointerDown(i, j); });
-            trigger.triggers.Add(entry);
-
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener(delegate { PointerEnter(i, j); });
-            trigger.triggers.Add(entry);
-
-            primitives.Add(newPrimitive);
-
+            paintLock = false;
         }
 
-        paintLock = false;
-    }
-
-    public void Refresh()
-    {
-        puzzle.Refresh();
-
-        foreach (var primitive in primitives)
+        public void Refresh()
         {
-            if (primitive.color != Colors.backgroundColor)
+            puzzle.Refresh();
+
+            foreach (var primitive in primitives)
             {
-                primitive.color = Color.white;
+                if (primitive.color != Colors.backgroundColor)
+                {
+                    primitive.color = Color.white;
+                }
             }
         }
-    }
 
-    public void Destroy()
-    {
-        foreach (var primitive in primitives)
+        public void Destroy()
         {
-            Destroy(primitive.gameObject);
+            foreach (var primitive in primitives)
+            {
+                Destroy(primitive.gameObject);
+            }
+
+            primitives.Clear();
         }
 
-        primitives.Clear();
-    }
-
-    private void PointerDown(int i, int j)
-    {
-        if (paintLock || puzzle[i, j] == 'b')
+        private void PointerDown(int i, int j)
         {
-            return;
+            if (paintLock || puzzle[i, j] == 'b')
+            {
+                return;
+            }
+
+            duringSwipe = true;
+
+            if (eraseMode = puzzle[i, j] == palette.paintColorChar)
+            {
+                puzzle[i, j] = 'e';
+                primitives[i * puzzle.width + j].color = Color.white;
+            }
+            else
+            {
+                puzzle[i, j] = palette.paintColorChar;
+                primitives[i * puzzle.width + j].color = palette.paintColor;
+            }
+
+            if (puzzle.CheckForSolution())
+            {
+                gameManager.OnSolvedLevel();
+            }
         }
 
-        duringSwipe = true;
+        private void PointerEnter(int i, int j)
+        {
+            if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
+            {
+                return;
+            }
 
-        if (eraseMode = puzzle[i, j] == palette.paintColorChar)
-        {
-            puzzle[i, j] = 'e';
-            primitives[i * puzzle.width + j].color = Color.white;
-        }
-        else
-        {
-            puzzle[i, j] = palette.paintColorChar;
-            primitives[i * puzzle.width + j].color = palette.paintColor;
-        }
+            if (puzzle[i, j] == palette.paintColorChar && eraseMode)
+            {
+                puzzle[i, j] = 'e';
+                primitives[i * puzzle.width + j].color = Color.white;
+            }
+            else
+            {
+                puzzle[i, j] = palette.paintColorChar;
+                primitives[i * puzzle.width + j].color = palette.paintColor;
+            }
 
-        if (puzzle.CheckForSolution())
-        {
-            gameManager.OnSolvedLevel();
-        }
-    }
-
-    private void PointerEnter(int i, int j)
-    {
-        if (paintLock || !duringSwipe || puzzle[i, j] == 'b')
-        {
-            return;
+            if (puzzle.CheckForSolution())
+            {
+                gameManager.OnSolvedLevel();
+            }
         }
 
-        if (puzzle[i, j] == palette.paintColorChar && eraseMode)
+        private void Update()
         {
-            puzzle[i, j] = 'e';
-            primitives[i * puzzle.width + j].color = Color.white;
-        }
-        else
-        {
-            puzzle[i, j] = palette.paintColorChar;
-            primitives[i * puzzle.width + j].color = palette.paintColor;
-        }
-
-        if (puzzle.CheckForSolution())
-        {
-            gameManager.OnSolvedLevel();            
-        }
-    }
-
-    private void Update()
-    {
-        // Rewrite for touches
-        if (Input.GetMouseButtonUp(0))
-        {
-            duringSwipe = false;
+            // Rewrite for touches
+            if (Input.GetMouseButtonUp(0))
+            {
+                duringSwipe = false;
+            }
         }
     }
 }
