@@ -16,6 +16,15 @@ namespace UI
         private const int primitiveMargin = 3; // px = 1 dp for full hd screen
         private readonly List<Image> primitives = new List<Image>();
 
+        [Space(5)]
+
+        [Tooltip("Right separator for primitive")]
+        public GameObject horizontalSeparator;
+        [Tooltip("Down separator for primitive")]
+        public GameObject verticalSeparator;
+        [Tooltip("Bottom right corner separator for primitive")]
+        public GameObject cornerSeparator;
+
         private GameManager gameManager;
 
         private Palette palette;
@@ -31,6 +40,15 @@ namespace UI
             palette = GameObject.FindObjectOfType<Palette>();
         }
 
+        private void Update()
+        {
+            // TODO: Rewrite for touches
+            if (Input.GetMouseButtonUp(0))
+            {
+                duringSwipe = false;
+            }
+        }
+
         public void Create(Puzzle puzzle)
         {
             this.puzzle = puzzle;
@@ -43,6 +61,7 @@ namespace UI
                 (gridrt.height - (puzzle.height - 1) * primitiveMargin) / puzzle.height);
 
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
+            grid.spacing = new Vector2(primitiveMargin, primitiveMargin);
             grid.constraintCount = puzzle.width;
 
             foreach (var cell in puzzle)
@@ -86,6 +105,11 @@ namespace UI
                 {
                     primitive.color = Color.white;
                 }
+
+                foreach (Transform separator in primitive.transform)
+                {
+                    Destroy(separator.gameObject);
+                }
             }
         }
 
@@ -97,6 +121,57 @@ namespace UI
             }
 
             primitives.Clear();
+        }
+
+        public void RemoveInsideBorders()
+        {
+            var primitiveSize = gameObject.GetComponent<GridLayoutGroup>().cellSize.x;
+
+            for (var index = 0; index < primitives.Count; index++)
+            {
+                var i = index / puzzle.width;
+                var j = index % puzzle.width;
+
+                var rightNeighbour = false;
+                var downNeighbour = false;
+
+                // Right neighbour cell exists and has the same color
+                if (rightNeighbour =
+                    index % puzzle.width != puzzle.width - 1 &&
+                    puzzle[i, j] != 'b' && puzzle[i, j] == puzzle[i, j + 1])
+                {
+                    var separator = Instantiate(verticalSeparator);
+                    separator.transform.SetParent(primitives[index].transform, false);
+
+                    separator.GetComponent<RectTransform>()
+                        .SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, primitiveSize);
+
+                    separator.GetComponent<Image>().color = Colors.cellColors[puzzle[i, j] - '0'];
+                }
+
+                // Down neighbour cell exists and has the same color
+                if (downNeighbour =
+                    index + puzzle.width < puzzle.partition.Length &&
+                    puzzle[i, j] != 'b' && puzzle[i, j] == puzzle[i + 1, j])
+                {
+                    var separator = Instantiate(horizontalSeparator);
+                    separator.transform.SetParent(primitives[index].transform, false);
+
+                    separator.GetComponent<RectTransform>()
+                        .SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, primitiveSize);
+
+                    separator.GetComponent<Image>().color = Colors.cellColors[puzzle[i, j] - '0'];
+                }
+
+                // Bottom right corner neihbour cell exists and has the same color
+                if (rightNeighbour && downNeighbour && puzzle[i, j] == puzzle[i + 1, j + 1])
+                {
+                    var separator = Instantiate(cornerSeparator);
+                    separator.transform.SetParent(primitives[index].transform, false);
+
+                    separator.GetComponent<Image>().color = Colors.cellColors[puzzle[i, j] - '0'];
+                }
+            }
         }
 
         private void PointerDown(int i, int j)
@@ -122,6 +197,7 @@ namespace UI
             if (puzzle.CheckForSolution())
             {
                 gameManager.OnSolvedLevel();
+                RemoveInsideBorders();
             }
         }
 
@@ -146,15 +222,7 @@ namespace UI
             if (puzzle.CheckForSolution())
             {
                 gameManager.OnSolvedLevel();
-            }
-        }
-
-        private void Update()
-        {
-            // TODO: Rewrite for touches
-            if (Input.GetMouseButtonUp(0))
-            {
-                duringSwipe = false;
+                RemoveInsideBorders();
             }
         }
     }

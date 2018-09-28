@@ -139,7 +139,7 @@ namespace Logic
                 if ((Partition[i] == 'b' && partition[i] != 'b') ||
                     (Partition[i] != 'b' && partition[i] == 'b') ||
                     (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
-                    (char.IsDigit(partition[i]) && (int)(partition[i] - '0') >= this.elementsCount))
+                    (char.IsDigit(partition[i]) && partition[i] - '0' >= this.elementsCount))
                 {
                     return false;
                 }
