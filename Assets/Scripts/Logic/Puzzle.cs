@@ -123,8 +123,7 @@ namespace Logic
         }
 
         private bool CheckIfValidIndexes(int i, int j) =>
-            i * width + j >= 0 && i * width + j < Partition.Length;
-
+            i >= 0 && i < height && j >= 0 && j < width;
 
         // Checks if partition for loading has the same shape
         // and contains only valid cells
