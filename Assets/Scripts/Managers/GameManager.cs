@@ -99,7 +99,10 @@ namespace Managers
         public void OnSolvedLevel()
         {
             puzzleGrid.paintLock = true;
+            puzzleGrid.RemoveInsideBorders();
+
             palette.gameObject.SetActive(false);
+            
             levelSolvedState = true;
 
             if (!progressManager.IsOnLastLevel())

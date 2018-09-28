@@ -390,6 +390,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   primitive: {fileID: 1165818025608120, guid: 0438c4a718dda914ab832f9ec767d79c, type: 2}
+  horizontalSeparator: {fileID: 1165818025608120, guid: ed0cb6c2d1ccd7c4188a7b5e073aced1,
+    type: 2}
+  verticalSeparator: {fileID: 1165818025608120, guid: 0d12089268856d8429a35ec470e611f9,
+    type: 2}
+  cornerSeparator: {fileID: 1165818025608120, guid: 9575d2b2c779f9c49a881e627b55ef5c,
+    type: 2}
   paintLock: 1
 --- !u!114 &922485248
 MonoBehaviour:

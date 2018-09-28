@@ -19,7 +19,11 @@ namespace ManagersBasicTwo
 
         private void Start() => LoadCurrentPuzzle();
 
-        public void OnSolvedLevel() => puzzleGrid.paintLock = true;
+        public void OnSolvedLevel()
+        {
+            puzzleGrid.paintLock = true;
+            puzzleGrid.RemoveInsideBorders();
+        }
 
         private void LoadCurrentPuzzle()
         {

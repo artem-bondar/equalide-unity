@@ -197,7 +197,6 @@ namespace UI
             if (puzzle.CheckForSolution())
             {
                 gameManager.OnSolvedLevel();
-                RemoveInsideBorders();
             }
         }
 
@@ -222,7 +221,6 @@ namespace UI
             if (puzzle.CheckForSolution())
             {
                 gameManager.OnSolvedLevel();
-                RemoveInsideBorders();
             }
         }
     }
