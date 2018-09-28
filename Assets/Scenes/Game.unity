@@ -577,8 +577,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 922485247}
-        m_MethodName: Refresh
+      - m_Target: {fileID: 1119643966}
+        m_MethodName: OnRefreshButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

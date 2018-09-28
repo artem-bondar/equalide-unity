@@ -83,9 +83,10 @@ namespace Managers
 
         public void OnRefreshButton()
         {
+            puzzleGrid.Refresh();
+
             if (levelSolvedState)
             {
-                puzzleGrid.Refresh();
                 puzzleGrid.paintLock = false;
 
                 palette.gameObject.SetActive(true);
