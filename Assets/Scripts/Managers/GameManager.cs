@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
 using UnityEngine.UI;
 
 using UI;
@@ -16,8 +18,14 @@ namespace Managers
         private ProgressManager progressManager;
         private TransitionsManager transitionsController;
 
-        private Palette palette;
-        private PuzzleGrid puzzleGrid;
+        private dynamic palette;
+        private dynamic puzzleGrid;
+
+        private Palette paletteDefault;
+        private PuzzleGrid puzzleGridDefault;
+
+        private UIWhiteHighlight.Palette paletteWhiteHighlight;
+        private UIWhiteHighlight.PuzzleGrid puzzleGridWhiteHighlight;
 
         private LevelGrid levelGrid;
 
@@ -28,8 +36,11 @@ namespace Managers
             progressManager = GameObject.FindObjectOfType<ProgressManager>();
             transitionsController = GameObject.FindObjectOfType<TransitionsManager>();
 
-            palette = GameObject.FindObjectOfType<Palette>();
-            puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
+            paletteDefault = GameObject.FindObjectOfType<Palette>();
+            puzzleGridDefault = GameObject.FindObjectOfType<PuzzleGrid>();
+
+            paletteWhiteHighlight = GameObject.FindObjectOfType<UIWhiteHighlight.Palette>();
+            puzzleGridWhiteHighlight = GameObject.FindObjectOfType<UIWhiteHighlight.PuzzleGrid>();
 
             levelGrid = GameObject.FindObjectOfType<LevelGrid>();
         }
@@ -137,6 +148,18 @@ namespace Managers
             topAppBarTitle.text = "Equalide   " +
                 $"{progressManager.currentPackIndex + 1}-" +
                 $"{progressManager.currentPuzzleIndex + 1}".PadLeft(2, '0');
+
+            // Dirty solution, rewrite UI on every level
+            if (progressManager.currentPackIndex == 8)
+            {
+                palette = paletteWhiteHighlight;
+                puzzleGrid = puzzleGridWhiteHighlight;
+            }
+            else
+            {
+                palette = paletteDefault;
+                puzzleGrid = puzzleGridDefault;
+            }
 
             puzzleGrid.Create(progressManager.currentPuzzle);
 
