@@ -29,20 +29,13 @@ namespace UIWhiteHighlight
         }
 
         private const float oldPaletteSpacing = 3f; // 1 dp
-        private const float newPaletteSpacing = 6f;
+        private const float newPaletteSpacing = 6f; // 2 dp
+
+        // To change RectTransfrom Pos Y coordinate
         private readonly Vector3 palettePositionDelta = new Vector3(0, 3f, 0);
 
-        public void ApplyProperHierarchyAlignment()
-        {
-            gameObject.GetComponent<HorizontalLayoutGroup>().spacing = newPaletteSpacing;
-            gameObject.GetComponent<RectTransform>().localPosition += palettePositionDelta;
-        }
-
-        public void RestoreDefaultHierarchyAlignment()
-        {
-            gameObject.GetComponent<HorizontalLayoutGroup>().spacing = oldPaletteSpacing;
-            gameObject.GetComponent<RectTransform>().localPosition -= palettePositionDelta;
-        }
+        // To change RectTransfrom Bottom constaint
+        private readonly Vector2 puzzleGridPositionDelta = new Vector2(0, 3f);
 
         public void Create(int size)
         {
@@ -51,6 +44,8 @@ namespace UIWhiteHighlight
                 Debug.Log("Incorrect palette size was passed!");
                 return;
             }
+
+            ApplyProperHierarchyAlignment();
 
             for (var i = 0; i < size; i++)
             {
@@ -79,6 +74,8 @@ namespace UIWhiteHighlight
             }
 
             paletteButtons.Clear();
+
+            RestoreDefaultHierarchyAlignment();
         }
 
         private void ChangePencilPosition(int newPosition)
@@ -95,6 +92,22 @@ namespace UIWhiteHighlight
                 .gameObject.GetComponent<Image>().enabled = true;
 
             pencilPosition = newPosition;
+        }
+
+        private void ApplyProperHierarchyAlignment()
+        {
+            gameObject.GetComponent<HorizontalLayoutGroup>().spacing = newPaletteSpacing;
+            gameObject.GetComponent<RectTransform>().localPosition += palettePositionDelta;
+            GameObject.FindObjectOfType<PuzzleGrid>()
+                .GetComponent<RectTransform>().offsetMin += puzzleGridPositionDelta;
+        }
+
+        private void RestoreDefaultHierarchyAlignment()
+        {
+            gameObject.GetComponent<HorizontalLayoutGroup>().spacing = oldPaletteSpacing;
+            gameObject.GetComponent<RectTransform>().localPosition -= palettePositionDelta;
+            GameObject.FindObjectOfType<PuzzleGrid>()
+                .GetComponent<RectTransform>().offsetMin -= puzzleGridPositionDelta;
         }
     }
 }
