@@ -14,7 +14,7 @@ namespace UIBasicTwo
     public class PuzzleGrid : MonoBehaviour
     {
         public GameObject primitive;
-        private const int primitiveMargin = 3; // px = 1 dp for full hd screen
+        private const float primitiveMargin = 3f; // px = 1 dp for full hd screen
         private readonly List<Image> primitives = new List<Image>();
 
         [Space(5)]

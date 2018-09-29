@@ -5,10 +5,10 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using Logic;
-using Managers;
 using Utilities;
+using ManagersWhiteHighlight;
 
-namespace UI
+namespace UIWhiteHighlight
 {
     public class PuzzleGrid : MonoBehaviour
     {

@@ -28,8 +28,8 @@ namespace UIWhiteHighlight
             }
         }
 
-        private const float oldPaletteSpacing = 3f; // 1dp
-        private const float newPaletteSpacing = 6f; // 6dp
+        private const float oldPaletteSpacing = 3f; // 1 dp
+        private const float newPaletteSpacing = 6f;
         private readonly Vector3 palettePositionDelta = new Vector3(0, 3f, 0);
 
         public void ApplyProperHierarchyAlignment()

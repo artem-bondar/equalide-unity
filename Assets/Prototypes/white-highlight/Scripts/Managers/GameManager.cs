@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 
 using Logic;
-using UIBasicTwo;
 using UIWhiteHighlight;
 
 namespace ManagersWhiteHighlight
