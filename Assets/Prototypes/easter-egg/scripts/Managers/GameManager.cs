@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 using UI;
 using Logic;
@@ -10,12 +11,13 @@ namespace ManagersEasterEgg
     {
         private Palette palette;
         private UIEasterEgg.PuzzleGrid puzzleGrid;
-        public bool CheckEaster = false;
+        private UiEasterSolved.EasterSolved easterSolved;
 
         private void Awake()
         {
             palette = GameObject.FindObjectOfType<Palette>();
             puzzleGrid = GameObject.FindObjectOfType<UIEasterEgg.PuzzleGrid>();
+            easterSolved = GameObject.FindObjectOfType<UIEasterSolved.EasterSolved>();
         }
 
         public void Start() => LoadCurrentPuzzle();
@@ -28,20 +30,25 @@ namespace ManagersEasterEgg
 
         private void LoadCurrentPuzzle()
         {   
-            puzzleGrid.Destroy();
-            puzzleGrid.Create(new Puzzle("bb0b\nb00b\n0001\nb011\nb111\nbb1b"));
-            palette.Destroy();
-            palette.Create(2);
-            CheckEaster = false;
+            if(SceneManager.GetActiveScene().name == "easter-egg")
+            {
+                puzzleGrid.Create(new Puzzle("0\n1"));
+                palette.Create(2);
+            }  
+            else
+            {
+                puzzleGrid.Create(new Puzzle("bb0b\nb00b\n0001\nb011\nb111\nbb1b"));
+                palette.Create(2);
+                if(easterSolved.EasterSolved)
+                {
+                    puzzleGrid.EasterSolvedVoid();
+                    easterSolved.EasterSolved = false;
+                }
+            }
+            
+
         }
 
-        public void EasterEgg()
-        {   
-            puzzleGrid.Destroy();
-            puzzleGrid.Create(new Puzzle("0\n1"));
-            palette.Destroy();
-            palette.Create(2);
-            CheckEaster = true;
-        }
+        
     }
 }

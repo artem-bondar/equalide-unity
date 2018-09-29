@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 using UI;
 using Logic;
@@ -35,13 +36,15 @@ namespace UIEasterEgg
         private bool duringSwipe;
         public bool paintLock = true;
 
-        public int []  EasterMas = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-        public int []  EasterTrue = {0,1,0,0,1,0,1,1,0,1,1,0,1,0};
+        private int []  EasterMas = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        private int []  EasterTrue = {0,1,0,0,1,0,1,1,0,1,1,0,1,0};
+        private UiEasterSolved.EasterSolved easterSolved;
 
         private void Awake()
         {
             gameManager = GameObject.FindObjectOfType<GameManager>();
             palette = GameObject.FindObjectOfType<Palette>();
+            easterSolved = GameObject.FindObjectOfType<UiEasterSolved.EasterSolved>();
         }
 
         private void Update()
@@ -218,7 +221,32 @@ namespace UIEasterEgg
         {
             if(CheckEaster())
             {   
-                gameManager.EasterEgg();
+                
+                SceneManager.LoadScene("easter-egg");
+            }
+        }
+
+        private void EasterSolvedVoid()
+        {   
+            int index = 0;
+            for (int i = 0; i < puzzle.height; i++)
+            {
+                for (int j = 0; j < puzzle.width; j++)
+                {   
+                    if(primitives[i * puzzle.width + j].color  == Color.white)
+                    {
+                        if(EasterTrue[index] == 0)
+                        {
+                            primitives[i * puzzle.width + j].color = Colors.cellColors[0];
+                            index++;
+                        }
+                        else
+                        {
+                            primitives[i * puzzle.width + j].color = Colors.cellColors[1];
+                            index++;
+                        }
+                    }
+                }
             }
         }
 
@@ -244,13 +272,15 @@ namespace UIEasterEgg
 
             if (puzzle.CheckForSolution())
             {   
-                if(gameManager.CheckEaster)
+                if(SceneManager.GetActiveScene().name == "easter-egg")
                 {
-                    gameManager.Start();
-                }
+                    SceneManager.LoadScene("easter-game");
+                    easterSolved.EasterSolved = true;
+                } 
                 else gameManager.OnSolvedLevel();
             }
-            EasterEgg();
+            if(EasterSolved==false)
+                EasterEgg();
         }
 
         private void PointerEnter(int i, int j)
@@ -273,13 +303,15 @@ namespace UIEasterEgg
 
             if (puzzle.CheckForSolution())
             {   
-                if(gameManager.CheckEaster)
+                if(SceneManager.GetActiveScene().name == "easter-egg")
                 {
-                    gameManager.Start();
-                }
+                    SceneManager.LoadScene("easter-game");
+                    easterSolved.EasterSolved = true;
+                } 
                 else gameManager.OnSolvedLevel();
             }
-            EasterEgg();
+            if(EasterSolved==false)
+                EasterEgg();
         }
     }
 }
