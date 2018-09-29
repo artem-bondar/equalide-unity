@@ -31,7 +31,7 @@ namespace Managers
 
             for (var i = 1; i < packs.Count; i++)
             {
-                puzzlesProgress[i] += '\n' + new string('c', packs[i].puzzles.Length);
+                puzzlesProgress[i] = new string('c', packs[i].puzzles.Length);
             }
 
             return new ProgressData(0, 0, string.Empty, packsProgress, puzzlesProgress);
