@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
@@ -93,6 +94,8 @@ namespace Managers
             dataManager.Pack(currentPackIndex)
                 [currentPuzzleIndex].partition = progressData.savedPartition;
 
+            OpenAllLevels(); // Temporary
+
             packList.Create(packsProgress);
         }
 
@@ -157,6 +160,25 @@ namespace Managers
             {
                 currentPackIndex++;
                 currentPuzzleIndex = 0;
+            }
+        }
+
+        public void OpenAllLevels()
+        {
+            for (var i = 0; i < packsStates.Length; i++)
+            {
+                if (packsStates[i] != ProgressState.Solved)
+                {
+                    packsStates[i] = ProgressState.Opened;
+                }
+
+                for (var j = 0; j < puzzlesStates[i].Length; j++)
+                {
+                    if (puzzlesStates[i][j] != ProgressState.Solved)
+                    {
+                        puzzlesStates[i][j] = ProgressState.Opened;
+                    }
+                }
             }
         }
 
