@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UI;
 using Logic;
 using Utilities;
-using ManagersBasicTwo;
+using ManagersHexColor;
 
 namespace UIHexColor
 {

@@ -9,12 +9,12 @@ namespace ManagersHexColor
     public class GameManager : MonoBehaviour
     {
         private Palette palette;
-        private UIBasicTwo.PuzzleGrid puzzleGrid;
+        private PuzzleGrid puzzleGrid;
 
         private void Awake()
         {
             palette = GameObject.FindObjectOfType<Palette>();
-            puzzleGrid = GameObject.FindObjectOfType<UIBasicTwo.PuzzleGrid>();
+            puzzleGrid = GameObject.FindObjectOfType<PuzzleGrid>();
         }
 
         private void Start() => LoadCurrentPuzzle();
