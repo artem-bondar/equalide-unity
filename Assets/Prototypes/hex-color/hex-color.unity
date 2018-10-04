@@ -274,9 +274,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 645323714}
-  - component: {fileID: 645323713}
   - component: {fileID: 645323712}
   - component: {fileID: 645323715}
+  - component: {fileID: 645323713}
   m_Layer: 5
   m_Name: Palette
   m_TagString: Untagged
@@ -319,6 +319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   paletteButton: {fileID: 1948286419326606, guid: 78c474dde38d1714bb14567f345ae9eb,
     type: 2}
+  longPressDuration: 1.5
 --- !u!224 &645323714
 RectTransform:
   m_ObjectHideFlags: 0
@@ -362,7 +363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &658056212
 RectTransform:
   m_ObjectHideFlags: 0
@@ -378,11 +379,11 @@ RectTransform:
   m_Father: {fileID: 479468451}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 600, y: -1810.7999}
-  m_SizeDelta: {x: 1200, y: 212.39}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 212.40002}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &658056213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -779,7 +780,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1119643964}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5d6f03c0a740cd4783c3cbe6bf09f06, type: 3}
+  m_Script: {fileID: 11500000, guid: 327c06e0add77364e99dac6fe36102fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1151920593
