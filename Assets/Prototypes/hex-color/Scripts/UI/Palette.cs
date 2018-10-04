@@ -15,6 +15,14 @@ namespace UIHexColor
         private readonly List<Transform> paletteButtons = new List<Transform>();
 
         private int pencilPosition;
+        private int heldButton;
+        private HexInput hexInput;
+
+        private void Awake()
+        {
+            hexInput = GameObject.FindObjectOfType<HexInput>();
+        }
+
         public Color paintColor
         {
             get
@@ -82,17 +90,19 @@ namespace UIHexColor
 
         public void OnPointerDown(int i)
         {
-            Invoke("EnableHexInput", longPressDuration);
+            heldButton = i;
+            Invoke("OnLongPress", longPressDuration);
         }
 
         public void OnPointerUp(int i)
         {
-            CancelInvoke("EnableHexInput");
+            CancelInvoke("OnLongPress");
         }
 
-        private void EnableHexInput()
-        {
-            Debug.Log("LOng Press!");
+        private void OnLongPress()
+        {     
+            hexInput.colorIndex = heldButton;
+            hexInput.Activate();
         }
 
         public void Destroy()
