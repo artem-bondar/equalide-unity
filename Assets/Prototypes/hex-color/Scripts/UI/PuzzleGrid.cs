@@ -114,6 +114,19 @@ namespace UIHexColor
             }
         }
 
+        public void ReColor()
+        {
+            for (int index = 0; index < primitives.Count; index++)
+            {
+                var i = index / puzzle.width;
+                var j = index % puzzle.width;
+                if (puzzle[i, j] != 'e' && puzzle[i, j] != 'b')
+                {
+                    primitives[index].color = Colors.cellColors[puzzle[i,j] - '0'];
+                }
+            }
+        }
+
         public void Destroy()
         {
             foreach (var primitive in primitives)

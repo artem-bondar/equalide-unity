@@ -115,6 +115,14 @@ namespace UIHexColor
             paletteButtons.Clear();
         }
 
+        public void ReColor()
+        {
+            for (var i = 0; i < paletteButtons.Count; i++)
+            {
+                paletteButtons[i].Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];
+            }
+        }
+
         private void ChangePencilPosition(int newPosition)
         {
             if (pencilPosition == newPosition)
