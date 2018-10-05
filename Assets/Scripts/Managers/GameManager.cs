@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,8 @@ namespace Managers
 
         [Tooltip("Floating action button")]
         public GameObject fab;
+
+        private Animator fabAnimator;
 
         private ProgressManager progressManager;
         private TransitionsManager transitionsController;
@@ -33,6 +36,8 @@ namespace Managers
 
         private void Awake()
         {
+            fabAnimator = fab.GetComponent<Animator>();
+
             progressManager = GameObject.FindObjectOfType<ProgressManager>();
             transitionsController = GameObject.FindObjectOfType<TransitionsManager>();
 
@@ -102,7 +107,7 @@ namespace Managers
 
                 palette.gameObject.SetActive(true);
 
-                fab.GetComponent<Animator>().Play("ZoomOut");
+                fabAnimator.Play("ZoomOut");
                 fab.SetActive(false);
             }
         }
@@ -113,7 +118,7 @@ namespace Managers
             puzzleGrid.RemoveInsideBorders();
 
             palette.gameObject.SetActive(false);
-            
+
             levelSolvedState = true;
 
             if (!progressManager.IsOnLastLevel())
@@ -123,11 +128,13 @@ namespace Managers
                 progressManager.OpenNextLevel();
 
                 fab.SetActive(true);
-                fab.GetComponent<Animator>().Play("ZoomIn");
+                fabAnimator.Play("ZoomIn");
             }
         }
 
-        public void OnFabClick()
+        public void OnFabClick() => StartCoroutine(LoadNextLevel());
+
+        private IEnumerator LoadNextLevel()
         {
             if (!progressManager.IsOnLastLevel())
             {
@@ -135,11 +142,12 @@ namespace Managers
                 progressManager.currentPuzzle.Refresh();
                 progressManager.SaveGame();
 
-                fab.GetComponent<Animator>().Play("ZoomOut");
-                fab.SetActive(false);
-
                 DestroyCurrentPuzzle();
                 LoadCurrentPuzzle();
+
+                fabAnimator.Play("ZoomOut");
+                yield return new WaitForSeconds(0.3f);
+                fab.SetActive(false);
             }
         }
 
