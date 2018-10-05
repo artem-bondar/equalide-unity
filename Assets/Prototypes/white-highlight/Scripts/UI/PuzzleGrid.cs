@@ -215,7 +215,7 @@ namespace UIWhiteHighlight
                 puzzle[i, j] = 'e';
                 primitives[i * puzzle.width + j].color = Color.white;
             }
-            else
+            else if (!eraseMode)
             {
                 puzzle[i, j] = palette.paintColorChar;
                 primitives[i * puzzle.width + j].color = palette.paintColor;
