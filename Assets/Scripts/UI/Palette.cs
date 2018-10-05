@@ -40,7 +40,7 @@ namespace UI
             {
                 var button = Instantiate(paletteButton).transform;
 
-                button.SetParent(gameObject.transform, false);
+                button.SetParent(gameObject.transform);
                 button.Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];
 
                 var iCopy = i; // Outer variable trap

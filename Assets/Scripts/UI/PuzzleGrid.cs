@@ -67,7 +67,7 @@ namespace UI
             foreach (var cell in puzzle)
             {
                 var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-                newPrimitive.transform.SetParent(grid.transform, false);
+                newPrimitive.transform.SetParent(grid.transform);
 
                 if (cell != 'e')
                 {
