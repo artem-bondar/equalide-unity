@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using Logic;
+using Managers;
 using Utilities;
-using ManagersWhiteHighlight;
 
 namespace UIWhiteHighlight
 {
@@ -25,7 +25,7 @@ namespace UIWhiteHighlight
         [Tooltip("Bottom right corner separator for primitive")]
         public GameObject cornerSeparator;
 
-        private GameManager gameManager;
+        private dynamic gameManager;
 
         private Palette palette;
 
@@ -36,7 +36,10 @@ namespace UIWhiteHighlight
 
         private void Awake()
         {
-            gameManager = GameObject.FindObjectOfType<GameManager>();
+            gameManager = GameObject.FindObjectOfType<ManagersWhiteHighlight.GameManager>();
+            if (gameManager == null)
+                gameManager = GameObject.FindObjectOfType<GameManager>();
+
             palette = GameObject.FindObjectOfType<Palette>();
         }
 
