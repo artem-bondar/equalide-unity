@@ -68,7 +68,7 @@ namespace UIHexColor
             foreach (var cell in puzzle)
             {
                 var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-                newPrimitive.transform.SetParent(grid.transform);
+                newPrimitive.transform.SetParent(grid.transform, false);
 
                 if (cell != 'e')
                 {

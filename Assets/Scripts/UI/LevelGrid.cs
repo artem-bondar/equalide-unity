@@ -48,7 +48,7 @@ namespace UI
             for (var i = 0; i < puzzlesStates.Length; i++)
             {
                 GameObject newTile = Instantiate(levelTile);
-                newTile.transform.SetParent(gameObject.transform);
+                newTile.transform.SetParent(gameObject.transform, false);
 
                 newTile.GetComponent<Image>().color =
                     puzzlesStates[i] == ProgressState.Solved ?

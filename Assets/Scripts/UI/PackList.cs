@@ -28,7 +28,7 @@ namespace UI
             for (var i = 0; i < packsStates.Length; i++)
             {
                 var newButton = Instantiate(packButton).transform;
-                newButton.SetParent(gameObject.transform);
+                newButton.SetParent(gameObject.transform, false);
 
                 if (packsStates[i] != 'c')
                 {

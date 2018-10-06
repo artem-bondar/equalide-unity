@@ -50,7 +50,7 @@ namespace UIHexColor
             {
                 var button = Instantiate(paletteButton).transform;
 
-                button.SetParent(gameObject.transform);
+                button.SetParent(gameObject.transform, false);
                 button.Find("PaletteButtonFill").GetComponent<Image>().color = Colors.cellColors[i];
 
                 var iCopy = i; // Outer variable trap
