@@ -9,11 +9,17 @@ namespace Logic
     public class CellGrid : IEnumerable<char>
     {
         // Holds string representation of 2D-array
-        private string Cells;
-        virtual public string cells
+        protected string Cells;
+        public string cells
         {
             get { return Cells; }
-            set { }
+            set
+            {
+                if (value.Length == cells.Length)
+                {
+                    Cells = value;
+                }
+            }
         }
 
         // Dimensions in cells
@@ -25,6 +31,13 @@ namespace Logic
             this.Cells = cells;
             this.width = width;
             this.height = height;
+        }
+
+        public CellGrid(string cells, int width) : this(cells, width, cells.Length / width) {}
+
+        protected CellGrid(string cells)
+        {
+            this.Cells = cells;
         }
 
         // Indexer interface to get/set cell using [,] operator

@@ -6,30 +6,28 @@ namespace Logic
     // Contains element with next representation:
     // 'c' - non-empty cell
     // 'e' - empty cell
-    public class Element
+    public class Element : CellGrid
     {
-        // Holds string representation of 2D-array
-        private string shape;
+        new public string cells
+        {
+            get { return Cells; }
+            private set { Cells = value; }
+        }
 
-        // Dimensions in cells
-        private int width;
-        private int height;
+        new public int width { get; private set; }
+        new public readonly int height;
 
         // Receives string without '\n'
-        public Element(string shape, int width)
+        public Element(string cells, int width) : base(cells)
         {
-            this.shape = shape;
-
             this.width = width;
-            height = shape.Length / width;
-
-            CutShapeByWidth();
+            this.height = cells.Length / width;
+            CutByWidth();
         }
 
         // Assumed to be already cut by width
-        private Element(string shape, int width, int height)
+        private Element(string cells, int width, int height) : base(cells)
         {
-            this.shape = shape;
             this.width = width;
             this.height = height;
         }
@@ -41,7 +39,7 @@ namespace Logic
             return element == null ? false : this == element;
         }
 
-        public override int GetHashCode() => shape.GetHashCode();
+        public override int GetHashCode() => Cells.GetHashCode();
 
         // Checks equality to another element with accuracy to rotations and reflections
         public static bool operator !=(Element first, Element second) => !(first == second);
@@ -53,7 +51,7 @@ namespace Logic
                 return false;
             }
 
-            if (first.shape != second.shape && first.GetBodyMirroredByHeight() != second.shape)
+            if (first.Cells != second.Cells && first.GetCellsMirroredByHeight() != second.Cells)
             {
                 Element elementForRotate = first;
 
@@ -61,8 +59,8 @@ namespace Logic
                 {
                     Element rotatedElement = elementForRotate.GetElementRotatedClockWise();
 
-                    if (rotatedElement.shape == second.shape ||
-                        rotatedElement.GetBodyMirroredByHeight() == second.shape)
+                    if (rotatedElement.Cells == second.Cells ||
+                        rotatedElement.GetCellsMirroredByHeight() == second.Cells)
                     {
                         return true;
                     }
@@ -83,7 +81,7 @@ namespace Logic
             var checkedIndexes = new HashSet<int>();
 
             // Stores pending cell indexes to traverse on next step
-            var pendingIndexes = new HashSet<int> { shape.IndexOf("c") };
+            var pendingIndexes = new HashSet<int> { Cells.IndexOf("c") };
 
             // Stores cell indexes that could be traversed after pending cells
             var findedIndexes = new HashSet<int>();
@@ -97,7 +95,7 @@ namespace Logic
                 {
                     // Indexes of all neighbour cells
                     int? up = (index - width >= 0) ? index - width : (int?)null;
-                    int? down = (index + width < shape.Length) ? index + width : (int?)null;
+                    int? down = (index + width < Cells.Length) ? index + width : (int?)null;
                     int? left = (index % width != 0) ? index - 1 : (int?)null;
                     int? right = (index % width != width - 1) ? index + 1 : (int?)null;
 
@@ -106,7 +104,7 @@ namespace Logic
                     foreach (var i in indexesForCheck)
                     {
                         if (((i != null) &&
-                            (shape[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
+                            (Cells[(int)i] == 'c')) && !(checkedIndexes.Contains((int)i)))
                         {
                             findedIndexes.Add((int)i);
                         }
@@ -119,9 +117,9 @@ namespace Logic
             }
 
             // Checks if element has any non-traversed cells
-            for (var i = 0; i < shape.Length; i++)
+            for (var i = 0; i < Cells.Length; i++)
             {
-                if ((shape[i] == 'c') && !(checkedIndexes.Contains(i)))
+                if ((Cells[i] == 'c') && !(checkedIndexes.Contains(i)))
                 {
                     return false;
                 }
@@ -131,7 +129,7 @@ namespace Logic
         }
 
         // Cut element to it's bounding rectangle of the same height
-        private void CutShapeByWidth()
+        private void CutByWidth()
         {
             var startIndexes = new List<int>();
             var endIndexes = new List<int>();
@@ -141,7 +139,7 @@ namespace Logic
             {
                 for (var j = 0; j < width; j++)
                 {
-                    if (shape[i * width + j] != 'e')
+                    if (Cells[i * width + j] != 'e')
                     {
                         startIndexes.Add(j);
                         break;
@@ -150,7 +148,7 @@ namespace Logic
 
                 for (var j = width - 1; j >= 0; j--)
                 {
-                    if (shape[i * width + j] != 'e')
+                    if (Cells[i * width + j] != 'e')
                     {
                         endIndexes.Add(j);
                         break;
@@ -170,17 +168,17 @@ namespace Logic
             // Perform cutting if possible
             if ((start != 0) || (end != width - 1))
             {
-                var cutShape = string.Empty;
+                var cutCells = string.Empty;
 
                 for (var i = 0; i < height; i++)
                 {
                     for (var j = start; j <= end; j++)
                     {
-                        cutShape += shape[i * width + j];
+                        cutCells += Cells[i * width + j];
                     }
                 }
 
-                shape = cutShape;
+                Cells = cutCells;
                 width = end - start + 1;
             }
         }
@@ -188,33 +186,33 @@ namespace Logic
         // Return element rotated by 90° clockwise
         private Element GetElementRotatedClockWise()
         {
-            var rotatedShape = string.Empty;
+            var rotatedCells = string.Empty;
 
             for (var i = 0; i < width; i++)
             {
                 for (var j = height - 1; j >= 0; j--)
                 {
-                    rotatedShape += shape[j * width + i];
+                    rotatedCells += Cells[j * width + i];
                 }
             }
 
-            return new Element(rotatedShape, height, width);
+            return new Element(rotatedCells, height, width);
         }
 
         // Return element mirrored by vertical axis
-        private string GetBodyMirroredByHeight()
+        private string GetCellsMirroredByHeight()
         {
-            var mirroredShape = string.Empty;
+            var mirroredCells = string.Empty;
 
             for (var i = 0; i < height; i++)
             {
                 for (var j = width - 1; j >= 0; j--)
                 {
-                    mirroredShape += shape[i * width + j];
+                    mirroredCells += Cells[i * width + j];
                 }
             }
 
-            return mirroredShape;
+            return mirroredCells;
         }
     }
 }
