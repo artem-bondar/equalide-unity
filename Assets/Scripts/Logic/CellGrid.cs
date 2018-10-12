@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Logic
 {
-    // Contains square grid.
+    // Contains rectangle grid.
     // Each cell is represented as a simple char.
     public class CellGrid : IEnumerable<char>
     {

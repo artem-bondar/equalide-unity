@@ -152,12 +152,12 @@ namespace Logic
                 var elementHeight = lastOccurance / width - firstOccurance / width + 1;
 
                 // Get partition that represent element cut by height bounds
-                string substr = Cells.Substring(
+                string element = Cells.Substring(
                     firstOccurance - firstOccurance % width,
                     elementHeight * width);
 
                 result.Add(new Element(
-                    Regex.Replace(substr, string.Format("[^{0}]", cell), "e")
+                    Regex.Replace(element, string.Format("[^{0}]", cell), "e")
                          .Replace(cell, 'c'),
                     elementHeight));
             }
