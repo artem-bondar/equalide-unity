@@ -9,13 +9,9 @@ namespace Logic
     // 'b' - blank cell, can't be colored
     public class Puzzle : CellGrid
     {
-        // Remove base class set accessor
-        new public string cells
-        {
-            get { return Cells; }
-        }
+        public readonly int elementsCount;
 
-        public string partition
+        public override string cells
         {
             get { return Cells; }
             set
@@ -27,18 +23,10 @@ namespace Logic
             }
         }
 
-        public readonly int elementsCount;
-
-        // Dimensions in cells
-        new public readonly int width;
-        new public readonly int height;
-
         public Puzzle(string cells, int elementsCount,
-                      int width, int height) : base(cells)
+                      int width, int height) : base(cells, width, height)
         {
             this.elementsCount = elementsCount;
-            this.width = width;
-            this.height = height;
         }
 
         // Receives puzzle with solution in simple text format:
@@ -52,19 +40,39 @@ namespace Logic
         // b10
         // 10b
         // ---
-        public Puzzle(string rawPuzzleText)
+        public static explicit operator Puzzle(string rawPuzzleText)
         {
             var unicalCells = new HashSet<char>(rawPuzzleText.ToCharArray());
             unicalCells.RemoveWhere(c => c == 'b' || c == 'e' || c == '\n');
 
             string[] lines = rawPuzzleText.Split('\n');
 
-            this.Cells = string.Join("", lines);
-            Refresh();
+            Puzzle puzzle = new Puzzle(
+                string.Join("", lines), unicalCells.Count,
+                lines[0].Length, lines.Length);
 
-            this.elementsCount = unicalCells.Count;
-            this.width = lines[0].Length;
-            this.height = lines.Length;
+            puzzle.Refresh();
+
+            return puzzle;
+        }
+
+        // Indexer interface to get/set cell using [,] operator
+        public override char this[int i, int j]
+        {
+            get
+            {
+                return CheckIfValidIndexes(i, j) ? Cells[i * width + j] : 'b';
+            }
+            set
+            {
+                if (CheckIfValidIndexes(i, j) &&
+                    CheckIfValidCell(value) && Cells[i * width + j] != 'b')
+                {
+                    var newCells = Cells.ToCharArray();
+                    newCells[i * width + j] = value;
+                    Cells = new string(newCells);
+                }
+            }
         }
 
         // Return puzzle partition to initial unsolved state
@@ -103,6 +111,10 @@ namespace Logic
             return true;
         }
 
+        private bool CheckIfValidCell(char cell) =>
+            (!char.IsDigit(cell) && (cell == 'b' || cell == 'e')) ||
+            (char.IsDigit(cell) && cell - '0' < this.elementsCount);
+
         // Checks if partition for loading has the same shape
         // and contains only valid cells
         private bool CheckIfValidPartition(string partition)
@@ -116,8 +128,7 @@ namespace Logic
             {
                 if ((Cells[i] == 'b' && partition[i] != 'b') ||
                     (Cells[i] != 'b' && partition[i] == 'b') ||
-                    (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
-                    (char.IsDigit(partition[i]) && partition[i] - '0' >= this.elementsCount))
+                    !CheckIfValidCell(partition[i]))
                 {
                     return false;
                 }
@@ -138,16 +149,17 @@ namespace Logic
             {
                 int firstOccurance = Cells.IndexOf(cell);
                 int lastOccurance = Cells.LastIndexOf(cell);
+                var elementHeight = lastOccurance / width - firstOccurance / width + 1;
 
                 // Get partition that represent element cut by height bounds
                 string substr = Cells.Substring(
                     firstOccurance - firstOccurance % width,
-                    (lastOccurance / width - firstOccurance / width + 1) * width);
+                    elementHeight * width);
 
                 result.Add(new Element(
                     Regex.Replace(substr, string.Format("[^{0}]", cell), "e")
-                    .Replace(cell, 'c'),
-                    width));
+                         .Replace(cell, 'c'),
+                    elementHeight));
             }
 
             return result;
