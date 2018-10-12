@@ -56,7 +56,10 @@ namespace Logic
 
                 for (var i = 0; i < 3; i++)
                 {
-                    Element rotatedElement = elementForRotate.GetElementRotatedClockWise();
+                    Element rotatedElement = new Element(
+                        elementForRotate.GetCellsRotatedClockWise(),
+                        elementForRotate.height,
+                        elementForRotate.width);
 
                     if (rotatedElement.Cells == second.Cells ||
                         rotatedElement.GetCellsMirroredByHeight() == second.Cells)
@@ -180,38 +183,6 @@ namespace Logic
             }
 
             return cells;
-        }
-
-        // Return element rotated by 90° clockwise
-        private Element GetElementRotatedClockWise()
-        {
-            var rotatedCells = string.Empty;
-
-            for (var i = 0; i < width; i++)
-            {
-                for (var j = height - 1; j >= 0; j--)
-                {
-                    rotatedCells += Cells[j * width + i];
-                }
-            }
-
-            return new Element(rotatedCells, height, width);
-        }
-
-        // Return element mirrored by vertical axis
-        private string GetCellsMirroredByHeight()
-        {
-            var mirroredCells = string.Empty;
-
-            for (var i = 0; i < height; i++)
-            {
-                for (var j = width - 1; j >= 0; j--)
-                {
-                    mirroredCells += Cells[i * width + j];
-                }
-            }
-
-            return mirroredCells;
         }
     }
 }
