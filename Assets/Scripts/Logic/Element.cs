@@ -31,51 +31,6 @@ namespace Logic
             set { }
         }
 
-        public override bool Equals(object obj)
-        {
-            var element = obj as Element;
-
-            return element == null ? false : this == element;
-        }
-
-        public override int GetHashCode() => Cells.GetHashCode();
-
-        // Checks equality to another element with accuracy to rotations and reflections
-        public static bool operator !=(Element first, Element second) => !(first == second);
-        public static bool operator ==(Element first, Element second)
-        {
-            if ((first.width != second.width || first.height != second.height) &&
-                (first.height != second.width || first.width != second.height))
-            {
-                return false;
-            }
-
-            if (first.Cells != second.Cells && first.GetCellsMirroredByHeight() != second.Cells)
-            {
-                Element elementForRotate = first;
-
-                for (var i = 0; i < 3; i++)
-                {
-                    Element rotatedElement = new Element(
-                        elementForRotate.GetCellsRotatedClockWise(),
-                        elementForRotate.height,
-                        elementForRotate.width);
-
-                    if (rotatedElement.Cells == second.Cells ||
-                        rotatedElement.GetCellsMirroredByHeight() == second.Cells)
-                    {
-                        return true;
-                    }
-
-                    elementForRotate = rotatedElement;
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
         // Checks if element has only one component
         public bool CheckConnectivity()
         {

@@ -62,11 +62,55 @@ namespace Logic
         public IEnumerator<char> GetEnumerator() => Cells.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => Cells.GetEnumerator();
 
-        protected bool CheckIfValidIndexes(int i, int j) =>
-            i >= 0 && i < height && j >= 0 && j < width;
+        public override bool Equals(object obj)
+        {
+            var element = obj as CellGrid;
 
-        // Return grid rotated by 90° clockwise
-        protected string GetCellsRotatedClockWise()
+            return element == null ? false : this == element;
+        }
+
+        public override int GetHashCode() => Cells.GetHashCode();
+
+        // Checks equality to another grid with accuracy to rotations and reflections
+        public static bool operator !=(CellGrid first, CellGrid second) => !(first == second);
+        public static bool operator ==(CellGrid first, CellGrid second)
+        {
+            // TODO
+
+            // if ((first.width != second.width || first.height != second.height) &&
+            //     (first.height != second.width || first.width != second.height))
+            // {
+            //     return false;
+            // }
+
+            // if (first.Cells != second.Cells && first.GetCellsMirroredByHeight() != second.Cells)
+            // {
+            //     Element elementForRotate = first;
+
+            //     for (var i = 0; i < 3; i++)
+            //     {
+            //         Element rotatedElement = new Element(
+            //             elementForRotate.GetCellsRotatedClockWise(),
+            //             elementForRotate.height,
+            //             elementForRotate.width);
+
+            //         if (rotatedElement.Cells == second.Cells ||
+            //             rotatedElement.GetCellsMirroredByHeight() == second.Cells)
+            //         {
+            //             return true;
+            //         }
+
+            //         elementForRotate = rotatedElement;
+            //     }
+
+            //     return false;
+            // }
+
+            return true;
+        }
+
+        // Return cells rotated by 90° clockwise
+        public static string RotateCellsClockWise(string cells, int width, int height)
         {
             var rotatedCells = string.Empty;
 
@@ -74,15 +118,15 @@ namespace Logic
             {
                 for (var j = height - 1; j >= 0; j--)
                 {
-                    rotatedCells += Cells[j * width + i];
+                    rotatedCells += cells[j * width + i];
                 }
             }
 
             return rotatedCells;
         }
 
-        // Return grid mirrored by vertical axis
-        protected string GetCellsMirroredByHeight()
+        // Return cells mirrored by vertical axis
+        public static string MirrorCellsByHeight(string cells, int width, int height)
         {
             var mirroredCells = string.Empty;
 
@@ -90,11 +134,41 @@ namespace Logic
             {
                 for (var j = width - 1; j >= 0; j--)
                 {
-                    mirroredCells += Cells[i * width + j];
+                    mirroredCells += cells[i * width + j];
                 }
             }
 
             return mirroredCells;
         }
+
+        // Return all 8 cells reflections: 4 rotations + 4 mirrored rotations
+        public static string[] ReflectCells(string cells, int width, int height)
+        {
+            var reflections = new string[8];
+            reflections[0] = cells;
+            reflections[1] = MirrorCellsByHeight(cells, width, height);
+
+            for (var i = 1; i <= 3; i++)
+            {
+                reflections[i * 2] =
+                    RotateCellsClockWise(reflections[(i - 1) * 2],
+                    i % 2 == 1 ? width : height,
+                    i % 2 == 1 ? height : height);
+
+                reflections[i * 2 + 1] =
+                    MirrorCellsByHeight(reflections[i * 2],
+                    i % 2 == 1 ? height : width,
+                    i % 2 == 1 ? width : height);
+            }
+
+            return reflections;
+        }
+
+        public string GetCellsRotatedClockWise() => RotateCellsClockWise(Cells, width, height);
+        public string GetCellsMirroredByHeight() => MirrorCellsByHeight(Cells, width, height);
+        public string[] GetCellsReflections() => ReflectCells(Cells, width, height);
+
+        protected bool CheckIfValidIndexes(int i, int j) =>
+            i >= 0 && i < height && j >= 0 && j < width;
     }
 }

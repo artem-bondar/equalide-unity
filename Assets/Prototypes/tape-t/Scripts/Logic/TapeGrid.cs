@@ -13,7 +13,7 @@ namespace LogicTapeT
     // 'b' - blank cell, can't be colored
     public class TapeGrid : CellGrid
     {
-        private Element element;
+        private Element[] elements;
 
         public override string cells
         {
@@ -27,8 +27,11 @@ namespace LogicTapeT
             }
         }
 
-        public TapeGrid(string tape, int width, int height)
-            : base(tape, width, height) { }
+        public TapeGrid(string tape, int width, int height, Element element)
+            : base(tape, width, height)
+        {
+            
+        }
         
         // Indexer interface to get/set cell using [,] operator
         public override char this[int i, int j]
