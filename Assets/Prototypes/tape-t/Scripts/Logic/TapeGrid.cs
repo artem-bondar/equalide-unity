@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Logic
+using Logic;
+
+namespace LogicTapeT
 {
     // Contains rectangle grid that represent a round glued tape.
     public class TapeGrid : CellGrid
