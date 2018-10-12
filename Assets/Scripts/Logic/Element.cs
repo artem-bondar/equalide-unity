@@ -3,32 +3,32 @@ using System.Collections.Generic;
 
 namespace Logic
 {
-    // Contains element with next representation:
+    // Contains immutable element with next representation:
     // 'c' - non-empty cell
     // 'e' - empty cell
     public class Element : CellGrid
     {
-        // Hide base class set accessor
-        new public string cells
+        // Remove base class set accessor
+        public override string cells
         {
             get { return Cells; }
-            private set { Cells = value; }
+            set { }
         }
-
-        // Dimension in cells
-        new public int width { get; private set; }
 
         // Receives string without '\n'
-        public Element(string cells, int width) : base(cells, cells.Length / width)
-        {
-            this.width = width;
-            CutByWidth();
-        }
+        public Element(string cells, int height) : base(CutByWidth(cells, height), height) { }
 
         // Assumed to be already cut by width
-        private Element(string cells, int width, int height) : base(cells, height)
+        private Element(string cells, int width, int height) : base(cells, width, height) { }
+
+        // Remove base class set accessor
+        public override char this[int i, int j]
         {
-            this.width = width;
+            get
+            {
+                return CheckIfValidIndexes(i, j) ? Cells[i * width + j] : 'c';
+            }
+            set { }
         }
 
         public override bool Equals(object obj)
@@ -128,8 +128,9 @@ namespace Logic
         }
 
         // Cut element to it's bounding rectangle of the same height
-        private void CutByWidth()
+        private static string CutByWidth(string cells, int height)
         {
+            var width = cells.Length / height;
             var startIndexes = new List<int>();
             var endIndexes = new List<int>();
 
@@ -138,7 +139,7 @@ namespace Logic
             {
                 for (var j = 0; j < width; j++)
                 {
-                    if (Cells[i * width + j] != 'e')
+                    if (cells[i * width + j] != 'e')
                     {
                         startIndexes.Add(j);
                         break;
@@ -147,7 +148,7 @@ namespace Logic
 
                 for (var j = width - 1; j >= 0; j--)
                 {
-                    if (Cells[i * width + j] != 'e')
+                    if (cells[i * width + j] != 'e')
                     {
                         endIndexes.Add(j);
                         break;
@@ -155,31 +156,30 @@ namespace Logic
                 }
             }
 
-            if (startIndexes.Count == 0 && endIndexes.Count == 0)
+            if (startIndexes.Count != 0 || endIndexes.Count == 0)
             {
-                return;
-            }
+                // Calculate bounds by width
+                int start = startIndexes.Min();
+                int end = endIndexes.Max();
 
-            // Calculate bounds by width
-            int start = startIndexes.Min();
-            int end = endIndexes.Max();
-
-            // Perform cutting if possible
-            if ((start != 0) || (end != width - 1))
-            {
-                var cutCells = string.Empty;
-
-                for (var i = 0; i < height; i++)
+                // Perform cutting if possible
+                if ((start != 0) || (end != width - 1))
                 {
-                    for (var j = start; j <= end; j++)
-                    {
-                        cutCells += Cells[i * width + j];
-                    }
-                }
+                    var cutCells = string.Empty;
 
-                Cells = cutCells;
-                width = end - start + 1;
+                    for (var i = 0; i < height; i++)
+                    {
+                        for (var j = start; j <= end; j++)
+                        {
+                            cutCells += cells[i * width + j];
+                        }
+                    }
+
+                    return cutCells;
+                }
             }
+
+            return cells;
         }
 
         // Return element rotated by 90° clockwise
