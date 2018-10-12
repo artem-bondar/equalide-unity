@@ -45,7 +45,7 @@ namespace Logic
 
             for (var i = 0; i < puzzles.Length; i++)
             {
-                this.puzzles[i] = new Puzzle(puzzles[i]);
+                this.puzzles[i] = (Puzzle)puzzles[i];
             }
         }
 

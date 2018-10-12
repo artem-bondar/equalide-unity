@@ -27,7 +27,7 @@ namespace Data
 
             for (var i = 0; i < pack.size; i++)
             {
-                puzzles[i] = pack[i].partition;
+                puzzles[i] = pack[i].cells;
                 puzzlesWidths[i] = pack[i].width;
                 puzzlesElementsCounts[i] = pack[i].elementsCount;
             }

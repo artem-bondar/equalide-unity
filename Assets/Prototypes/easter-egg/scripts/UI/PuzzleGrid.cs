@@ -154,7 +154,7 @@ namespace UIEasterEgg
 
                 // Down neighbour cell exists and has the same color
                 if (downNeighbour =
-                    index + puzzle.width < puzzle.partition.Length &&
+                    index + puzzle.width < puzzle.cells.Length &&
                     puzzle[i, j] != 'b' && puzzle[i, j] == puzzle[i + 1, j])
                 {
                     var separator = Instantiate(horizontalSeparator);
@@ -203,7 +203,7 @@ namespace UIEasterEgg
             }  
             if(gameManager.EasterSolved == false)
             {
-                if(EasterPartition == puzzle.partition)
+                if(EasterPartition == puzzle.cells)
                 {   
                     gameManager.Easter();
                 }
@@ -234,7 +234,7 @@ namespace UIEasterEgg
             }
             if(gameManager.EasterSolved == false)
             {
-                if(EasterPartition == puzzle.partition)
+                if(EasterPartition == puzzle.cells)
                 {
                     gameManager.Easter();
                 }

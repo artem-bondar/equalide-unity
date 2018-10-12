@@ -30,7 +30,7 @@ namespace ManagersEasterEgg
             if(CheckEaster)
             {   
                 puzzleGrid.Destroy();
-                puzzleGrid.Create(new Puzzle("bb0b\nb00b\n0001\nb011\nb111\nbb1b")); 
+                puzzleGrid.Create((Puzzle)"bb0b\nb00b\n0001\nb011\nb111\nbb1b"); 
                 puzzleGrid.Repaint();
                 EasterSolved = true;
                 CheckEaster = false; 
@@ -46,14 +46,14 @@ namespace ManagersEasterEgg
         private void LoadCurrentPuzzle()
         {   
             
-            puzzleGrid.Create(new Puzzle("bb0b\nb00b\n0001\nb011\nb111\nbb1b"));
+            puzzleGrid.Create((Puzzle)"bb0b\nb00b\n0001\nb011\nb111\nbb1b");
             palette.Create(2);
         }
 
         public void Easter()
         {
             puzzleGrid.Destroy();
-            puzzleGrid.Create(new Puzzle("0\n1")); 
+            puzzleGrid.Create((Puzzle)"0\n1"); 
             CheckEaster = true;  
         } 
     }

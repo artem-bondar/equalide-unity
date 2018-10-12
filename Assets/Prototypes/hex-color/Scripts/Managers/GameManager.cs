@@ -27,7 +27,7 @@ namespace ManagersHexColor
 
         private void LoadCurrentPuzzle()
         {
-            puzzleGrid.Create(new Puzzle("bb0b\nb00b\n0001\nb011\nb111\nbb1b"));
+            puzzleGrid.Create((Puzzle)"bb0b\nb00b\n0001\nb011\nb111\nbb1b");
             palette.Create(2);
         }
     }

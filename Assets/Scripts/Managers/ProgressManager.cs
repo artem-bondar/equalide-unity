@@ -92,7 +92,7 @@ namespace Managers
             currentPackIndex = progressData.currentPackIndex;
             currentPuzzleIndex = progressData.currentPuzzleIndex;
             dataManager.Pack(currentPackIndex)
-                [currentPuzzleIndex].partition = progressData.savedPartition;
+                [currentPuzzleIndex].cells = progressData.savedPartition;
 
             OpenAllLevels(); // Temporary
 
@@ -218,7 +218,7 @@ namespace Managers
 
         private ProgressData GetProgressData() => new ProgressData(
                 currentPackIndex, currentPuzzleIndex,
-                dataManager.Pack(currentPackIndex)[currentPuzzleIndex].partition,
+                dataManager.Pack(currentPackIndex)[currentPuzzleIndex].cells,
                 packsProgress, puzzlesProgress);
 
         private void SaveGameProgress(ProgressData progressData)
