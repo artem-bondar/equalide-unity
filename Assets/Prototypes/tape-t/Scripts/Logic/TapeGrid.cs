@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using Logic;
 
@@ -46,6 +47,9 @@ namespace LogicTapeT
                 }
             }
         }
+
+        // Return puzzle partition to initial unsolved state
+        public void Refresh() => Cells = Regex.Replace(Cells, "[^be]", "e");
 
         public bool CheckIfSolved()
         {

@@ -49,9 +49,8 @@ namespace UITapeT
             var grid = gameObject.GetComponent<GridLayoutGroup>();
             var gridrt = grid.GetComponent<RectTransform>().rect;
 
-            var primitiveSize = Mathf.Min(
-                (gridrt.width - (tapeGrid.width - 1) * primitiveMargin) / tapeGrid.width,
-                (gridrt.height - (tapeGrid.height - 1) * primitiveMargin) / tapeGrid.height);
+            var primitiveSize =
+                (gridrt.width - (tapeGrid.width - 1) * primitiveMargin) / tapeGrid.width;
 
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
             grid.constraintCount = tapeGrid.width;
@@ -94,9 +93,33 @@ namespace UITapeT
             paintLock = false;
         }
 
+        public void Refresh()
+        {
+            tapeGrid.Refresh();
+
+            foreach (var row in tapeRows)
+            {
+                foreach (var primitive in row)
+                {
+                    if (primitive.color != Color.black)
+                    {
+                        primitive.color = Color.white;
+                    }
+                }
+            }
+        }
+
         public void Destroy()
         {
+            foreach (var row in tapeRows)
+            {
+                foreach (var primitive in row)
+                {
+                    Destroy(primitive.gameObject);
+                }
+            }
 
+            tapeRows.Clear();
         }
 
         private void PointerDown(int i, int j)
@@ -117,12 +140,14 @@ namespace UITapeT
             {
                 tapeGrid[i, j] = 'm';
                 tapeRows[i][j].color = markColor;
-
-                if (tapeGrid.CheckIfSolved())
-                {
-                    gameManager.OnSolvedTape();
-                }
             }
+
+            tapeGrid.CutElement();
+
+            if (tapeGrid.CheckIfSolved())
+            {
+                gameManager.OnSolvedTape();
+            }       
         }
 
         private void PointerEnter(int i, int j)
@@ -142,6 +167,8 @@ namespace UITapeT
                 tapeGrid[i, j] = 'm';
                 tapeRows[i][j].color = markColor;
             }
+
+            tapeGrid.CutElement();
 
             if (tapeGrid.CheckIfSolved())
             {
