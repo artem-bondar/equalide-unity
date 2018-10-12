@@ -12,7 +12,7 @@ namespace LogicTapeT
     // 'b' - blank cell, can't be colored
     public class TapeGrid : CellGrid
     {
-		private Element element;
+        private Element element;
 
         public override string cells
         {
@@ -26,8 +26,9 @@ namespace LogicTapeT
             }
         }
 
-        public TapeGrid() { }
-
+        public TapeGrid(string tape, int width, int height)
+            : base(tape, width, height) { }
+        
         // Indexer interface to get/set cell using [,] operator
         public override char this[int i, int j]
         {
@@ -48,21 +49,21 @@ namespace LogicTapeT
 
         public bool CheckIfSolved()
         {
-			return false;
+            return false;
         }
 
-		// Find marked element, cut it from grid and
-		// return array of indexes for it's cells
-		public List<Tuple<int, int>> CutElement()
-		{
-			return new List<Tuple<int, int>>();
-		}
+        // Find marked element, cut it from grid and
+        // return array of indexes for it's cells
+        public List<Tuple<int, int>> CutElement()
+        {
+            return new List<Tuple<int, int>>();
+        }
 
         public void MoveRowFromBottomToTop()
         {
-			string body = Cells.Substring(0, Cells.Length - width);
-			string lastRow = Cells.Substring(Cells.Length - width - 1, width);
-			Cells = lastRow + body;
-		}
+            string body = Cells.Substring(0, Cells.Length - width);
+            string lastRow = Cells.Substring(Cells.Length - width - 1, width);
+            Cells = lastRow + body;
+        }
     }
 }

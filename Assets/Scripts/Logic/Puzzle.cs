@@ -48,7 +48,7 @@ namespace Logic
             string[] lines = rawPuzzleText.Split('\n');
 
             Puzzle puzzle = new Puzzle(
-                string.Join("", lines), unicalCells.Count,
+                string.Join(string.Empty, lines), unicalCells.Count,
                 lines[0].Length, lines.Length);
 
             puzzle.Refresh();

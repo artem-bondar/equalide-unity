@@ -12,6 +12,7 @@ namespace UITapeT
     public class Tape : MonoBehaviour
     {
         public GameObject primitive;
+        private const float primitiveMargin = 3f; // px = 1 dp for full hd screen
         private readonly List<Image> primitives = new List<Image>();
 
         private GameManager gameManager;
@@ -21,16 +22,16 @@ namespace UITapeT
         private bool duringSwipe;
         public bool paintLock = true;
 
-        private static readonly Color markColor;
-        private static readonly Color deleteColor;
+        private Color markColor;
+        private Color deleteColor;
 
-        static Tape()
+        private void Awake()
         {
+            gameManager = GameObject.FindObjectOfType<GameManager>();
+
             ColorUtility.TryParseHtmlString("#4caf50", out markColor);
             ColorUtility.TryParseHtmlString("#2e7d32", out deleteColor);
         }
-
-        private void Awake() => gameManager = GameObject.FindObjectOfType<GameManager>();
 
         private void Update()
         {
@@ -49,8 +50,8 @@ namespace UITapeT
             var gridrt = grid.GetComponent<RectTransform>().rect;
 
             var primitiveSize = Mathf.Min(
-                gridrt.width / tapeGrid.width,
-                gridrt.height / tapeGrid.height);
+                (gridrt.width - (tapeGrid.width - 1) * primitiveMargin) / tapeGrid.width,
+                (gridrt.height - (tapeGrid.height - 1) * primitiveMargin) / tapeGrid.height);
 
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
             grid.constraintCount = tapeGrid.width;

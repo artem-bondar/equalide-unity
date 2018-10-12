@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-using UI;
-using Logic;
+using UITapeT;
+using LogicTapeT;
 
 namespace ManagersTapeT
 {
     public class GameManager : MonoBehaviour
     {
-        private void Awake()
-        {
-        }
+        private Tape tape;
+
+        private void Awake() => tape = GameObject.FindObjectOfType<Tape>();
 
         private void Start() => LoadCurrentTape();
 
@@ -20,26 +20,30 @@ namespace ManagersTapeT
 
         private void LoadCurrentTape()
         {
-            string tape = @"bebebbb
-            bebeeeb
-            eeeeeee
-            ebeeeeb
-            eeeebee
-            ebeeeee
-            eeeeeee
-            beebeeb
-            beeeeeb
-            beeeeee
-            eeeeeeb
-            beeeebb
-            beeeebb
-            eeebeeb
-            eeeeeeb
-            beeeeeb
-            bebeebb
-            bbeeebb
-            bbeeeeb
-            beeebbb";
+            var tapeCellsRaw = @"bebebbb
+bebeeeb
+eeeeeee
+ebeeeeb
+eeeebee
+ebeeeee
+eeeeeee
+beebeeb
+beeeeeb
+beeeeee
+eeeeeeb
+beeeebb
+beeeebb
+eeebeeb
+eeeeeeb
+beeeeeb
+bebeebb
+bbeeebb
+bbeeeeb
+beeebbb";
+
+            var tapeCells = string.Join(string.Empty, tapeCellsRaw.Split('\n'));
+
+            tape.Create(new TapeGrid(tapeCells, 7, tapeCells.Length / 7));
         }
     }
 }
