@@ -5,12 +5,16 @@ using System.Text.RegularExpressions;
 namespace Logic
 {
     // Contains square grid.
-    // Each cell is represented as simple char.
+    // Each cell is represented as a simple char.
     public class CellGrid : IEnumerable<char>
     {
-        // Holds string representation of 2D-array
+        // Dimensions in cells
+        public readonly int width;
+        public readonly int height;
+
+        // String representation of 2D-array
         protected string Cells;
-        public string cells
+        public virtual string cells
         {
             get { return Cells; }
             set
@@ -22,10 +26,6 @@ namespace Logic
             }
         }
 
-        // Dimensions in cells
-        public readonly int width;
-        public readonly int height;
-
         public CellGrid(string cells, int width, int height)
         {
             this.Cells = cells;
@@ -33,21 +33,17 @@ namespace Logic
             this.height = height;
         }
 
-        protected CellGrid() {}
-        
-        protected CellGrid(string cells)
-        {
-            this.Cells = cells;
-        }
+        protected CellGrid() { }
 
         protected CellGrid(string cells, int height)
         {
             this.Cells = cells;
+            this.width = cells.Length / height;
             this.height = height;
         }
 
         // Indexer interface to get/set cell using [,] operator
-        virtual public char this[int i, int j]
+        public virtual char this[int i, int j]
         {
             get
             {
@@ -57,9 +53,9 @@ namespace Logic
             {
                 if (CheckIfValidIndexes(i, j))
                 {
-                    char[] charArray = Cells.ToCharArray();
-                    charArray[i * width + j] = value;
-                    Cells = new string(charArray);
+                    var newCells = Cells.ToCharArray();
+                    newCells[i * width + j] = value;
+                    Cells = new string(newCells);
                 }
             }
         }
@@ -67,7 +63,7 @@ namespace Logic
         public IEnumerator<char> GetEnumerator() => Cells.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => Cells.GetEnumerator();
 
-        private bool CheckIfValidIndexes(int i, int j) =>
+        protected bool CheckIfValidIndexes(int i, int j) =>
             i >= 0 && i < height && j >= 0 && j < width;
     }
 }
