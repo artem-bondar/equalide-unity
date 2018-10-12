@@ -13,7 +13,7 @@ namespace UITapeT
     {
         public GameObject primitive;
         private const float primitiveMargin = 3f; // px = 1 dp for full hd screen
-        private readonly List<Image> primitives = new List<Image>();
+        private readonly List<Image[]> tapeRows = new List<Image[]>();
 
         private GameManager gameManager;
 
@@ -56,32 +56,39 @@ namespace UITapeT
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
             grid.constraintCount = tapeGrid.width;
 
-            foreach (var cell in tapeGrid)
+            for (var i = 0; i < tapeGrid.height; i++)
             {
-                var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-                newPrimitive.transform.SetParent(grid.transform, false);
+                var newRow = new Image[tapeGrid.width];
 
-                if (cell != 'e')
+                for (var j = 0; j < tapeGrid.width; j++)
                 {
-                    newPrimitive.GetComponent<Image>().color = (cell == 'b') ?
-                        Color.black : markColor;
+                    var newPrimitive = Instantiate(primitive).GetComponent<Image>();
+                    newPrimitive.transform.SetParent(grid.transform, false);
+
+                    if (tapeGrid[i, j] != 'e')
+                    {
+                        newPrimitive.GetComponent<Image>().color = (tapeGrid[i, j] == 'b') ?
+                            Color.black : markColor;
+                    }
+
+                    var iCopy = i;
+                    var jCopy = j;
+                    var trigger = newPrimitive.GetComponent<EventTrigger>();
+
+                    var entry = new EventTrigger.Entry();
+                    entry.eventID = EventTriggerType.PointerDown;
+                    entry.callback.AddListener(delegate { PointerDown(iCopy, jCopy); });
+                    trigger.triggers.Add(entry);
+
+                    entry = new EventTrigger.Entry();
+                    entry.eventID = EventTriggerType.PointerEnter;
+                    entry.callback.AddListener(delegate { PointerEnter(iCopy, jCopy); });
+                    trigger.triggers.Add(entry);
+
+                    newRow[j] = newPrimitive;
                 }
 
-                var i = primitives.Count / tapeGrid.width;
-                var j = primitives.Count % tapeGrid.width;
-                var trigger = newPrimitive.GetComponent<EventTrigger>();
-
-                var entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerDown;
-                entry.callback.AddListener(delegate { PointerDown(i, j); });
-                trigger.triggers.Add(entry);
-
-                entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerEnter;
-                entry.callback.AddListener(delegate { PointerEnter(i, j); });
-                trigger.triggers.Add(entry);
-
-                primitives.Add(newPrimitive);
+                tapeRows.Add(newRow);
             }
 
             paintLock = false;
@@ -104,12 +111,12 @@ namespace UITapeT
             if (eraseMode = tapeGrid[i, j] == 'm')
             {
                 tapeGrid[i, j] = 'e';
-                primitives[i * tapeGrid.width + j].color = Color.white;
+                tapeRows[i][j].color = Color.white;
             }
             else
             {
                 tapeGrid[i, j] = 'm';
-                primitives[i * tapeGrid.width + j].color = markColor;
+                tapeRows[i][j].color = markColor;
 
                 if (tapeGrid.CheckIfSolved())
                 {
@@ -128,12 +135,12 @@ namespace UITapeT
             if (tapeGrid[i, j] == 'm' && eraseMode)
             {
                 tapeGrid[i, j] = 'e';
-                primitives[i * tapeGrid.width + j].color = Color.white;
+                tapeRows[i][j].color = Color.white;
             }
             else if (!eraseMode)
             {
                 tapeGrid[i, j] = 'm';
-                primitives[i * tapeGrid.width + j].color = markColor;
+                tapeRows[i][j].color = markColor;
             }
 
             if (tapeGrid.CheckIfSolved())
