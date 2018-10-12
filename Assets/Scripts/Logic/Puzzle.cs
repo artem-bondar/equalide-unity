@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Logic
@@ -8,18 +7,22 @@ namespace Logic
     // '0-9' - colored cell
     // 'e' - empty cell, can be colored
     // 'b' - blank cell, can't be colored
-    public class Puzzle : IEnumerable<char>
+    public class Puzzle : CellGrid
     {
-        // Holds string representation of 2D-array
-        private string Partition;
+        // Remove base class set accessor
+        new public string cells
+        {
+            get { return Cells; }
+        }
+
         public string partition
         {
-            get { return Partition; }
+            get { return Cells; }
             set
             {
                 if (CheckIfValidPartition(value))
                 {
-                    Partition = value;
+                    Cells = value;
                 }
             }
         }
@@ -27,13 +30,12 @@ namespace Logic
         public readonly int elementsCount;
 
         // Dimensions in cells
-        public readonly int width;
-        public readonly int height;
+        new public readonly int width;
+        new public readonly int height;
 
-        public Puzzle(string partition, int elementsCount,
-                      int width, int height)
+        public Puzzle(string cells, int elementsCount,
+                      int width, int height) : base(cells)
         {
-            this.Partition = partition;
             this.elementsCount = elementsCount;
             this.width = width;
             this.height = height;
@@ -57,7 +59,7 @@ namespace Logic
 
             string[] lines = rawPuzzleText.Split('\n');
 
-            this.Partition = string.Join("", lines);
+            this.Cells = string.Join("", lines);
             Refresh();
 
             this.elementsCount = unicalCells.Count;
@@ -65,35 +67,14 @@ namespace Logic
             this.height = lines.Length;
         }
 
-        // Indexer interface to get/set char using [,] operator
-        public char this[int i, int j]
-        {
-            get
-            {
-                return CheckIfValidIndexes(i, j) ? Partition[i * width + j] : 'b';
-            }
-            set
-            {
-                if (CheckIfValidIndexes(i, j))
-                {
-                    char[] charArray = Partition.ToCharArray();
-                    charArray[i * width + j] = value;
-                    Partition = new string(charArray);
-                }
-            }
-        }
-
-        public IEnumerator<char> GetEnumerator() => partition.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => partition.GetEnumerator();
-
         // Return puzzle partition to initial unsolved state
-        public void Refresh() => Partition = Regex.Replace(Partition, "[^be]", "e");
+        public void Refresh() => Cells = Regex.Replace(Cells, "[^be]", "e");
 
         // Checks if current puzzle partition is a valid solution
         public bool CheckForSolution()
         {
             // Checks if puzzle contains any unpainted primitive
-            if (Partition.IndexOf('e') != -1)
+            if (Cells.IndexOf('e') != -1)
             {
                 return false;
             }
@@ -122,22 +103,19 @@ namespace Logic
             return true;
         }
 
-        private bool CheckIfValidIndexes(int i, int j) =>
-            i >= 0 && i < height && j >= 0 && j < width;
-
         // Checks if partition for loading has the same shape
         // and contains only valid cells
         private bool CheckIfValidPartition(string partition)
         {
-            if (Partition.Length != partition.Length)
+            if (Cells.Length != partition.Length)
             {
                 return false;
             }
 
             for (var i = 0; i < partition.Length; i++)
             {
-                if ((Partition[i] == 'b' && partition[i] != 'b') ||
-                    (Partition[i] != 'b' && partition[i] == 'b') ||
+                if ((Cells[i] == 'b' && partition[i] != 'b') ||
+                    (Cells[i] != 'b' && partition[i] == 'b') ||
                     (!char.IsDigit(partition[i]) && partition[i] != 'b' && partition[i] != 'e') ||
                     (char.IsDigit(partition[i]) && partition[i] - '0' >= this.elementsCount))
                 {
@@ -153,16 +131,16 @@ namespace Logic
         {
             var result = new List<Element>();
 
-            var unicalCells = new HashSet<char>(Partition.ToCharArray());
+            var unicalCells = new HashSet<char>(Cells.ToCharArray());
             unicalCells.RemoveWhere(c => c == 'b' || c == 'e');
 
             foreach (var cell in unicalCells)
             {
-                int firstOccurance = Partition.IndexOf(cell);
-                int lastOccurance = Partition.LastIndexOf(cell);
+                int firstOccurance = Cells.IndexOf(cell);
+                int lastOccurance = Cells.LastIndexOf(cell);
 
                 // Get partition that represent element cut by height bounds
-                string substr = Partition.Substring(
+                string substr = Cells.Substring(
                     firstOccurance - firstOccurance % width,
                     (lastOccurance / width - firstOccurance / width + 1) * width);
 

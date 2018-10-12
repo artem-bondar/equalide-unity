@@ -8,28 +8,27 @@ namespace Logic
     // 'e' - empty cell
     public class Element : CellGrid
     {
+        // Hide base class set accessor
         new public string cells
         {
             get { return Cells; }
             private set { Cells = value; }
         }
 
+        // Dimension in cells
         new public int width { get; private set; }
-        new public readonly int height;
 
         // Receives string without '\n'
-        public Element(string cells, int width) : base(cells)
+        public Element(string cells, int width) : base(cells, cells.Length / width)
         {
             this.width = width;
-            this.height = cells.Length / width;
             CutByWidth();
         }
 
         // Assumed to be already cut by width
-        private Element(string cells, int width, int height) : base(cells)
+        private Element(string cells, int width, int height) : base(cells, height)
         {
             this.width = width;
-            this.height = height;
         }
 
         public override bool Equals(object obj)

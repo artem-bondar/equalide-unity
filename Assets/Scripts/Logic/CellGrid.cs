@@ -33,11 +33,17 @@ namespace Logic
             this.height = height;
         }
 
-        public CellGrid(string cells, int width) : this(cells, width, cells.Length / width) {}
-
+        protected CellGrid() {}
+        
         protected CellGrid(string cells)
         {
             this.Cells = cells;
+        }
+
+        protected CellGrid(string cells, int height)
+        {
+            this.Cells = cells;
+            this.height = height;
         }
 
         // Indexer interface to get/set cell using [,] operator
