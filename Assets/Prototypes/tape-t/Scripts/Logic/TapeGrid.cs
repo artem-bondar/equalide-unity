@@ -5,7 +5,11 @@ using Logic;
 
 namespace LogicTapeT
 {
-    // Contains rectangle grid that represent a round glued tape.
+    // Contains rectangle grid that represent a round glued tape
+    // with next encoding:
+    // 'm' - marked cell
+    // 'e' - empty cell, can be colored
+    // 'b' - blank cell, can't be colored
     public class TapeGrid : CellGrid
     {
 		private Element element;
