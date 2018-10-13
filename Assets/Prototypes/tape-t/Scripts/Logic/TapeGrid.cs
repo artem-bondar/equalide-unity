@@ -13,7 +13,7 @@ namespace LogicTapeT
     // 'b' - blank cell, can't be colored
     public class TapeGrid : CellGrid
     {
-        private Element[] elements;
+        private readonly CellGrid[] elements = new CellGrid[8];
 
         public override string cells
         {
@@ -27,12 +27,25 @@ namespace LogicTapeT
             }
         }
 
-        public TapeGrid(string tape, int width, int height, Element element)
+        public TapeGrid(string tape, int width, int height, CellGrid element)
             : base(tape, width, height)
         {
-            
+            var reflections = element.GetCellsReflections();
+
+            for (var i = 0; i <= 3; i++)
+            {
+                elements[i * 2] =
+                    new CellGrid(reflections[i * 2],
+                    i % 2 == 0 ? width : height,
+                    i % 2 == 0 ? height : width);
+
+                elements[i * 2 + 1] =
+                    new CellGrid(reflections[i * 2 + 1],
+                    i % 2 == 0 ? width : height,
+                    i % 2 == 0 ? height : width);
+            }
         }
-        
+
         // Indexer interface to get/set cell using [,] operator
         public override char this[int i, int j]
         {
@@ -59,10 +72,28 @@ namespace LogicTapeT
             return false;
         }
 
-        // Find marked element, cut it from grid and
+        // Find only one marked element, cut it from grid and
         // return array of indexes for it's cells
         public List<Tuple<int, int>> CutElement()
         {
+            foreach (var element in elements)
+            {
+                for (var i = 0; i < width - element.width; i++)
+                {
+                    for (var j = 0; j < height - element.height; j++)
+                    {
+                        if (CheckIfHasElementOnPosition(i, j, element))
+                        {
+                            return GetCellsCoordinatesOfElement(i, j, element);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+
             return new List<Tuple<int, int>>();
         }
 
@@ -71,6 +102,43 @@ namespace LogicTapeT
             string body = Cells.Substring(0, Cells.Length - width);
             string lastRow = Cells.Substring(Cells.Length - width - 1, width);
             Cells = lastRow + body;
+        }
+
+        // Check if element is in grid and top-left corner of it is positioned at (x, y) 
+        private bool CheckIfHasElementOnPosition(int x, int y, CellGrid element)
+        {
+            for (var i = 0; i < element.width; i++)
+            {
+                for (var j = 0; j < element.height; j++)
+                {
+                    if (element[i, j] != 'b' && this[x + i, y + j] != 'm')
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // Return cells coordinates related to grid of element,
+        // top-left corner of wich is positioned at (x, y)
+        private List<Tuple<int, int>> GetCellsCoordinatesOfElement(int x, int y, CellGrid element)
+        {
+            var coordinates = new List<Tuple<int, int>>();
+
+            for (var i = 0; i < element.width; i++)
+            {
+                for (var j = 0; j < element.height; j++)
+                {
+                    if (element[i, j] != 'b' && this[x + i, y + j] == 'm')
+                    {
+                        coordinates.Add(Tuple.Create(x + i, y + j));
+                    }
+                }
+            }
+
+            return coordinates;
         }
     }
 }
