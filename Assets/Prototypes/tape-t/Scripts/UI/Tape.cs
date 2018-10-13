@@ -127,14 +127,13 @@ namespace UITapeT
 
         public IEnumerator MoveOneRowDown(float duration)
         {
-            var deltaY = new Vector2(0, (primitiveSize / duration) * Time.deltaTime);
             var rt = gameObject.GetComponent<RectTransform>();
 
             for (var t = 0f; t < duration; t += Time.deltaTime)
             {
                 yield return new WaitForEndOfFrame();
 
-                rt.offsetMin -= deltaY;
+                rt.offsetMin -= new Vector2(0, (primitiveSize / duration) * Time.deltaTime);
             }
 
             tapeGrid.MoveRowFromBottomToTop();
