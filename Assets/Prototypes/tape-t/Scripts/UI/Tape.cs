@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -142,12 +143,17 @@ namespace UITapeT
                 tapeRows[i][j].color = markColor;
             }
 
-            tapeGrid.CutElement();
+            List<Tuple<int, int>> coordinates = tapeGrid.CutElement();
+
+            if (coordinates.Count > 0)
+            {
+                
+            }
 
             if (tapeGrid.CheckIfSolved())
             {
                 gameManager.OnSolvedTape();
-            }       
+            }
         }
 
         private void PointerEnter(int i, int j)
@@ -168,7 +174,12 @@ namespace UITapeT
                 tapeRows[i][j].color = markColor;
             }
 
-            tapeGrid.CutElement();
+            List<Tuple<int, int>> coordinates = tapeGrid.CutElement();
+
+            if (coordinates.Count > 0)
+            {
+
+            }
 
             if (tapeGrid.CheckIfSolved())
             {

@@ -36,13 +36,13 @@ namespace LogicTapeT
             {
                 elements[i * 2] =
                     new CellGrid(reflections[i * 2],
-                    i % 2 == 0 ? width : height,
-                    i % 2 == 0 ? height : width);
+                    i % 2 == 0 ? element.width : element.height,
+                    i % 2 == 0 ? element.height : element.width);
 
                 elements[i * 2 + 1] =
                     new CellGrid(reflections[i * 2 + 1],
-                    i % 2 == 0 ? width : height,
-                    i % 2 == 0 ? height : width);
+                    i % 2 == 0 ? element.width : element.height,
+                    i % 2 == 0 ? element.height : element.width);
             }
         }
 
@@ -78,13 +78,21 @@ namespace LogicTapeT
         {
             foreach (var element in elements)
             {
-                for (var i = 0; i < width - element.width; i++)
+                for (var i = 0; i < height - element.height + 1; i++)
                 {
-                    for (var j = 0; j < height - element.height; j++)
+                    for (var j = 0; j < width - element.width + 1; j++)
                     {
                         if (CheckIfHasElementOnPosition(i, j, element))
                         {
-                            return GetCellsCoordinatesOfElement(i, j, element);
+                            List<Tuple<int, int>> coordinates =
+                                GetCellsCoordinatesOfElement(i, j, element);
+                            
+                            foreach (var coordinate in coordinates)
+                            {
+                                this[coordinate.Item1, coordinate.Item2] = 'b';
+                            }
+
+                            return coordinates;
                         }
                         else
                         {
@@ -107,9 +115,9 @@ namespace LogicTapeT
         // Check if element is in grid and top-left corner of it is positioned at (x, y) 
         private bool CheckIfHasElementOnPosition(int x, int y, CellGrid element)
         {
-            for (var i = 0; i < element.width; i++)
+            for (var i = 0; i < element.height; i++)
             {
-                for (var j = 0; j < element.height; j++)
+                for (var j = 0; j < element.width; j++)
                 {
                     if (element[i, j] != 'b' && this[x + i, y + j] != 'm')
                     {
@@ -127,9 +135,9 @@ namespace LogicTapeT
         {
             var coordinates = new List<Tuple<int, int>>();
 
-            for (var i = 0; i < element.width; i++)
+            for (var i = 0; i < element.height; i++)
             {
-                for (var j = 0; j < element.height; j++)
+                for (var j = 0; j < element.width; j++)
                 {
                     if (element[i, j] != 'b' && this[x + i, y + j] == 'm')
                     {
