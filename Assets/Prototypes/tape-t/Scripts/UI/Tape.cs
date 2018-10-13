@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -123,6 +124,35 @@ namespace UITapeT
             tapeRows.Clear();
         }
 
+        private void DestroyMarkedElement(List<Tuple<int, int>> coordinates)
+        {
+            StartCoroutine(ChangeElementColor(coordinates, deleteColor, 0.1f));
+            StartCoroutine(ChangeElementColor(coordinates, Color.black, 0.5f, 0.9f));
+        }
+
+        private IEnumerator ChangeElementColor(List<Tuple<int, int>> coordinates,
+            Color targetColor, float duration, float delay = 0f)
+        {
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
+            Color oldColor = tapeRows[coordinates[0].Item1][coordinates[0].Item2].color;
+
+            for (var t = 0f; t < duration; t += Time.deltaTime)
+            {
+                yield return new WaitForEndOfFrame();
+
+                Color newColor = Color.Lerp(oldColor, targetColor, t / duration);
+
+                foreach (var coordinate in coordinates)
+                {
+                    tapeRows[coordinate.Item1][coordinate.Item2].color = newColor;
+                }
+            }
+        }
+
         private void PointerDown(int i, int j)
         {
             if (paintLock || tapeGrid[i, j] == 'b')
@@ -147,7 +177,7 @@ namespace UITapeT
 
             if (coordinates.Count > 0)
             {
-                
+                DestroyMarkedElement(coordinates);
             }
 
             if (tapeGrid.CheckIfSolved())
@@ -178,7 +208,7 @@ namespace UITapeT
 
             if (coordinates.Count > 0)
             {
-
+                DestroyMarkedElement(coordinates);
             }
 
             if (tapeGrid.CheckIfSolved())

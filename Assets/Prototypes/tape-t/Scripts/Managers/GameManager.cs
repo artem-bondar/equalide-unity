@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 
 using UITapeT;
+using Logic;
 using LogicTapeT;
 
 namespace ManagersTapeT
@@ -40,10 +41,9 @@ bebeebb
 bbeeebb
 bbeeeeb
 beeebbb";
-
             var tapeCells = string.Join(string.Empty, tapeCellsRaw.Split('\n'));
-
-            tape.Create(new TapeGrid(tapeCells, 7, tapeCells.Length / 7));
+            var element = new CellGrid("cccbcbbcb", 3, 3);
+            tape.Create(new TapeGrid(tapeCells, 7, tapeCells.Length / 7, element));
         }
     }
 }
