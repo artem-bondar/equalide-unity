@@ -59,6 +59,23 @@ namespace Logic
             }
         }
 
+        public override string ToString()
+        {
+            var result = string.Empty;
+
+            for (var i = 0; i < height; i++)
+            {
+                for (var j = 0; j < width; j++)
+                {
+                    result += this[i, j];
+                }
+
+                result += '\n';
+            }
+
+            return result;
+        }
+
         public IEnumerator<char> GetEnumerator() => Cells.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => Cells.GetEnumerator();
 
