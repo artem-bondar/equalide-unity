@@ -75,38 +75,21 @@ namespace Logic
         public static bool operator !=(CellGrid first, CellGrid second) => !(first == second);
         public static bool operator ==(CellGrid first, CellGrid second)
         {
-            // TODO
+            if ((first.width != second.width || first.height != second.height) &&
+                (first.height != second.width || first.width != second.height))
+            {
+                return false;
+            }
 
-            // if ((first.width != second.width || first.height != second.height) &&
-            //     (first.height != second.width || first.width != second.height))
-            // {
-            //     return false;
-            // }
+            foreach (var cells in first.GetCellsReflections())
+            {
+                if (cells == second.cells)
+                {
+                    return true;
+                }
+            }
 
-            // if (first.Cells != second.Cells && first.GetCellsMirroredByHeight() != second.Cells)
-            // {
-            //     Element elementForRotate = first;
-
-            //     for (var i = 0; i < 3; i++)
-            //     {
-            //         Element rotatedElement = new Element(
-            //             elementForRotate.GetCellsRotatedClockWise(),
-            //             elementForRotate.height,
-            //             elementForRotate.width);
-
-            //         if (rotatedElement.Cells == second.Cells ||
-            //             rotatedElement.GetCellsMirroredByHeight() == second.Cells)
-            //         {
-            //             return true;
-            //         }
-
-            //         elementForRotate = rotatedElement;
-            //     }
-
-            //     return false;
-            // }
-
-            return true;
+            return false;
         }
 
         // Return cells rotated by 90° clockwise
@@ -153,7 +136,7 @@ namespace Logic
                 reflections[i * 2] =
                     RotateCellsClockWise(reflections[(i - 1) * 2],
                     i % 2 == 1 ? width : height,
-                    i % 2 == 1 ? height : height);
+                    i % 2 == 1 ? height : width);
 
                 reflections[i * 2 + 1] =
                     MirrorCellsByHeight(reflections[i * 2],
