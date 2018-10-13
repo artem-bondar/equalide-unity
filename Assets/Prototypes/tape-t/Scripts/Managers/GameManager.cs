@@ -15,6 +15,9 @@ namespace ManagersTapeT
         private float tapeSpeed = 1f; // takes to move one row down
         private bool tapeSolved = false;
 
+        public Text score;
+        public int markedElements = 0;
+
         private void Awake() => tape = GameObject.FindObjectOfType<Tape>();
 
         private void Start()
@@ -23,9 +26,25 @@ namespace ManagersTapeT
             StartCoroutine(RunTape());
         }
 
-        public void OnSolvedTape() => tapeSolved = true;
+        public void OnSolvedTape()
+        {
+            tapeSolved = true;
+            score.text = $"You marked {markedElements} elements";
+            score.gameObject.transform.parent.gameObject.SetActive(true);
+        }
 
-        private void LoadCurrentTape()
+        public void OnRestart()
+        {
+            markedElements = 0;
+            tapeSolved = false;
+            score.gameObject.transform.parent.gameObject.SetActive(false);
+
+            tape.Destroy();
+            LoadCurrentTape();
+            StartCoroutine(RunTape());
+        }
+
+        public void LoadCurrentTape()
         {
             var tapeCellsRaw = @"bebebbb
 bebeeeb

@@ -236,6 +236,7 @@ namespace UITapeT
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
+                gameManager.markedElements++;
 
                 if (tapeGrid.CheckIfSolved())
                 {
@@ -271,6 +272,7 @@ namespace UITapeT
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
+                gameManager.markedElements++;
 
                 if (tapeGrid.CheckIfSolved())
                 {
