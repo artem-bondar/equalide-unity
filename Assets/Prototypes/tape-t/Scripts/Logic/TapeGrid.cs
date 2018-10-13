@@ -67,39 +67,25 @@ namespace LogicTapeT
         // Return puzzle partition to initial unsolved state
         public void Refresh() => Cells = Regex.Replace(Cells, "[^be]", "e");
 
-        public bool CheckIfSolved()
-        {
-            return false;
-        }
+        public bool CheckIfSolved() => FindElement(false).Item1 == -1;
 
         // Find only one marked element, cut it from grid and
         // return array of indexes for it's cells
-        public List<Tuple<int, int>> CutElement()
+        public List<Tuple<int, int>> CutElementIfPossible()
         {
-            foreach (var element in elements)
-            {
-                for (var i = 0; i < height - element.height + 1; i++)
-                {
-                    for (var j = 0; j < width - element.width + 1; j++)
-                    {
-                        if (CheckIfHasElementOnPosition(i, j, element))
-                        {
-                            List<Tuple<int, int>> coordinates =
-                                GetCellsCoordinatesOfElement(i, j, element);
-                            
-                            foreach (var coordinate in coordinates)
-                            {
-                                this[coordinate.Item1, coordinate.Item2] = 'b';
-                            }
+            Tuple<int, int, CellGrid> position = FindElement(true);
 
-                            return coordinates;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
+            if (position.Item1 != -1)
+            {
+                List<Tuple<int, int>> coordinates = GetCellsCoordinatesOfElement(
+                    position.Item1, position.Item2, position.Item3);
+
+                foreach (var coordinate in coordinates)
+                {
+                    this[coordinate.Item1, coordinate.Item2] = 'b';
                 }
+
+                return coordinates;
             }
 
             return new List<Tuple<int, int>>();
@@ -108,18 +94,41 @@ namespace LogicTapeT
         public void MoveRowFromBottomToTop()
         {
             string body = Cells.Substring(0, Cells.Length - width);
-            string lastRow = Cells.Substring(Cells.Length - width - 1, width);
+            string lastRow = Cells.Substring(Cells.Length - width, width);
             Cells = lastRow + body;
         }
 
-        // Check if element is in grid and top-left corner of it is positioned at (x, y) 
-        private bool CheckIfHasElementOnPosition(int x, int y, CellGrid element)
+        // Find only one marked element,
+        // return position of it's upper-left corner and corresponding element
+        private Tuple<int, int, CellGrid> FindElement(bool marked)
+        {
+            foreach (var element in elements)
+            {
+                for (var i = 0; i < height - element.height + 1; i++)
+                {
+                    for (var j = 0; j < width - element.width + 1; j++)
+                    {
+                        if (CheckIfHasElementOnPosition(i, j, element, marked))
+                        {
+                            return Tuple.Create(i, j, element);
+                        }
+                    }
+                }
+            }
+
+            return Tuple.Create(-1, -1, new CellGrid(string.Empty, 0, 0));
+        }
+
+        // Check if grid has element and it's upper-left corner is positioned at (x, y) 
+        private bool CheckIfHasElementOnPosition(int x, int y, CellGrid element, bool marked)
         {
             for (var i = 0; i < element.height; i++)
             {
                 for (var j = 0; j < element.width; j++)
                 {
-                    if (element[i, j] != 'b' && this[x + i, y + j] != 'm')
+                    if (element[i, j] != 'b' &&
+                       ((marked && this[x + i, y + j] != 'm') ||
+                       (!marked && this[x + i, y + j] == 'b')))
                     {
                         return false;
                     }
@@ -130,7 +139,7 @@ namespace LogicTapeT
         }
 
         // Return cells coordinates related to grid of element,
-        // top-left corner of wich is positioned at (x, y)
+        // upper-left corner of wich is positioned at (x, y)
         private List<Tuple<int, int>> GetCellsCoordinatesOfElement(int x, int y, CellGrid element)
         {
             var coordinates = new List<Tuple<int, int>>();
