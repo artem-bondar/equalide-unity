@@ -14,6 +14,7 @@ namespace UITapeT
     public class Tape : MonoBehaviour
     {
         public GameObject primitive;
+        private float primitiveSize;
         private const float primitiveMargin = 3f; // px = 1 dp for full hd screen
         private readonly List<Image[]> tapeRows = new List<Image[]>();
 
@@ -51,7 +52,7 @@ namespace UITapeT
             var grid = gameObject.GetComponent<GridLayoutGroup>();
             var gridrt = grid.GetComponent<RectTransform>().rect;
 
-            var primitiveSize =
+            primitiveSize =
                 (gridrt.width - (tapeGrid.width - 1) * primitiveMargin) / tapeGrid.width;
 
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
@@ -72,18 +73,18 @@ namespace UITapeT
                             Color.black : markColor;
                     }
 
-                    var iCopy = i;
-                    var jCopy = j;
                     var trigger = newPrimitive.GetComponent<EventTrigger>();
 
                     var entry = new EventTrigger.Entry();
                     entry.eventID = EventTriggerType.PointerDown;
-                    entry.callback.AddListener(delegate { PointerDown(iCopy, jCopy); });
+                    entry.callback.AddListener(
+                        delegate { PointerDown(newPrimitive.GetInstanceID()); });
                     trigger.triggers.Add(entry);
 
                     entry = new EventTrigger.Entry();
                     entry.eventID = EventTriggerType.PointerEnter;
-                    entry.callback.AddListener(delegate { PointerEnter(iCopy, jCopy); });
+                    entry.callback.AddListener(
+                        delegate { PointerEnter(newPrimitive.GetInstanceID()); });
                     trigger.triggers.Add(entry);
 
                     newRow[j] = newPrimitive;
@@ -124,21 +125,58 @@ namespace UITapeT
             tapeRows.Clear();
         }
 
-        private void DestroyMarkedElement(List<Tuple<int, int>> coordinates)
+        public IEnumerator MoveOneRowDown(float duration)
         {
-            StartCoroutine(ChangeElementColor(coordinates, deleteColor, 0.1f));
-            StartCoroutine(ChangeElementColor(coordinates, Color.black, 0.5f, 0.9f));
+            var deltaY = new Vector2(0, (primitiveSize / duration) * Time.deltaTime);
+            var rt = gameObject.GetComponent<RectTransform>();
+
+            for (var t = 0f; t < duration; t += Time.deltaTime)
+            {
+                yield return new WaitForEndOfFrame();
+
+                rt.offsetMin -= deltaY;
+            }
+
+            tapeGrid.MoveRowFromBottomToTop();
+            MoveRowFromBottomToTop();
+
+            rt.offsetMin = Vector2.zero;
         }
 
-        private IEnumerator ChangeElementColor(List<Tuple<int, int>> coordinates,
-            Color targetColor, float duration, float delay = 0f)
+        private void MoveRowFromBottomToTop()
+        {
+            Image[] lastRow = tapeRows[tapeRows.Count - 1];
+            tapeRows.RemoveAt(tapeRows.Count - 1);
+            tapeRows.Insert(0, lastRow);
+
+            for (var i = 0; i < lastRow.Length; i++)
+            {
+                lastRow[i].transform.SetSiblingIndex(i);
+            }
+        }
+
+        private void DestroyMarkedElement(List<Tuple<int, int>> coordinates)
+        {
+            var cellsToDestroy = new Image[coordinates.Count];
+
+            for (var i = 0; i < coordinates.Count; i++)
+            {
+                cellsToDestroy[i] = tapeRows[coordinates[i].Item1][coordinates[i].Item2];
+            }
+
+            StartCoroutine(ChangeCellsColor(cellsToDestroy, deleteColor, 0.1f));
+            StartCoroutine(ChangeCellsColor(cellsToDestroy, Color.black, 0.5f, 0.9f));
+        }
+
+        private IEnumerator ChangeCellsColor(Image[] cells, Color targetColor,
+                                             float duration, float delay = 0f)
         {
             if (delay > 0f)
             {
                 yield return new WaitForSeconds(delay);
             }
 
-            Color oldColor = tapeRows[coordinates[0].Item1][coordinates[0].Item2].color;
+            Color oldColor = cells[0].color;
 
             for (var t = 0f; t < duration; t += Time.deltaTime)
             {
@@ -146,15 +184,35 @@ namespace UITapeT
 
                 Color newColor = Color.Lerp(oldColor, targetColor, t / duration);
 
-                foreach (var coordinate in coordinates)
+                foreach (var cell in cells)
                 {
-                    tapeRows[coordinate.Item1][coordinate.Item2].color = newColor;
+                    cell.color = newColor;
                 }
             }
         }
 
-        private void PointerDown(int i, int j)
+        private Tuple<int, int> GetCoordinatesOfPrimive(int id)
         {
+            for (var i = 0; i < tapeRows.Count; i++)
+            {
+                for (var j = 0; j < tapeRows[i].Length; j++)
+                {
+                    if (id == tapeRows[i][j].GetInstanceID())
+                    {
+                        return Tuple.Create(i, j);
+                    }
+                }
+            }
+
+            return Tuple.Create(-1, -1);
+        }
+
+        private void PointerDown(int id)
+        {
+            var ij = GetCoordinatesOfPrimive(id);
+            var i = ij.Item1;
+            var j = ij.Item2;
+
             if (paintLock || tapeGrid[i, j] == 'b')
             {
                 return;
@@ -173,21 +231,25 @@ namespace UITapeT
                 tapeRows[i][j].color = markColor;
             }
 
-            List<Tuple<int, int>> coordinates = tapeGrid.CutElement();
+            List<Tuple<int, int>> coordinates = tapeGrid.CutElementIfPossible();
 
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-            }
 
-            if (tapeGrid.CheckIfSolved())
-            {
-                gameManager.OnSolvedTape();
+                if (tapeGrid.CheckIfSolved())
+                {
+                    gameManager.OnSolvedTape();
+                }
             }
         }
 
-        private void PointerEnter(int i, int j)
+        private void PointerEnter(int id)
         {
+            var ij = GetCoordinatesOfPrimive(id);
+            var i = ij.Item1;
+            var j = ij.Item2;
+
             if (paintLock || !duringSwipe || tapeGrid[i, j] == 'b')
             {
                 return;
@@ -204,16 +266,16 @@ namespace UITapeT
                 tapeRows[i][j].color = markColor;
             }
 
-            List<Tuple<int, int>> coordinates = tapeGrid.CutElement();
+            List<Tuple<int, int>> coordinates = tapeGrid.CutElementIfPossible();
 
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-            }
 
-            if (tapeGrid.CheckIfSolved())
-            {
-                gameManager.OnSolvedTape();
+                if (tapeGrid.CheckIfSolved())
+                {
+                    gameManager.OnSolvedTape();
+                }
             }
         }
     }
