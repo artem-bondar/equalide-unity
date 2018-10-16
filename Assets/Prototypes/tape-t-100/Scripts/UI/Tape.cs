@@ -236,6 +236,13 @@ namespace UITapeT100
             {
                 DestroyMarkedElement(coordinates);
                 gameManager.survivalPoints += GameManager.pointsPerFigure;
+                gameManager.walkthroughPoints += GameManager.pointsPerFigure;
+                gameManager.walkthroughPointsCounter.text = $"{gameManager.walkthroughPoints}";
+            }
+            else
+            {
+                gameManager.survivalPoints -= GameManager.penaltyPerMiss;
+                gameManager.survivalPointsCounter.text = $"{gameManager.survivalPoints}";
             }
         }
 
@@ -267,6 +274,13 @@ namespace UITapeT100
             {
                 DestroyMarkedElement(coordinates);
                 gameManager.survivalPoints += GameManager.pointsPerFigure;
+                gameManager.walkthroughPoints += GameManager.pointsPerFigure;
+                gameManager.walkthroughPointsCounter.text = $"{gameManager.walkthroughPoints}";
+            }
+            else
+            {
+                gameManager.survivalPoints -= GameManager.penaltyPerMiss;
+                gameManager.survivalPointsCounter.text = $"{gameManager.survivalPoints}";
             }
         }
     }

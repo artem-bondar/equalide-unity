@@ -11,7 +11,7 @@ namespace LogicTapeT100
         {
             var tapeCells = string.Empty;
 
-            for (var i = 0; i < 200; i++)
+            for (var i = 0; i < 500; i++)
             {
                 for (var j = 0; j < width; j++)
                 {

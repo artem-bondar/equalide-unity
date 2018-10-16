@@ -17,21 +17,27 @@ namespace ManagersTapeT100
         public Text walkthroughPointsCounter;
 
         public Image pauseButtonIcon;
+
         public Sprite pauseIconSprite;
         public Sprite playIconSprite;
 
         private Tape tape;
 
-        private readonly float tapeSpeed = 0.75f; // takes to move one row down
-        private readonly float decreasePointsDelta = 0.2f;
-        public const int pointsPerFigure = 5;
+        private const float tapeSpeed = 0.75f; // takes to move one row down
+        private const float decreaseSurvivalPointsDelta = 0.75f;
+
+        private const int startSurvivalPoints = 100;
+
+        public const int pointsPerLine = 1;
+        public const int penaltyPerMiss = 1;
+        public const int pointsPerFigure = 6;
 
         private bool gameOver;
         public bool gamePaused;
         private int linesWalked;
 
         public int survivalPoints;
-        private int walkthroughPoints;
+        public int walkthroughPoints;
 
         private void Awake() => tape = GameObject.FindObjectOfType<Tape>();
 
@@ -59,12 +65,15 @@ namespace ManagersTapeT100
 
         private void StartGame()
         {
-            linesWalked = 0;
-            survivalPoints = 25;
-            walkthroughPoints = 0;
             gameOver = false;
+            linesWalked = 0;
+
+            survivalPoints = startSurvivalPoints;
             survivalPointsCounter.text = $"{survivalPoints}";
+
+            walkthroughPoints = 0;
             walkthroughPointsCounter.text = $"{walkthroughPoints}";
+
             score.gameObject.transform.parent.gameObject.SetActive(false);
 
             LoadTape();
@@ -84,12 +93,11 @@ namespace ManagersTapeT100
             {
                 StartCoroutine(tape.MoveOneRowDown(tapeSpeed));
                 yield return new WaitForSeconds(tapeSpeed);
+
                 if (!gameOver)
                 {
-                    if (!gamePaused)
-                    {
-                        survivalPointsCounter.text = $"{--survivalPoints}";
-                    }
+                    walkthroughPoints += pointsPerLine;
+                    walkthroughPointsCounter.text = $"{walkthroughPoints}";
                 }
                 else
                 {
@@ -100,14 +108,11 @@ namespace ManagersTapeT100
 
         private IEnumerator UpdateScore()
         {
-            while (survivalPoints > 0 && linesWalked < 300)
+            while (survivalPoints > 0 && linesWalked < 500)
             {
-                yield return new WaitForSeconds(decreasePointsDelta);
+                yield return new WaitForSeconds(decreaseSurvivalPointsDelta);
 
-                if (!gamePaused)
-                {
-                    walkthroughPointsCounter.text = $"{++walkthroughPoints}";
-                }
+                survivalPointsCounter.text = $"{--survivalPoints}";
             }
 
             gameOver = true;
@@ -130,6 +135,7 @@ namespace ManagersTapeT100
         {
             gameOver = true;
             tape.paintLock = true;
+            survivalPointsCounter.text = "0";
             score.text = $"Earned {walkthroughPoints} WPs";
             score.gameObject.transform.parent.gameObject.SetActive(true);
         }
