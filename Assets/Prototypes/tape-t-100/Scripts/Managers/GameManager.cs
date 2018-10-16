@@ -13,15 +13,21 @@ namespace ManagersTapeT100
     public class GameManager : MonoBehaviour
     {
         public Text score;
-        public Text linesCounter;
-        public Text survivalPointsPanel;
+        public Text survivalPointsCounter;
+        public Text walkthroughPointsCounter;
+
+        public Image pauseButtonIcon;
+        public Sprite pauseIconSprite;
+        public Sprite playIconSprite;
 
         private Tape tape;
 
         private readonly float tapeSpeed = 0.75f; // takes to move one row down
         private readonly float decreasePointsDelta = 0.2f;
+        public const int pointsPerFigure = 5;
 
         private bool gameOver;
+        public bool gamePaused;
         private int linesWalked;
 
         public int survivalPoints;
@@ -37,14 +43,28 @@ namespace ManagersTapeT100
             StartGame();
         }
 
+        public void OnPauseButtonClick()
+        {
+            if (gamePaused)
+            {
+                pauseButtonIcon.sprite = pauseIconSprite;
+                ContinueGame();
+            }
+            else
+            {
+                pauseButtonIcon.sprite = playIconSprite;
+                PauseGame();
+            }
+        }
+
         private void StartGame()
         {
             linesWalked = 0;
             survivalPoints = 25;
             walkthroughPoints = 0;
             gameOver = false;
-            linesCounter.text = $"{linesWalked}";
-            survivalPointsPanel.text = $"{survivalPoints}";
+            survivalPointsCounter.text = $"{survivalPoints}";
+            walkthroughPointsCounter.text = $"{walkthroughPoints}";
             score.gameObject.transform.parent.gameObject.SetActive(false);
 
             LoadTape();
@@ -60,14 +80,16 @@ namespace ManagersTapeT100
 
         private IEnumerator RunTape()
         {
-            for (;;)
+            for (; ; )
             {
                 StartCoroutine(tape.MoveOneRowDown(tapeSpeed));
                 yield return new WaitForSeconds(tapeSpeed);
                 if (!gameOver)
                 {
-                    survivalPointsPanel.text = $"{--survivalPoints}";
-                    linesCounter.text = $"{++linesWalked}";
+                    if (!gamePaused)
+                    {
+                        survivalPointsCounter.text = $"{--survivalPoints}";
+                    }
                 }
                 else
                 {
@@ -81,11 +103,27 @@ namespace ManagersTapeT100
             while (survivalPoints > 0 && linesWalked < 300)
             {
                 yield return new WaitForSeconds(decreasePointsDelta);
-                walkthroughPoints++;
+
+                if (!gamePaused)
+                {
+                    walkthroughPointsCounter.text = $"{++walkthroughPoints}";
+                }
             }
 
             gameOver = true;
             OnGameOver();
+        }
+
+        private void PauseGame()
+        {
+            Time.timeScale = 0f;
+            gamePaused = true;
+        }
+
+        private void ContinueGame()
+        {
+            Time.timeScale = 1f;
+            gamePaused = false;
         }
 
         private void OnGameOver()
