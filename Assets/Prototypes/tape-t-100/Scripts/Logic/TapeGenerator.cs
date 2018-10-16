@@ -11,7 +11,7 @@ namespace LogicTapeT100
         {
             var tapeCells = string.Empty;
 
-            for (var probability = 1f; probability > 0f; probability -= 0.01f)
+            for (var probability = 0.01f; probability <= 1f; probability += 0.01f)
             {
                 for (var i = 0; i < width; i++)
                 {
