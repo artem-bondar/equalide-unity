@@ -19,8 +19,10 @@ namespace UITapeT100
         private readonly List<Image[]> tapeRows = new List<Image[]>();
 
         private GameManager gameManager;
+        private GridLayoutGroup grid;
 
         private TapeGrid tapeGrid;
+        private int newRowIndex;
         private bool eraseMode;
         private bool duringSwipe;
         public bool paintLock = true;
@@ -31,6 +33,7 @@ namespace UITapeT100
         private void Awake()
         {
             gameManager = GameObject.FindObjectOfType<GameManager>();
+            grid = gameObject.GetComponent<GridLayoutGroup>();
 
             ColorUtility.TryParseHtmlString("#4caf50", out markColor);
             ColorUtility.TryParseHtmlString("#2e7d32", out deleteColor);
@@ -49,7 +52,6 @@ namespace UITapeT100
         {
             this.tapeGrid = tapeGrid;
 
-            var grid = gameObject.GetComponent<GridLayoutGroup>();
             var gridrt = grid.GetComponent<RectTransform>().rect;
 
             primitiveSize =
@@ -58,39 +60,13 @@ namespace UITapeT100
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
             grid.constraintCount = tapeGrid.width;
 
-            for (var i = 0; i < tapeGrid.height; i++)
+            var primitivesPerHeight = (int)(gridrt.height / primitiveSize) + 2;
+
+            newRowIndex = tapeGrid.height - primitivesPerHeight - 2;
+
+            for (var i = newRowIndex + 1; i < tapeGrid.height; i++)
             {
-                var newRow = new Image[tapeGrid.width];
-
-                for (var j = 0; j < tapeGrid.width; j++)
-                {
-                    var newPrimitive = Instantiate(primitive).GetComponent<Image>();
-                    newPrimitive.transform.SetParent(grid.transform, false);
-
-                    if (tapeGrid[i, j] != 'e')
-                    {
-                        newPrimitive.GetComponent<Image>().color = (tapeGrid[i, j] == 'b') ?
-                            Color.black : markColor;
-                    }
-
-                    var trigger = newPrimitive.GetComponent<EventTrigger>();
-
-                    var entry = new EventTrigger.Entry();
-                    entry.eventID = EventTriggerType.PointerDown;
-                    entry.callback.AddListener(
-                        delegate { PointerDown(newPrimitive.GetInstanceID()); });
-                    trigger.triggers.Add(entry);
-
-                    entry = new EventTrigger.Entry();
-                    entry.eventID = EventTriggerType.PointerEnter;
-                    entry.callback.AddListener(
-                        delegate { PointerEnter(newPrimitive.GetInstanceID()); });
-                    trigger.triggers.Add(entry);
-
-                    newRow[j] = newPrimitive;
-                }
-
-                tapeRows.Add(newRow);
+                CreateNewRow(i);
             }
 
             paintLock = false;
@@ -136,22 +112,62 @@ namespace UITapeT100
                 rt.offsetMin -= new Vector2(0, (primitiveSize / duration) * Time.deltaTime);
             }
 
-            tapeGrid.MoveRowFromBottomToTop();
-            MoveRowFromBottomToTop();
+            DeleteBottomRow();
+
+            CreateNewRow(newRowIndex);
+
+            foreach (var primitive in tapeRows[0])
+            {
+                primitive.transform.SetSiblingIndex(0);
+            }
+
+            newRowIndex--;
 
             rt.offsetMin = Vector2.zero;
         }
 
-        private void MoveRowFromBottomToTop()
+        private void CreateNewRow(int rowIndex)
         {
-            Image[] lastRow = tapeRows[tapeRows.Count - 1];
-            tapeRows.RemoveAt(tapeRows.Count - 1);
-            tapeRows.Insert(0, lastRow);
+            var newRow = new Image[tapeGrid.width];
 
-            for (var i = 0; i < lastRow.Length; i++)
+            for (var j = 0; j < tapeGrid.width; j++)
             {
-                lastRow[i].transform.SetSiblingIndex(i);
+                var newPrimitive = Instantiate(primitive).GetComponent<Image>();
+                newPrimitive.transform.SetParent(grid.transform, false);
+
+                if (tapeGrid[rowIndex, j] != 'e')
+                {
+                    newPrimitive.GetComponent<Image>().color = (tapeGrid[rowIndex, j] == 'b') ?
+                        Color.black : markColor;
+                }
+
+                var jCopy = j;
+                var trigger = newPrimitive.GetComponent<EventTrigger>();
+
+                var entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerDown;
+                entry.callback.AddListener(delegate { PointerDown(rowIndex, jCopy); });
+                trigger.triggers.Add(entry);
+
+                entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerEnter;
+                entry.callback.AddListener(delegate { PointerEnter(rowIndex, jCopy); });
+                trigger.triggers.Add(entry);
+
+                newRow[j] = newPrimitive;
             }
+
+            tapeRows.Add(newRow);
+        }
+
+        private void DeleteBottomRow()
+        {
+            foreach (var primitive in tapeRows[tapeRows.Count - 1])
+            {
+                Destroy(primitive.gameObject);
+            }
+
+            tapeRows.RemoveAt(tapeRows.Count - 1);
         }
 
         private void DestroyMarkedElement(List<Tuple<int, int>> coordinates)
@@ -188,30 +204,15 @@ namespace UITapeT100
                     cell.color = newColor;
                 }
             }
-        }
 
-        private Tuple<int, int> GetCoordinatesOfPrimive(int id)
-        {
-            for (var i = 0; i < tapeRows.Count; i++)
+            foreach (var cell in cells)
             {
-                for (var j = 0; j < tapeRows[i].Length; j++)
-                {
-                    if (id == tapeRows[i][j].GetInstanceID())
-                    {
-                        return Tuple.Create(i, j);
-                    }
-                }
+                cell.color = targetColor;
             }
-
-            return Tuple.Create(-1, -1);
         }
 
-        private void PointerDown(int id)
+        private void PointerDown(int i, int j)
         {
-            var ij = GetCoordinatesOfPrimive(id);
-            var i = ij.Item1;
-            var j = ij.Item2;
-
             if (paintLock || tapeGrid[i, j] == 'b')
             {
                 return;
@@ -246,12 +247,8 @@ namespace UITapeT100
             }
         }
 
-        private void PointerEnter(int id)
+        private void PointerEnter(int i, int j)
         {
-            var ij = GetCoordinatesOfPrimive(id);
-            var i = ij.Item1;
-            var j = ij.Item2;
-
             if (paintLock || !duringSwipe || tapeGrid[i, j] == 'b')
             {
                 return;
