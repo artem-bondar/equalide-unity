@@ -12,12 +12,12 @@ namespace ManagersTapeT100
 {
     public class GameManager : MonoBehaviour
     {
-        public Text score;
         public Text survivalPointsCounter;
         public Text walkthroughPointsCounter;
 
         public Image pauseButtonIcon;
 
+        public Sprite restartIconSprite;
         public Sprite pauseIconSprite;
         public Sprite playIconSprite;
 
@@ -49,9 +49,15 @@ namespace ManagersTapeT100
             StartGame();
         }
 
-        public void OnPauseButtonClick()
+        public void OnDiversityButtonClick()
         {
-            if (gamePaused)
+            if (gameOver)
+            {
+                pauseButtonIcon.sprite = pauseIconSprite;
+                tape.Destroy();
+                StartGame();
+            }
+            else if (gamePaused)
             {
                 pauseButtonIcon.sprite = pauseIconSprite;
                 ContinueGame();
@@ -73,8 +79,6 @@ namespace ManagersTapeT100
 
             walkthroughPoints = 0;
             walkthroughPointsCounter.text = $"{walkthroughPoints}";
-
-            score.gameObject.transform.parent.gameObject.SetActive(false);
 
             LoadTape();
             StartCoroutine(RunTape());
@@ -136,8 +140,7 @@ namespace ManagersTapeT100
             gameOver = true;
             tape.paintLock = true;
             survivalPointsCounter.text = "0";
-            score.text = $"Earned {walkthroughPoints} WPs";
-            score.gameObject.transform.parent.gameObject.SetActive(true);
+            pauseButtonIcon.sprite = restartIconSprite;
         }
     }
 }
