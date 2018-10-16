@@ -125,12 +125,14 @@ namespace ManagersTapeT100
 
         private void PauseGame()
         {
+            tape.paintLock = true;
             Time.timeScale = 0f;
             gamePaused = true;
         }
 
         private void ContinueGame()
         {
+            tape.paintLock = false;
             Time.timeScale = 1f;
             gamePaused = false;
         }
