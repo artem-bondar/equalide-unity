@@ -13,13 +13,17 @@ namespace ManagersTapeT100
     public class GameManager : MonoBehaviour
     {
         public Text score;
+        public Text linesCounter;
+        public Text survivalPointsPanel;
+        
         private Tape tape;
 
         private readonly float tapeSpeed = 1f; // takes to move one row down
         private readonly float decreasePointsDelta = 0.2f;
 
         private bool gameOver;
-        
+        private int linesLeft;
+
         public int survivalPoints;
         private int walkthroughPoints;
 
@@ -35,9 +39,12 @@ namespace ManagersTapeT100
 
         private void StartGame()
         {
+            linesLeft = 100;
             survivalPoints = 100;
             walkthroughPoints = 0;
             gameOver = false;
+            linesCounter.text = "100";
+            survivalPointsPanel.text = "100";
             score.gameObject.transform.parent.gameObject.SetActive(false);
 
             LoadTape();
@@ -57,13 +64,14 @@ namespace ManagersTapeT100
             {
                 StartCoroutine(tape.MoveOneRowDown(tapeSpeed));
                 yield return new WaitForSeconds(tapeSpeed);
-                survivalPoints--;
+                survivalPointsPanel.text = $"{--survivalPoints}";
+                linesCounter.text = $"{--linesLeft}";
             }
         }
 
         private IEnumerator UpdateScore()
         {
-            while (survivalPoints > 0)
+            while (survivalPoints > 0 && linesLeft > 0)
             {
                 yield return new WaitForSeconds(decreasePointsDelta);
                 walkthroughPoints++;
@@ -76,6 +84,7 @@ namespace ManagersTapeT100
         private void OnGameOver()
         {
             gameOver = true;
+            score.text = $"Earned {walkthroughPoints} WPs";
             score.gameObject.transform.parent.gameObject.SetActive(true);
         }
     }
