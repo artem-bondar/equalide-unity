@@ -15,11 +15,11 @@ namespace LogicTapeT100
             {
                 for (var j = 0; j < width; j++)
                 {
-					tapeCells += Random.value <= 0.7f ? 'e' : 'b';
+					tapeCells += Random.value <= 0.75f ? 'e' : 'b';
                 }
             }
 
-            for (var probability = 0.7f; probability <= 1f; probability += 0.005f)
+            for (var probability = 0.75f; probability <= 1f; probability += 0.005f)
             {
                 for (var i = 0; i < width; i++)
                 {
