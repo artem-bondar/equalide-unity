@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using LogicTapeT;
-using ManagersTapeT;
+using ManagersTapeT100;
 
 namespace UITapeT100
 {
@@ -235,12 +235,7 @@ namespace UITapeT100
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-                gameManager.markedElements++;
-
-                if (tapeGrid.CheckIfSolved())
-                {
-                    gameManager.OnSolvedTape();
-                }
+                gameManager.survivalPoints += 5;
             }
         }
 
@@ -271,12 +266,7 @@ namespace UITapeT100
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-                gameManager.markedElements++;
-
-                if (tapeGrid.CheckIfSolved())
-                {
-                    gameManager.OnSolvedTape();
-                }
+                gameManager.survivalPoints += 5;
             }
         }
     }

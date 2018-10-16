@@ -6,84 +6,77 @@ using UnityEngine.UI;
 using UITapeT100;
 using Logic;
 using LogicTapeT;
+using LogicTapeT100;
 
 namespace ManagersTapeT100
 {
     public class GameManager : MonoBehaviour
     {
-        private Tape tape;
-        private float tapeSpeed = 1f; // takes to move one row down
-        private bool tapeSolved = false;
-
         public Text score;
-        public int markedElements = 0;
+        private Tape tape;
+
+        private readonly float tapeSpeed = 1f; // takes to move one row down
+        private readonly float decreasePointsDelta = 0.2f;
+
+        private bool gameOver;
+        
+        public int survivalPoints;
+        private int walkthroughPoints;
 
         private void Awake() => tape = GameObject.FindObjectOfType<Tape>();
 
-        private void Start()
-        {
-            LoadCurrentTape();
-            StartCoroutine(RunTape());
-        }
-
-        public void OnSolvedTape()
-        {
-            tapeSolved = true;
-            score.text = $"You marked {markedElements} elements";
-            score.gameObject.transform.parent.gameObject.SetActive(true);
-        }
+        private void Start() => StartGame();
 
         public void OnRestart()
         {
-            markedElements = 0;
-            tapeSolved = false;
-            score.gameObject.transform.parent.gameObject.SetActive(false);
-
             tape.Destroy();
-            LoadCurrentTape();
-            StartCoroutine(RunTape());
+            StartGame();
         }
 
-        public void LoadCurrentTape()
+        private void StartGame()
         {
-            var tapeCellsRaw = @"bebebbb
-bebeeeb
-eeeeeee
-ebeeeeb
-eeeebee
-ebeeeee
-eeeeeee
-beebeeb
-beeeeeb
-beeeeee
-eeeeeeb
-beeeebb
-beeeebb
-eeebeeb
-eeeeeeb
-beeeeeb
-bebeebb
-bbeeebb
-bbeeeeb
-beeebbb";
-//             var tapeCellsRaw = @"eeee
-// // eeee
-// // eeee
-// // eeee";
-            var tapeCells = string.Join(string.Empty, tapeCellsRaw.Split('\n'));
+            survivalPoints = 100;
+            walkthroughPoints = 0;
+            gameOver = false;
+            score.gameObject.transform.parent.gameObject.SetActive(false);
+
+            LoadTape();
+            StartCoroutine(RunTape());
+            StartCoroutine(UpdateScore());
+        }
+
+        private void LoadTape()
+        {
             var element = new CellGrid("cccbcbbcb", 3, 3);
-            // var element = new CellGrid("cc", 2, 1);
-            tape.Create(new TapeGrid(tapeCells, 7, tapeCells.Length / 7, element));
-            // tape.Create(new TapeGrid(tapeCells, 4, tapeCells.Length / 4, element));
+            tape.Create(TapeGenerator.GenerateGradientLinearTape(7, element));
         }
 
         private IEnumerator RunTape()
         {
-            while (!tapeSolved)
+            while (!gameOver)
             {
                 StartCoroutine(tape.MoveOneRowDown(tapeSpeed));
                 yield return new WaitForSeconds(tapeSpeed);
+                survivalPoints--;
             }
+        }
+
+        private IEnumerator UpdateScore()
+        {
+            while (survivalPoints > 0)
+            {
+                yield return new WaitForSeconds(decreasePointsDelta);
+                walkthroughPoints++;
+            }
+
+            gameOver = true;
+            OnGameOver();
+        }
+
+        private void OnGameOver()
+        {
+            gameOver = true;
+            score.gameObject.transform.parent.gameObject.SetActive(true);
         }
     }
 }
