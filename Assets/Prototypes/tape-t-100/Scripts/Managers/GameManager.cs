@@ -15,14 +15,14 @@ namespace ManagersTapeT100
         public Text score;
         public Text linesCounter;
         public Text survivalPointsPanel;
-        
+
         private Tape tape;
 
-        private readonly float tapeSpeed = 1f; // takes to move one row down
+        private readonly float tapeSpeed = 0.75f; // takes to move one row down
         private readonly float decreasePointsDelta = 0.2f;
 
         private bool gameOver;
-        private int linesLeft;
+        private int linesWalked;
 
         public int survivalPoints;
         private int walkthroughPoints;
@@ -39,12 +39,12 @@ namespace ManagersTapeT100
 
         private void StartGame()
         {
-            linesLeft = 100;
-            survivalPoints = 100;
+            linesWalked = 0;
+            survivalPoints = 25;
             walkthroughPoints = 0;
             gameOver = false;
-            linesCounter.text = "100";
-            survivalPointsPanel.text = "100";
+            linesCounter.text = $"{linesWalked}";
+            survivalPointsPanel.text = $"{survivalPoints}";
             score.gameObject.transform.parent.gameObject.SetActive(false);
 
             LoadTape();
@@ -55,23 +55,30 @@ namespace ManagersTapeT100
         private void LoadTape()
         {
             var element = new CellGrid("cccbcbbcb", 3, 3);
-            tape.Create(TapeGenerator.GenerateGradientLinearTape(7, element));
+            tape.Create(TapeGenerator.GenerateGradientLinearTape(5, element));
         }
 
         private IEnumerator RunTape()
         {
-            while (!gameOver)
+            for (;;)
             {
                 StartCoroutine(tape.MoveOneRowDown(tapeSpeed));
                 yield return new WaitForSeconds(tapeSpeed);
-                survivalPointsPanel.text = $"{--survivalPoints}";
-                linesCounter.text = $"{--linesLeft}";
+                if (!gameOver)
+                {
+                    survivalPointsPanel.text = $"{--survivalPoints}";
+                    linesCounter.text = $"{++linesWalked}";
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
         private IEnumerator UpdateScore()
         {
-            while (survivalPoints > 0 && linesLeft > 0)
+            while (survivalPoints > 0 && linesWalked < 300)
             {
                 yield return new WaitForSeconds(decreasePointsDelta);
                 walkthroughPoints++;
@@ -84,6 +91,7 @@ namespace ManagersTapeT100
         private void OnGameOver()
         {
             gameOver = true;
+            tape.paintLock = true;
             score.text = $"Earned {walkthroughPoints} WPs";
             score.gameObject.transform.parent.gameObject.SetActive(true);
         }

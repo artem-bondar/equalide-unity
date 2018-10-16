@@ -235,7 +235,7 @@ namespace UITapeT100
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-                gameManager.survivalPoints += 5;
+                gameManager.survivalPoints += 2;
             }
         }
 
@@ -266,7 +266,7 @@ namespace UITapeT100
             if (coordinates.Count > 0)
             {
                 DestroyMarkedElement(coordinates);
-                gameManager.survivalPoints += 5;
+                gameManager.survivalPoints += 2;
             }
         }
     }
