@@ -22,7 +22,13 @@ namespace UITapeT
         private GridLayoutGroup grid;
 
         private TapeGrid tapeGrid;
-        private int spawnRowIndex;
+
+        // Shift in indexes between first row for tape grid and first row in actual grid
+        // on screen (be careful - it's row that is above first visible row)
+        private int screenRowsShift;
+        private int rowToRenderIndex;        
+        private int rowsToRender;
+        private int rowsMoved;
 
         private bool eraseMode;
         private bool duringSwipe;
@@ -61,24 +67,29 @@ namespace UITapeT
             grid.cellSize = new Vector2(primitiveSize, primitiveSize);
             grid.constraintCount = tapeGrid.width;
 
-            var primitivesPerScreen = (int)(gridrt.height / primitiveSize);
+            var rowsPerScreen = (int)(gridrt.height / primitiveSize);
 
-            if (primitivesPerScreen * primitiveSize < gridrt.height)
+            if (rowsPerScreen * primitiveSize < gridrt.height)
             {
-                primitivesPerScreen++;
+                rowsPerScreen++;
             }
+
+            rowsToRender = tapeGrid.height < rowsPerScreen + 1 ?
+                tapeGrid.height : rowsPerScreen + 1;
 
             // First -1 to convert to zero numerated index from length,
             // another -1 to select row that is above row that is seen
-            // on screen and last -1 to select row to spawn next
-            spawnRowIndex = tapeGrid.height - 1 - primitivesPerScreen - 2;
+            screenRowsShift = tapeGrid.height - rowsToRender;
 
-            for (var i = spawnRowIndex + 1; i < tapeGrid.height; i++)
+            rowToRenderIndex = screenRowsShift == 0 ? tapeGrid.height - 1 : screenRowsShift;
+
+            for (var i = 0; i < rowsToRender; i++)
             {
-                CreateNewRow(i);
+                CreateNewRow(i + screenRowsShift);
             }
 
             paintLock = false;
+            rowsMoved = 0;
         }
 
         public void Refresh()
@@ -121,10 +132,13 @@ namespace UITapeT
                 rt.offsetMin -= new Vector2(0, (primitiveSize / duration) * Time.deltaTime);
             }
 
-            tapeGrid.MoveRowFromBottomToTop();
-            MoveRowFromBottomToTop();
-
             rt.offsetMin = Vector2.zero;
+            rowsMoved++;
+
+            CreateNewRowAtTop(rowToRenderIndex);
+            DeleteBottomRow();
+
+            tapeGrid.MoveRowFromBottomToTop();
         }
 
         private void CreateNewRow(int rowIndex)
@@ -133,7 +147,7 @@ namespace UITapeT
 
             for (var j = 0; j < tapeGrid.width; j++)
             {
-                newRow[j] = CreateNewPrimive(rowIndex, j);
+                newRow[j] = CreateNewPrimive(tapeGrid[rowIndex, j], rowIndex, j);
             }
 
             tapeRows.Add(newRow);
@@ -145,22 +159,22 @@ namespace UITapeT
 
             for (var j = 0; j < tapeGrid.width; j++)
             {
-                newRow[j] = CreateNewPrimive(rowIndex, j);
+                newRow[j] = CreateNewPrimive(tapeGrid[rowIndex, j], -rowsMoved, j);
                 newRow[j].transform.SetSiblingIndex(j);
             }
 
             tapeRows.Insert(0, newRow);
         }
 
-        private Image CreateNewPrimive(int rowIndex, int columnIndex)
+        private Image CreateNewPrimive(char cell, int rowIndex, int columnIndex)
         {
             var newPrimitive = Instantiate(primitive).GetComponent<Image>();
             newPrimitive.transform.SetParent(grid.transform, false);
 
-            if (tapeGrid[rowIndex, columnIndex] != 'e')
+            if (cell != 'e')
             {
                 newPrimitive.GetComponent<Image>().color =
-                    (tapeGrid[rowIndex, columnIndex] == 'b') ? Color.black : markColor;
+                    (cell == 'b') ? Color.black : markColor;
             }
 
             var trigger = newPrimitive.GetComponent<EventTrigger>();
@@ -190,32 +204,24 @@ namespace UITapeT
             tapeRows.RemoveAt(tapeRows.Count - 1);
         }
 
-        private void MoveRowFromBottomToTop()
-        {
-            Image[] lastRow = tapeRows[tapeRows.Count - 1];
-            tapeRows.RemoveAt(tapeRows.Count - 1);
-            tapeRows.Insert(0, lastRow);
-
-            for (var i = 0; i < lastRow.Length; i++)
-            {
-                lastRow[i].transform.SetSiblingIndex(i);
-            }
-        }
-
         private void DestroyMarkedElement(List<Tuple<int, int>> coordinates)
         {
-            var cellsToDestroy = new Image[coordinates.Count];
+            var cellsToDestroy = new List<Image>();
 
-            for (var i = 0; i < coordinates.Count; i++)
+            foreach (var coordinate in coordinates)
             {
-                cellsToDestroy[i] = tapeRows[coordinates[i].Item1][coordinates[i].Item2];
+                if (coordinate.Item1 >= screenRowsShift)
+                {
+                    cellsToDestroy.Add(
+                        tapeRows[coordinate.Item1 - screenRowsShift][coordinate.Item2]);
+                }
             }
 
             StartCoroutine(ChangeCellsColor(cellsToDestroy, deleteColor, 0.1f));
             StartCoroutine(ChangeCellsColor(cellsToDestroy, Color.black, 0.5f, 0.9f));
         }
 
-        private IEnumerator ChangeCellsColor(Image[] cells, Color targetColor,
+        private IEnumerator ChangeCellsColor(List<Image> cells, Color targetColor,
                                              float duration, float delay = 0f)
         {
             if (delay > 0f)
@@ -233,13 +239,24 @@ namespace UITapeT
 
                 foreach (var cell in cells)
                 {
-                    cell.color = newColor;
+                    if (cell)
+                    {
+                        cell.color = newColor;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
 
-        private void PointerDown(int i, int j, Image primitive)
+        private void PointerDown(int iShifted, int j, Image primitive)
         {
+            var i = (iShifted + screenRowsShift + rowsMoved) % rowsToRender;
+
+            Debug.Log($"{iShifted}:{j} -> {i}:{j} rowsMove: {rowsMoved}");
+
             if (paintLock || tapeGrid[i, j] == 'b')
             {
                 return;
@@ -272,8 +289,10 @@ namespace UITapeT
             }
         }
 
-        private void PointerEnter(int i, int j, Image primitive)
+        private void PointerEnter(int iShifted, int j, Image primitive)
         {
+            var i = (iShifted + screenRowsShift + rowsMoved) % rowsToRender;
+
             if (paintLock || !duringSwipe || tapeGrid[i, j] == 'b')
             {
                 return;

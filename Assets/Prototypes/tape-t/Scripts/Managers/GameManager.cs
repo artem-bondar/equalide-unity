@@ -12,7 +12,7 @@ namespace ManagersTapeT
     public class GameManager : MonoBehaviour
     {
         private Tape tape;
-        private float tapeSpeed = 1f; // takes to move one row down
+        private float tapeSpeed = 2f; // takes to move one row down
         private bool tapeSolved = false;
 
         public Text score;
@@ -67,9 +67,9 @@ bbeeebb
 bbeeeeb
 beeebbb";
 //             var tapeCellsRaw = @"eeee
-// // eeee
-// // eeee
-// // eeee";
+// eeee
+// eeee
+// eeee";
             var tapeCells = string.Join(string.Empty, tapeCellsRaw.Split('\n'));
             var element = new CellGrid("cccbcbbcb", 3, 3);
             // var element = new CellGrid("cc", 2, 1);
