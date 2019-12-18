@@ -1,4 +1,4 @@
-# Equalide game
+# Equalide
 
 <img src="Docs/Images/icon.jpg" width="35%">
 
